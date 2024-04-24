@@ -26,3 +26,16 @@ $(MOCKGEN):
 
 .PHONY: ssclienttest
 ssclienttest: $(MOCKGEN)
+
+.PHONY: ssclient
+ssclient:
+	rm -rf $(CURDIR)/kiota
+	/tmp/kiota/kiota generate --language go --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.yaml --output ./kiota
+	mv $(CURDIR)/kiota/goescaped/artefactual/dev/ssclient/kiota/* kiota/
+	rm -rf $(CURDIR)/kiota/goescaped/
+	$(MAKE) update-kiota-imports
+
+.PHONY: update-kiota-imports
+update-kiota-imports:
+	find ./kiota -type f -name '*.go' -exec sed -i 's|goescaped.artefactual.dev/ssclient/kiota/|go.artefactual.dev/ssclient/kiota/|g' {} +
+

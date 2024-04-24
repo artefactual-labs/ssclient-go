@@ -1,0 +1,260 @@
+openapi: 3.0.0
+info:
+  title: Archivematica Storage Service
+  version: 0.0.0
+tags: []
+paths:
+  /api/v2/location:
+    get:
+      operationId: Locations_list
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationList'
+  /api/v2/location/default/{purpose}:
+    get:
+      operationId: Locations_default
+      parameters:
+        - name: purpose
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/LocationPurpose'
+      responses:
+        '302':
+          description: Redirection
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+  /api/v2/location/{uuid}:
+    get:
+      operationId: Locations_read
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+    post:
+      operationId: Locations_move
+      description: Move files to the specified location.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  origin_location:
+                    allOf:
+                      - $ref: '#/components/schemas/uri'
+                    description: URI of the Location the files should be moved from.
+                  pipeline:
+                    allOf:
+                      - $ref: '#/components/schemas/uri'
+                    description: URI of the
+                  files:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/moveFile'
+                    description: List of objects containing `source` and `destination`. The source and destination are paths relative to their Location of the files to be moved.
+                required:
+                  - origin_location
+                  - pipeline
+                  - files
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+  /api/v2/pipeline/{uuid}:
+    get:
+      operationId: Pipelines_read
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pipeline'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+security:
+  - ApiKeyAuth: []
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+    ListResponseMeta:
+      type: object
+      required:
+        - limit
+        - next
+        - offset
+        - previous
+        - total_count
+      properties:
+        limit:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        offset:
+          type: integer
+        previous:
+          type: string
+          nullable: true
+        total_count:
+          type: integer
+    Location:
+      type: object
+      required:
+        - description
+        - enabled
+        - path
+        - pipeline
+        - purpose
+        - quota
+        - relative_path
+        - resource_uri
+        - space
+        - used
+        - uuid
+      properties:
+        description:
+          type: string
+        enabled:
+          type: boolean
+        path:
+          type: string
+        pipeline:
+          type: array
+          items:
+            type: string
+        purpose:
+          $ref: '#/components/schemas/LocationPurpose'
+        quota:
+          type: integer
+          nullable: true
+        relative_path:
+          type: string
+        resource_uri:
+          type: string
+        space:
+          type: string
+        used:
+          type: integer
+        uuid:
+          $ref: '#/components/schemas/uuid'
+    LocationList:
+      type: object
+      required:
+        - meta
+        - objects
+      properties:
+        meta:
+          $ref: '#/components/schemas/ListResponseMeta'
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+    LocationPurpose:
+      type: string
+      enum:
+        - AR
+        - AS
+        - CP
+        - DS
+        - SD
+        - SS
+        - BL
+        - TS
+        - RP
+    Pipeline:
+      type: object
+      required:
+        - description
+        - remote_name
+        - resource_uri
+        - uuid
+      properties:
+        description:
+          type: string
+        remote_name:
+          type: string
+        resource_uri:
+          type: string
+        uuid:
+          $ref: '#/components/schemas/uuid'
+    moveFile:
+      type: object
+      required:
+        - source
+        - destination
+      properties:
+        source:
+          type: string
+        destination:
+          type: string
+    uri:
+      type: string
+      description: Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
+    uuid:
+      type: string
+      format: 'UUIDv4, e.g.: "e3bae040-7682-4457-aef8-20a419aed0bd".'
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: ApiKey
