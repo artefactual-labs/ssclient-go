@@ -1,0 +1,33 @@
+name: Tests
+on:
+  pull_request:
+  push:
+permissions:
+  contents: read
+jobs:
+  test:
+    name: Test
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v5
+      - name: Run tests
+        run: go test -race ./...
+  mod:
+    name: Check that `go mod tidy` is clean
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v5
+      - name: Check
+        run: |
+          go mod tidy
+          git diff --name-only --exit-code || (echo "Please run 'go mod tidy'."; exit 1)
