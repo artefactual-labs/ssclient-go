@@ -1,7 +1,7 @@
 # ssclient
 
 [![PkgGoDev](https://pkg.go.dev/badge/go.artefactual.dev/ssclient)](https://pkg.go.dev/go.artefactual.dev/ssclient)
-[![OpenAPI spec](https://img.shields.io/badge/openapi-spec-orange?logo=openapiinitiative&color=6BA539)][openapi-schema]
+[![OpenAPI spec](https://img.shields.io/badge/openapi-spec-orange?logo=openapiinitiative&color=6BA539)][openapi-schema-editor]
 
 This repository provides the `go.artefactual.dev/ssclient` module.
 
@@ -26,6 +26,7 @@ it's already doing all the mapping. TypeSpec could be a target by using the
 [emitter framework].
 
 [openapi-schema]: https://raw.githubusercontent.com/artefactual-labs/ssclient-go/main/typespec/tsp-output/%40typespec/openapi3/openapi.v1.yaml
+[openapi-schema-editor]: https://editor.swagger.io/?url=https://raw.githubusercontent.com/artefactual-labs/ssclient-go/main/typespec/tsp-output/%40typespec/openapi3/openapi.v1.yaml
 [TastyPie]: https://django-tastypie.readthedocs.io/
 [ss-schema.json]: https://gist.github.com/sevein/379f101ab9305235844c1e5101eeba04
 [django-tastypie-swagger]: https://github.com/concentricsky/django-tastypie-swagger
