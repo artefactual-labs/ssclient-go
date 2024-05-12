@@ -1,18 +1,37 @@
 import "@typespec/http";
 import "@typespec/rest";
 import "@typespec/openapi3";
+import "@typespec/versioning";
 
 using TypeSpec.Http;
 using TypeSpec.Rest;
+using TypeSpec.Versioning;
 
 @service({
   title: "Archivematica Storage Service",
 })
 @route("/api/v2")
 @useAuth(ApiKeyAuth<ApiKeyLocation.header, "ApiKey">)
+@versioned(Versions)
 namespace Service {
+  enum Versions {
+    v1,
+  }
+
   @route("/pipeline")
   namespace Pipelines {
+    @get
+    op list(
+      @query
+      description?: string,
+
+      @query
+      uuid?: uuid,
+    ): {
+      @statusCode statusCode: 200;
+      @body list: PipelineList;
+    };
+
     @get
     op read(@path uuid: string): {
       @statusCode statusCode: 200;
@@ -24,10 +43,38 @@ namespace Service {
       @statusCode statusCode: 404;
     };
   }
+
   @route("/location")
   namespace Locations {
     @get
-    op list(): {
+    op list(
+      @query
+      description?: string,
+
+      @query
+      purpose?: LocationPurpose,
+
+      @query
+      quota?: integer,
+
+      @query("relative_path")
+      relativePath?: string,
+
+      @query
+      used?: integer,
+
+      @query
+      uuid?: uuid,
+
+      // TODO: enable all ORM filters, including across relationships.
+      // "space": ALL_WITH_RELATIONS
+      // "pipeline": ALL_WITH_RELATIONS
+
+      @query("pipeline__uuid")
+      pipelineId?: uuid,
+
+      ...ListOpQueries,
+    ): {
       @statusCode statusCode: 200;
       @body list: LocationList;
     };
@@ -80,11 +127,26 @@ scalar uuid extends string;
 @doc("Uniform Resource Identifier, e.g. \"/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/\".")
 scalar uri extends string;
 
+model ListOpQueries {
+  @query("order_by")
+  orderBy?: string;
+
+  @query
+  limit?: integer;
+
+  @query
+  offset?: integer;
+}
+
 model Pipeline {
   description: string;
   remote_name: string;
   resource_uri: string;
   uuid: uuid;
+}
+
+model PipelineList {
+  ...ListResponse<Pipeline>;
 }
 
 enum LocationPurpose {

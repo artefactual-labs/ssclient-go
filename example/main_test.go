@@ -18,6 +18,8 @@ import (
 )
 
 func assertEqual(t *testing.T, got, want interface{}) {
+	t.Helper()
+
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Mismatch found:\nGot: %#v\nWant: %#v", got, want)
 	}
@@ -27,8 +29,8 @@ func TestRunUsage(t *testing.T) {
 	ctx := context.Background()
 	stdout := bytes.NewBuffer([]byte{})
 
-	err := run(ctx, stdout, []string{"example"})
-	assertEqual(t, err.Error(), "Usage: example -url=http://127.0.0.1:62081 -user=test -key=test")
+	err := run(ctx, stdout, []string{})
+	assertEqual(t, err.Error(), "flag: help requested")
 }
 
 func TestRun(t *testing.T) {
@@ -71,7 +73,7 @@ func TestRun(t *testing.T) {
 	}))
 	t.Cleanup(func() { srv.Close() })
 
-	if err := run(ctx, stdout, []string{"-url=" + srv.URL, "-user=test", "-key=test"}); err != nil {
+	if err := run(ctx, stdout, []string{"example", "-url=" + srv.URL, "-user=test", "-key=test"}); err != nil {
 		t.Fatal(err)
 	}
 

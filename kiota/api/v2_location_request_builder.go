@@ -10,12 +10,28 @@ import (
 type V2LocationRequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
+type V2LocationRequestBuilderGetQueryParameters struct {
+    Description *string `uriparametername:"description"`
+    Limit *int32 `uriparametername:"limit"`
+    Offset *int32 `uriparametername:"offset"`
+    Order_by *string `uriparametername:"order_by"`
+    Pipeline__uuid *string `uriparametername:"pipeline__uuid"`
+    // Deprecated: This property is deprecated, use PurposeAsLocationPurpose instead
+    Purpose *string `uriparametername:"purpose"`
+    PurposeAsLocationPurpose *i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.LocationPurpose `uriparametername:"purpose"`
+    Quota *int32 `uriparametername:"quota"`
+    Relative_path *string `uriparametername:"relative_path"`
+    Used *int32 `uriparametername:"used"`
+    Uuid *string `uriparametername:"uuid"`
+}
 // V2LocationRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
 type V2LocationRequestBuilderGetRequestConfiguration struct {
     // Request headers
     Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
     // Request options
     Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
+    // Request query parameters
+    QueryParameters *V2LocationRequestBuilderGetQueryParameters
 }
 // ByUuid gets an item from the go.artefactual.dev/ssclient/kiota.api.v2.location.item collection
 // returns a *V2LocationWithUuItemRequestBuilder when successful
@@ -32,7 +48,7 @@ func (m *V2LocationRequestBuilder) ByUuid(uuid string)(*V2LocationWithUuItemRequ
 // NewV2LocationRequestBuilderInternal instantiates a new V2LocationRequestBuilder and sets the default values.
 func NewV2LocationRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2LocationRequestBuilder) {
     m := &V2LocationRequestBuilder{
-        BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/api/v2/location", pathParameters),
+        BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/api/v2/location{?description*,limit*,offset*,order_by*,pipeline__uuid*,purpose*,quota*,relative_path*,used*,uuid*}", pathParameters),
     }
     return m
 }
@@ -66,6 +82,9 @@ func (m *V2LocationRequestBuilder) Get(ctx context.Context, requestConfiguration
 func (m *V2LocationRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2LocationRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
     if requestConfiguration != nil {
+        if requestConfiguration.QueryParameters != nil {
+            requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
+        }
         requestInfo.Headers.AddAll(requestConfiguration.Headers)
         requestInfo.AddRequestOptions(requestConfiguration.Options)
     }

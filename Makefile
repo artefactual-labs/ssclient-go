@@ -1,5 +1,5 @@
 PROJECT := ssclient
-.DEFAULT_GOAL := ssclienttest
+.DEFAULT_GOAL := ssclient
 UNAME_OS := $(shell uname -s)
 UNAME_ARCH := $(shell uname -m)
 CACHE_BASE ?= $(HOME)/.cache/$(PROJECT)
@@ -24,13 +24,15 @@ $(MOCKGEN):
 	@mkdir -p $(dir $(MOCKGEN))
 	@touch $(MOCKGEN)
 
-.PHONY: ssclienttest
-ssclienttest: $(MOCKGEN)
+.PHONY: examplemocks
+examplemocks: $(MOCKGEN)
+	cd $(CURDIR)/example && mockgen -typed -destination=./adapter/adapter.go -package=adapter github.com/microsoft/kiota-abstractions-go RequestAdapter
 
 .PHONY: ssclient
 ssclient:
+	@which kiota > /dev/null 2>&1 || (echo "kiota not found in PATH, download v1.14.0 from: https://learn.microsoft.com/en-ca/openapi/kiota/install" && exit 1)
 	rm -rf $(CURDIR)/kiota
-	/tmp/kiota/kiota generate --language go --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.yaml --output ./kiota
+	kiota generate --language go --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --output ./kiota
 	mv $(CURDIR)/kiota/goescaped/artefactual/dev/ssclient/kiota/* kiota/
 	rm -rf $(CURDIR)/kiota/goescaped/
 	$(MAKE) update-kiota-imports
