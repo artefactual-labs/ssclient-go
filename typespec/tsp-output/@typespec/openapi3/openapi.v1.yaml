@@ -1,13 +1,51 @@
 openapi: 3.0.0
 info:
   title: Archivematica Storage Service
-  version: 0.0.0
+  version: v1
 tags: []
 paths:
   /api/v2/location:
     get:
       operationId: Locations_list
-      parameters: []
+      parameters:
+        - name: description
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: purpose
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/LocationPurpose'
+        - name: quota
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: relative_path
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: used
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: uuid
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: pipeline__uuid
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - $ref: '#/components/parameters/ListOpQueries.orderBy'
+        - $ref: '#/components/parameters/ListOpQueries.limit'
+        - $ref: '#/components/parameters/ListOpQueries.offset'
       responses:
         '200':
           description: The request has succeeded.
@@ -101,6 +139,27 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: The server cannot find the requested resource.
+  /api/v2/pipeline:
+    get:
+      operationId: Pipelines_list
+      parameters:
+        - name: description
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: uuid
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineList'
   /api/v2/pipeline/{uuid}:
     get:
       operationId: Pipelines_read
@@ -128,6 +187,25 @@ paths:
 security:
   - ApiKeyAuth: []
 components:
+  parameters:
+    ListOpQueries.limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+    ListOpQueries.offset:
+      name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+    ListOpQueries.orderBy:
+      name: order_by
+      in: query
+      required: false
+      schema:
+        type: string
   schemas:
     Error:
       type: object
@@ -237,6 +315,22 @@ components:
           type: string
         uuid:
           $ref: '#/components/schemas/uuid'
+    PipelineList:
+      type: object
+      required:
+        - meta
+        - objects
+      properties:
+        meta:
+          $ref: '#/components/schemas/ListResponseMeta'
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pipeline'
+    Versions:
+      type: string
+      enum:
+        - v1
     moveFile:
       type: object
       required:

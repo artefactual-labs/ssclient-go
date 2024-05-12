@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -11,13 +10,17 @@ import (
 
 	"go.artefactual.dev/ssclient"
 	"go.artefactual.dev/ssclient/kiota"
+	"go.artefactual.dev/ssclient/kiota/api"
 )
 
 const usage = "Usage: example -url=http://127.0.0.1:62081 -user=test -key=test"
 
 func main() {
 	ctx := context.Background()
-	if err := run(ctx, os.Stdout, os.Args); err != nil {
+	if err := run(ctx, os.Stdout, os.Args); err == flag.ErrHelp {
+		fmt.Fprintf(os.Stderr, "%s\n", usage)
+		os.Exit(2)
+	} else if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
@@ -25,7 +28,7 @@ func main() {
 
 func run(ctx context.Context, out io.Writer, args []string) error {
 	if len(args) < 2 {
-		return errors.New(usage)
+		return flag.ErrHelp
 	}
 
 	var (
@@ -36,7 +39,7 @@ func run(ctx context.Context, out io.Writer, args []string) error {
 	flag.StringVar(&url, "url", "", "url, e.g. http://127.0.0.1:62081")
 	flag.StringVar(&user, "user", "", "user, e.g.: test")
 	flag.StringVar(&key, "key", "", "key, e.g.: test")
-	if err := flag.CommandLine.Parse(args); err != nil {
+	if err := flag.CommandLine.Parse(args[1:]); err != nil {
 		return err
 	}
 
@@ -57,7 +60,8 @@ type application struct {
 
 // locations prints a list of locations found in the storage server.
 func (app application) locations(ctx context.Context) error {
-	listable, err := app.client.Api().V2().Location().Get(ctx, nil)
+	reqConfig := &api.V2LocationRequestBuilderGetRequestConfiguration{}
+	listable, err := app.client.Api().V2().Location().Get(ctx, reqConfig)
 	if err != nil {
 		return err
 	}
