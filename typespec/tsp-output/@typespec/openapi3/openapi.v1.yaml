@@ -114,28 +114,6 @@ paths:
       responses:
         '200':
           description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  origin_location:
-                    allOf:
-                      - $ref: '#/components/schemas/uri'
-                    description: URI of the Location the files should be moved from.
-                  pipeline:
-                    allOf:
-                      - $ref: '#/components/schemas/uri'
-                    description: URI of the
-                  files:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/moveFile'
-                    description: List of objects containing `source` and `destination`. The source and destination are paths relative to their Location of the files to be moved.
-                required:
-                  - origin_location
-                  - pipeline
-                  - files
         '400':
           description: The server could not understand the request due to invalid syntax.
           content:
@@ -144,6 +122,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: The server cannot find the requested resource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveRequest'
   /api/v2/pipeline:
     get:
       operationId: Pipelines_list
@@ -304,6 +288,26 @@ components:
         - BL
         - TS
         - RP
+    MoveRequest:
+      type: object
+      required:
+        - origin_location
+        - pipeline
+        - files
+      properties:
+        origin_location:
+          allOf:
+            - $ref: '#/components/schemas/uri'
+          description: URI of the Location the files should be moved from.
+        pipeline:
+          allOf:
+            - $ref: '#/components/schemas/uri'
+          description: URI of the pipeline.
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/moveFile'
+          description: List of objects containing `source` and `destination`. The source and destination are paths relative to their Location of the files to be moved.
     Pipeline:
       type: object
       required:
