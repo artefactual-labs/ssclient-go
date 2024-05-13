@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"go.artefactual.dev/ssclient"
-	"go.artefactual.dev/ssclient/kiota"
 	"go.artefactual.dev/ssclient/kiota/api"
 )
 
@@ -17,7 +16,7 @@ const usage = "Usage: example -url=http://127.0.0.1:62081 -user=test -key=test"
 
 func main() {
 	ctx := context.Background()
-	if err := run(ctx, os.Stdout, os.Args); err == flag.ErrHelp {
+	if err := run(ctx, os.Stdout, os.Args[1:]); err == flag.ErrHelp {
 		fmt.Fprintf(os.Stderr, "%s\n", usage)
 		os.Exit(2)
 	} else if err != nil {
@@ -26,7 +25,7 @@ func main() {
 	}
 }
 
-func run(ctx context.Context, out io.Writer, args []string) error {
+func run(ctx context.Context, stdout io.Writer, args []string) error {
 	if len(args) < 2 {
 		return flag.ErrHelp
 	}
@@ -39,7 +38,7 @@ func run(ctx context.Context, out io.Writer, args []string) error {
 	flag.StringVar(&url, "url", "", "url, e.g. http://127.0.0.1:62081")
 	flag.StringVar(&user, "user", "", "user, e.g.: test")
 	flag.StringVar(&key, "key", "", "key, e.g.: test")
-	if err := flag.CommandLine.Parse(args[1:]); err != nil {
+	if err := flag.CommandLine.Parse(args); err != nil {
 		return err
 	}
 
@@ -48,20 +47,23 @@ func run(ctx context.Context, out io.Writer, args []string) error {
 		return fmt.Errorf("create ssclient: %v", err)
 	}
 
-	app := application{client, out}
+	app := application{
+		client: client.Api().V2(),
+		stdout: stdout,
+	}
 
 	return app.locations(ctx)
 }
 
 type application struct {
-	client *kiota.Client
+	client *api.V2RequestBuilder
 	stdout io.Writer
 }
 
 // locations prints a list of locations found in the storage server.
 func (app application) locations(ctx context.Context) error {
 	reqConfig := &api.V2LocationRequestBuilderGetRequestConfiguration{}
-	listable, err := app.client.Api().V2().Location().Get(ctx, reqConfig)
+	listable, err := app.client.Location().Get(ctx, reqConfig)
 	if err != nil {
 		return err
 	}

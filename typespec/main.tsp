@@ -93,12 +93,20 @@ namespace Service {
     @route("/default/{purpose}")
     @get
     op default(@path purpose: LocationPurpose): {
-      @statusCode statusCode: 302;
+      @statusCode
+      statusCode: 302;
+
+      @header("Location")
+      location: string;
     } | {
-      @statusCode statusCode: 400;
-      @body error: Error;
+      @statusCode
+      statusCode: 400;
+
+      @body
+      error: Error;
     } | {
-      @statusCode statusCode: 404;
+      @statusCode
+      statusCode: 404;
     };
 
     @doc("Move files to the specified location.")
