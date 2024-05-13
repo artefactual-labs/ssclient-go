@@ -111,15 +111,14 @@ namespace Service {
 
     @doc("Move files to the specified location.")
     @post
-    op move(@path uuid: uuid): {
-      @doc("URI of the Location the files should be moved from.")
-      origin_location: uri;
+    op move(
+      @path
+      uuid: uuid,
 
-      @doc("URI of the")
-      pipeline: uri;
-
-      @doc("List of objects containing `source` and `destination`. The source and destination are paths relative to their Location of the files to be moved.")
-      files: moveFilesList;
+      @body
+      body: MoveRequest,
+    ): {
+      @statusCode statusCode: 200;
     } | {
       @statusCode statusCode: 400;
       @body error: Error;
@@ -185,6 +184,17 @@ model Location {
 
 model LocationList {
   ...ListResponse<Location>;
+}
+
+model MoveRequest {
+  @doc("URI of the Location the files should be moved from.")
+  origin_location: uri;
+
+  @doc("URI of the pipeline.")
+  pipeline: uri;
+
+  @doc("List of objects containing `source` and `destination`. The source and destination are paths relative to their Location of the files to be moved.")
+  files: moveFilesList;
 }
 
 alias moveFilesList = moveFile[];

@@ -1,51 +1,50 @@
-package api
+package models
 
 import (
-    i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a "go.artefactual.dev/ssclient/kiota/models"
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
-type V2LocationItemWithUuPostResponse struct {
+type MoveRequest struct {
     // Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additionalData map[string]any
     // List of objects containing `source` and `destination`. The source and destination are paths relative to their Location of the files to be moved.
-    files []i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.MoveFileable
+    files []MoveFileable
     // URI of the Location the files should be moved from.
     origin_location *string
-    // URI of the
+    // URI of the pipeline.
     pipeline *string
 }
-// NewV2LocationItemWithUuPostResponse instantiates a new V2LocationItemWithUuPostResponse and sets the default values.
-func NewV2LocationItemWithUuPostResponse()(*V2LocationItemWithUuPostResponse) {
-    m := &V2LocationItemWithUuPostResponse{
+// NewMoveRequest instantiates a new MoveRequest and sets the default values.
+func NewMoveRequest()(*MoveRequest) {
+    m := &MoveRequest{
     }
     m.SetAdditionalData(make(map[string]any))
     return m
 }
-// CreateV2LocationItemWithUuPostResponseFromDiscriminatorValue creates a new instance of the appropriate class based on discriminator value
+// CreateMoveRequestFromDiscriminatorValue creates a new instance of the appropriate class based on discriminator value
 // returns a Parsable when successful
-func CreateV2LocationItemWithUuPostResponseFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, error) {
-    return NewV2LocationItemWithUuPostResponse(), nil
+func CreateMoveRequestFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, error) {
+    return NewMoveRequest(), nil
 }
 // GetAdditionalData gets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 // returns a map[string]any when successful
-func (m *V2LocationItemWithUuPostResponse) GetAdditionalData()(map[string]any) {
+func (m *MoveRequest) GetAdditionalData()(map[string]any) {
     return m.additionalData
 }
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error) when successful
-func (m *V2LocationItemWithUuPostResponse) GetFieldDeserializers()(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error)) {
+func (m *MoveRequest) GetFieldDeserializers()(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error)) {
     res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error))
     res["files"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-        val, err := n.GetCollectionOfObjectValues(i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.CreateMoveFileFromDiscriminatorValue)
+        val, err := n.GetCollectionOfObjectValues(CreateMoveFileFromDiscriminatorValue)
         if err != nil {
             return err
         }
         if val != nil {
-            res := make([]i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.MoveFileable, len(val))
+            res := make([]MoveFileable, len(val))
             for i, v := range val {
                 if v != nil {
-                    res[i] = v.(i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.MoveFileable)
+                    res[i] = v.(MoveFileable)
                 }
             }
             m.SetFiles(res)
@@ -76,21 +75,21 @@ func (m *V2LocationItemWithUuPostResponse) GetFieldDeserializers()(map[string]fu
 }
 // GetFiles gets the files property value. List of objects containing `source` and `destination`. The source and destination are paths relative to their Location of the files to be moved.
 // returns a []MoveFileable when successful
-func (m *V2LocationItemWithUuPostResponse) GetFiles()([]i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.MoveFileable) {
+func (m *MoveRequest) GetFiles()([]MoveFileable) {
     return m.files
 }
 // GetOriginLocation gets the origin_location property value. URI of the Location the files should be moved from.
 // returns a *string when successful
-func (m *V2LocationItemWithUuPostResponse) GetOriginLocation()(*string) {
+func (m *MoveRequest) GetOriginLocation()(*string) {
     return m.origin_location
 }
-// GetPipeline gets the pipeline property value. URI of the
+// GetPipeline gets the pipeline property value. URI of the pipeline.
 // returns a *string when successful
-func (m *V2LocationItemWithUuPostResponse) GetPipeline()(*string) {
+func (m *MoveRequest) GetPipeline()(*string) {
     return m.pipeline
 }
 // Serialize serializes information the current object
-func (m *V2LocationItemWithUuPostResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter)(error) {
+func (m *MoveRequest) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter)(error) {
     if m.GetFiles() != nil {
         cast := make([]i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, len(m.GetFiles()))
         for i, v := range m.GetFiles() {
@@ -124,28 +123,28 @@ func (m *V2LocationItemWithUuPostResponse) Serialize(writer i878a80d2330e89d2689
     return nil
 }
 // SetAdditionalData sets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
-func (m *V2LocationItemWithUuPostResponse) SetAdditionalData(value map[string]any)() {
+func (m *MoveRequest) SetAdditionalData(value map[string]any)() {
     m.additionalData = value
 }
 // SetFiles sets the files property value. List of objects containing `source` and `destination`. The source and destination are paths relative to their Location of the files to be moved.
-func (m *V2LocationItemWithUuPostResponse) SetFiles(value []i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.MoveFileable)() {
+func (m *MoveRequest) SetFiles(value []MoveFileable)() {
     m.files = value
 }
 // SetOriginLocation sets the origin_location property value. URI of the Location the files should be moved from.
-func (m *V2LocationItemWithUuPostResponse) SetOriginLocation(value *string)() {
+func (m *MoveRequest) SetOriginLocation(value *string)() {
     m.origin_location = value
 }
-// SetPipeline sets the pipeline property value. URI of the
-func (m *V2LocationItemWithUuPostResponse) SetPipeline(value *string)() {
+// SetPipeline sets the pipeline property value. URI of the pipeline.
+func (m *MoveRequest) SetPipeline(value *string)() {
     m.pipeline = value
 }
-type V2LocationItemWithUuPostResponseable interface {
+type MoveRequestable interface {
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
-    GetFiles()([]i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.MoveFileable)
+    GetFiles()([]MoveFileable)
     GetOriginLocation()(*string)
     GetPipeline()(*string)
-    SetFiles(value []i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.MoveFileable)()
+    SetFiles(value []MoveFileable)()
     SetOriginLocation(value *string)()
     SetPipeline(value *string)()
 }
