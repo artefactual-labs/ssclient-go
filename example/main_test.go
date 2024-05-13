@@ -73,7 +73,7 @@ func TestRun(t *testing.T) {
 	}))
 	t.Cleanup(func() { srv.Close() })
 
-	if err := run(ctx, stdout, []string{"example", "-url=" + srv.URL, "-user=test", "-key=test"}); err != nil {
+	if err := run(ctx, stdout, []string{"-url=" + srv.URL, "-user=test", "-key=test"}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -110,7 +110,7 @@ func TestApplication(t *testing.T) {
 		adapter.EXPECT().Send(param, param, param, param).Times(1).Return(list, nil)
 	}
 
-	app := application{client, stdout}
+	app := application{client.Api().V2(), stdout}
 	if err := app.locations(context.Background()); err != nil {
 		t.Fatal(err)
 	}

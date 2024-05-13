@@ -41,3 +41,9 @@ ssclient:
 update-kiota-imports:
 	find ./kiota -type f -name '*.go' -exec sed -i 's|goescaped.artefactual.dev/ssclient/kiota/|go.artefactual.dev/ssclient/kiota/|g' {} +
 
+.PHONY: typespec
+typespec:
+	npm --prefix=$(CURDIR)/typespec run compile
+
+.PHONY: gen
+gen: typespec ssclient examplemocks

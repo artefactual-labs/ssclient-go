@@ -65,6 +65,11 @@ paths:
       responses:
         '302':
           description: Redirection
+          headers:
+            Location:
+              required: true
+              schema:
+                type: string
         '400':
           description: The server could not understand the request due to invalid syntax.
           content:
