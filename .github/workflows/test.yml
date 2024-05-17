@@ -19,6 +19,23 @@ jobs:
         uses: actions/setup-go@v5
       - name: Run tests
         run: go test -race ./...
+  test-example:
+    name: Test example
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          working-directory: ./example
+      - name: Run tests
+        run: go test -race ./...
+        working-directory: ./example
   mod:
     name: Check that `go mod tidy` is clean
     runs-on: ubuntu-latest
