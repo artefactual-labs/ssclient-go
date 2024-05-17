@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"testing"
 
-	kiotahttpgo "github.com/microsoft/kiota-http-go"
 	"go.uber.org/mock/gomock"
 
 	"go.artefactual.dev/ssclient"
@@ -43,7 +42,7 @@ func TestRun(t *testing.T) {
 			"Accept":          {"application/json"},
 			"Accept-Encoding": {"gzip"},
 			"Authorization":   {"ApiKey test:test"},
-			"User-Agent":      {"kiota-go/" + kiotahttpgo.NewUserAgentHandlerOptions().ProductVersion},
+			"User-Agent":      {"ssclient-go/v0"},
 		}))
 
 		w.Header().Set("Content-Type", "application/json")
