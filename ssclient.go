@@ -96,18 +96,9 @@ func (p *authProvider) AuthenticateRequest(ctx context.Context, request *kabs.Re
 // not something that we have not been able to describe using TypeSpec yet.
 type appendTrailingSlashHandler struct{}
 
-var useSlash = map[string]struct{}{
-	http.MethodPost:   {},
-	http.MethodPut:    {},
-	http.MethodPatch:  {},
-	http.MethodDelete: {},
-}
-
 func (middleware appendTrailingSlashHandler) Intercept(pipeline khttp.Pipeline, middlewareIndex int, req *http.Request) (*http.Response, error) {
-	if _, ok := useSlash[req.Method]; ok {
-		if !strings.HasSuffix(req.URL.Path, "/") {
-			req.URL.Path += "/"
-		}
+	if !strings.HasSuffix(req.URL.Path, "/") {
+		req.URL.Path += "/"
 	}
 
 	return pipeline.Next(req, middlewareIndex)
