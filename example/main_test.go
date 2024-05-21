@@ -37,7 +37,7 @@ func TestRun(t *testing.T) {
 	stdout := bytes.NewBuffer([]byte{})
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assertEqual(t, r.URL.Path, "/api/v2/location")
+		assertEqual(t, r.URL.Path, "/api/v2/location/")
 		assertEqual(t, r.Header, http.Header(map[string][]string{
 			"Accept":          {"application/json"},
 			"Accept-Encoding": {"gzip"},
