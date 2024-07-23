@@ -10,7 +10,7 @@ using TypeSpec.Versioning;
 @service({
   title: "Archivematica Storage Service",
 })
-@route("/api/v2")
+@route("/api/v2/")
 @useAuth(ApiKeyAuth<ApiKeyLocation.header, "ApiKey">)
 @versioned(Versions)
 namespace Service {
@@ -18,7 +18,7 @@ namespace Service {
     v1,
   }
 
-  @route("/pipeline")
+  @route("/pipeline/")
   namespace Pipelines {
     @get
     op list(
@@ -44,7 +44,7 @@ namespace Service {
     };
   }
 
-  @route("/location")
+  @route("/location/")
   namespace Locations {
     @get
     op list(
@@ -90,7 +90,7 @@ namespace Service {
       @statusCode statusCode: 404;
     };
 
-    @route("/default/{purpose}")
+    @route("/default/{purpose}/")
     @get
     op default(@path purpose: LocationPurpose): {
       @statusCode
