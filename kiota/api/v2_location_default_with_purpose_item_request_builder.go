@@ -3,7 +3,7 @@ package api
 import (
     "context"
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
-    i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6 "go.artefactual.dev/ssclient/kiota/models"
+    i4542e4a18d89521068e4fdd8b8a4838f8ff1e57b1ea39592474927024654da90 "go.artefactual.dev/ssclient/kiota/models"
 )
 
 // V2LocationDefaultWithPurposeItemRequestBuilder builds and executes requests for operations under \api\v2\location\default\{purpose}
@@ -37,7 +37,7 @@ func (m *V2LocationDefaultWithPurposeItemRequestBuilder) Get(ctx context.Context
         return err
     }
     errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings {
-        "400": i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.CreateErrorEscapedFromDiscriminatorValue,
+        "400": i4542e4a18d89521068e4fdd8b8a4838f8ff1e57b1ea39592474927024654da90.CreateErrorEscapedFromDiscriminatorValue,
     }
     err = m.BaseRequestBuilder.RequestAdapter.SendNoContent(ctx, requestInfo, errorMapping)
     if err != nil {

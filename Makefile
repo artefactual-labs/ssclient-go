@@ -31,15 +31,14 @@ examplemocks: $(MOCKGEN)
 .PHONY: ssclient
 ssclient:
 	@which kiota > /dev/null 2>&1 || (echo "kiota not found in PATH, download v1.14.0 from: https://learn.microsoft.com/en-ca/openapi/kiota/install" && exit 1)
-	rm -rf $(CURDIR)/kiota
-	kiota generate --language go --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --output ./kiota
-	mv $(CURDIR)/kiota/goescaped/artefactual/dev/ssclient/kiota/* kiota/
-	rm -rf $(CURDIR)/kiota/goescaped/
+	kiota generate --language go --clean-output --class-name Client --namespace-name github.com/artefactual-labs/ssclient-go/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --output ./kiota
 	$(MAKE) update-kiota-imports
 
 .PHONY: update-kiota-imports
 update-kiota-imports:
-	find ./kiota -type f -name '*.go' -exec sed -i 's|goEscaped.artefactual.dev/ssclient/kiota/|go.artefactual.dev/ssclient/kiota/|g' {} +
+	# We use `github.com/artefactual-labs/ssclient-go/kiota` as the namespace
+	# because kiota escapes `go.artefactual.dev/ssclient/kiota`.
+	find ./kiota -type f -name '*.go' -exec sed -i 's|github.com/artefactual-labs/ssclient-go/kiota/|go.artefactual.dev/ssclient/kiota/|g' {} +
 
 .PHONY: typespec
 typespec:
