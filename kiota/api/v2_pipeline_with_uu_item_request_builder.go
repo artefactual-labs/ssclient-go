@@ -3,7 +3,7 @@ package api
 import (
     "context"
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
-    i4542e4a18d89521068e4fdd8b8a4838f8ff1e57b1ea39592474927024654da90 "go.artefactual.dev/ssclient/kiota/models"
+    if24bd427556b5f40ce1336ebc33d491ebd9ce71ce225ad2b47d523c1b0f25dee "go.artefactual.dev/ssclient/kiota/models"
 )
 
 // V2PipelineWithUuItemRequestBuilder builds and executes requests for operations under \api\v2\pipeline\{uuid}
@@ -32,22 +32,22 @@ func NewV2PipelineWithUuItemRequestBuilder(rawUrl string, requestAdapter i2ae418
 }
 // returns a Pipelineable when successful
 // returns a ErrorEscaped error when the service returns a 400 status code
-func (m *V2PipelineWithUuItemRequestBuilder) Get(ctx context.Context, requestConfiguration *V2PipelineWithUuItemRequestBuilderGetRequestConfiguration)(i4542e4a18d89521068e4fdd8b8a4838f8ff1e57b1ea39592474927024654da90.Pipelineable, error) {
+func (m *V2PipelineWithUuItemRequestBuilder) Get(ctx context.Context, requestConfiguration *V2PipelineWithUuItemRequestBuilderGetRequestConfiguration)(if24bd427556b5f40ce1336ebc33d491ebd9ce71ce225ad2b47d523c1b0f25dee.Pipelineable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
     }
     errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings {
-        "400": i4542e4a18d89521068e4fdd8b8a4838f8ff1e57b1ea39592474927024654da90.CreateErrorEscapedFromDiscriminatorValue,
+        "400": if24bd427556b5f40ce1336ebc33d491ebd9ce71ce225ad2b47d523c1b0f25dee.CreateErrorEscapedFromDiscriminatorValue,
     }
-    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i4542e4a18d89521068e4fdd8b8a4838f8ff1e57b1ea39592474927024654da90.CreatePipelineFromDiscriminatorValue, errorMapping)
+    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, if24bd427556b5f40ce1336ebc33d491ebd9ce71ce225ad2b47d523c1b0f25dee.CreatePipelineFromDiscriminatorValue, errorMapping)
     if err != nil {
         return nil, err
     }
     if res == nil {
         return nil, nil
     }
-    return res.(i4542e4a18d89521068e4fdd8b8a4838f8ff1e57b1ea39592474927024654da90.Pipelineable), nil
+    return res.(if24bd427556b5f40ce1336ebc33d491ebd9ce71ce225ad2b47d523c1b0f25dee.Pipelineable), nil
 }
 // returns a *RequestInformation when successful
 func (m *V2PipelineWithUuItemRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2PipelineWithUuItemRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
