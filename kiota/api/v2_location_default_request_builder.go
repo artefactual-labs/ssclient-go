@@ -8,7 +8,7 @@ import (
 type V2LocationDefaultRequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
-// ByPurpose gets an item from the go.artefactual.dev/ssclient/kiota.api.v2.location.default.item collection
+// ByPurpose gets an item from the github.com/artefactual-labs/ssclient-go/kiota.api.v2.location.default.item collection
 // returns a *V2LocationDefaultWithPurposeItemRequestBuilder when successful
 func (m *V2LocationDefaultRequestBuilder) ByPurpose(purpose string)(*V2LocationDefaultWithPurposeItemRequestBuilder) {
     urlTplParams := make(map[string]string)
