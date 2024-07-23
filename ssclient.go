@@ -92,8 +92,9 @@ func (p *authProvider) AuthenticateRequest(ctx context.Context, request *kabs.Re
 }
 
 // appendTrailingSlashHandler is a middleware that ensures that the path has a
-// trailing slash when expected by Archivematica Storage Service API. This is
-// not something that we have not been able to describe using TypeSpec yet.
+// trailing slash which is the expected in Archivematica Storage Service API.
+// With TypeSpec we can sucessfully describe paths with a trailing slash, but
+// Kiota drops it during generation (issue #4291).
 type appendTrailingSlashHandler struct{}
 
 func (middleware appendTrailingSlashHandler) Intercept(pipeline khttp.Pipeline, middlewareIndex int, req *http.Request) (*http.Response, error) {
