@@ -3,7 +3,7 @@ package api
 import (
     "context"
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
-    i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a "go.artefactual.dev/ssclient/kiota/models"
+    i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6 "go.artefactual.dev/ssclient/kiota/models"
 )
 
 // V2LocationDefaultWithPurposeItemRequestBuilder builds and executes requests for operations under \api\v2\location\default\{purpose}
@@ -30,14 +30,14 @@ func NewV2LocationDefaultWithPurposeItemRequestBuilder(rawUrl string, requestAda
     urlParams["request-raw-url"] = rawUrl
     return NewV2LocationDefaultWithPurposeItemRequestBuilderInternal(urlParams, requestAdapter)
 }
-// returns a Error error when the service returns a 400 status code
+// returns a ErrorEscaped error when the service returns a 400 status code
 func (m *V2LocationDefaultWithPurposeItemRequestBuilder) Get(ctx context.Context, requestConfiguration *V2LocationDefaultWithPurposeItemRequestBuilderGetRequestConfiguration)(error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return err
     }
     errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings {
-        "400": i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.CreateErrorFromDiscriminatorValue,
+        "400": i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.CreateErrorEscapedFromDiscriminatorValue,
     }
     err = m.BaseRequestBuilder.RequestAdapter.SendNoContent(ctx, requestInfo, errorMapping)
     if err != nil {

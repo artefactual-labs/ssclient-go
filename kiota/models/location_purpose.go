@@ -1,7 +1,4 @@
 package models
-import (
-    "errors"
-)
 type LocationPurpose int
 
 const (
@@ -41,7 +38,7 @@ func ParseLocationPurpose(v string) (any, error) {
         case "RP":
             result = RP_LOCATIONPURPOSE
         default:
-            return 0, errors.New("Unknown LocationPurpose value: " + v)
+            return nil, nil
     }
     return &result, nil
 }

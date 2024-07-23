@@ -3,7 +3,7 @@ package api
 import (
     "context"
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
-    i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a "go.artefactual.dev/ssclient/kiota/models"
+    i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6 "go.artefactual.dev/ssclient/kiota/models"
 )
 
 // V2LocationWithUuItemRequestBuilder builds and executes requests for operations under \api\v2\location\{uuid}
@@ -38,34 +38,34 @@ func NewV2LocationWithUuItemRequestBuilder(rawUrl string, requestAdapter i2ae418
     return NewV2LocationWithUuItemRequestBuilderInternal(urlParams, requestAdapter)
 }
 // returns a Locationable when successful
-// returns a Error error when the service returns a 400 status code
-func (m *V2LocationWithUuItemRequestBuilder) Get(ctx context.Context, requestConfiguration *V2LocationWithUuItemRequestBuilderGetRequestConfiguration)(i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.Locationable, error) {
+// returns a ErrorEscaped error when the service returns a 400 status code
+func (m *V2LocationWithUuItemRequestBuilder) Get(ctx context.Context, requestConfiguration *V2LocationWithUuItemRequestBuilderGetRequestConfiguration)(i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.Locationable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
     }
     errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings {
-        "400": i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.CreateErrorFromDiscriminatorValue,
+        "400": i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.CreateErrorEscapedFromDiscriminatorValue,
     }
-    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.CreateLocationFromDiscriminatorValue, errorMapping)
+    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.CreateLocationFromDiscriminatorValue, errorMapping)
     if err != nil {
         return nil, err
     }
     if res == nil {
         return nil, nil
     }
-    return res.(i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.Locationable), nil
+    return res.(i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.Locationable), nil
 }
 // Post move files to the specified location.
 // returns a []byte when successful
-// returns a Error error when the service returns a 400 status code
-func (m *V2LocationWithUuItemRequestBuilder) Post(ctx context.Context, body i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.MoveRequestable, requestConfiguration *V2LocationWithUuItemRequestBuilderPostRequestConfiguration)([]byte, error) {
+// returns a ErrorEscaped error when the service returns a 400 status code
+func (m *V2LocationWithUuItemRequestBuilder) Post(ctx context.Context, body i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.MoveRequestable, requestConfiguration *V2LocationWithUuItemRequestBuilderPostRequestConfiguration)([]byte, error) {
     requestInfo, err := m.ToPostRequestInformation(ctx, body, requestConfiguration);
     if err != nil {
         return nil, err
     }
     errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings {
-        "400": i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.CreateErrorFromDiscriminatorValue,
+        "400": i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.CreateErrorEscapedFromDiscriminatorValue,
     }
     res, err := m.BaseRequestBuilder.RequestAdapter.SendPrimitive(ctx, requestInfo, "[]byte", errorMapping)
     if err != nil {
@@ -88,7 +88,7 @@ func (m *V2LocationWithUuItemRequestBuilder) ToGetRequestInformation(ctx context
 }
 // ToPostRequestInformation move files to the specified location.
 // returns a *RequestInformation when successful
-func (m *V2LocationWithUuItemRequestBuilder) ToPostRequestInformation(ctx context.Context, body i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.MoveRequestable, requestConfiguration *V2LocationWithUuItemRequestBuilderPostRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2LocationWithUuItemRequestBuilder) ToPostRequestInformation(ctx context.Context, body i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.MoveRequestable, requestConfiguration *V2LocationWithUuItemRequestBuilderPostRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
     if requestConfiguration != nil {
         requestInfo.Headers.AddAll(requestConfiguration.Headers)
