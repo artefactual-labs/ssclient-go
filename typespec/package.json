@@ -8,10 +8,10 @@
     "deps": "npx ncu --interactive"
   },
   "dependencies": {
-    "@typespec/compiler": "latest",
-    "@typespec/http": "latest",
-    "@typespec/openapi3": "latest",
-    "@typespec/rest": "latest"
+    "@typespec/compiler": "~0.58.1",
+    "@typespec/http": "~0.58.0",
+    "@typespec/openapi3": "~0.58.0",
+    "@typespec/rest": "~0.58.0"
   },
   "private": true,
   "devDependencies": {
