@@ -3,7 +3,7 @@ package api
 import (
     "context"
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
-    i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a "go.artefactual.dev/ssclient/kiota/models"
+    i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6 "go.artefactual.dev/ssclient/kiota/models"
 )
 
 // V2LocationRequestBuilder builds and executes requests for operations under \api\v2\location
@@ -18,7 +18,7 @@ type V2LocationRequestBuilderGetQueryParameters struct {
     Pipeline__uuid *string `uriparametername:"pipeline__uuid"`
     // Deprecated: This property is deprecated, use PurposeAsLocationPurpose instead
     Purpose *string `uriparametername:"purpose"`
-    PurposeAsLocationPurpose *i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.LocationPurpose `uriparametername:"purpose"`
+    PurposeAsLocationPurpose *i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.LocationPurpose `uriparametername:"purpose"`
     Quota *int32 `uriparametername:"quota"`
     Relative_path *string `uriparametername:"relative_path"`
     Used *int32 `uriparametername:"used"`
@@ -64,19 +64,19 @@ func (m *V2LocationRequestBuilder) DefaultEscaped()(*V2LocationDefaultRequestBui
     return NewV2LocationDefaultRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 // returns a LocationListable when successful
-func (m *V2LocationRequestBuilder) Get(ctx context.Context, requestConfiguration *V2LocationRequestBuilderGetRequestConfiguration)(i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.LocationListable, error) {
+func (m *V2LocationRequestBuilder) Get(ctx context.Context, requestConfiguration *V2LocationRequestBuilderGetRequestConfiguration)(i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.LocationListable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
     }
-    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.CreateLocationListFromDiscriminatorValue, nil)
+    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.CreateLocationListFromDiscriminatorValue, nil)
     if err != nil {
         return nil, err
     }
     if res == nil {
         return nil, nil
     }
-    return res.(i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.LocationListable), nil
+    return res.(i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.LocationListable), nil
 }
 // returns a *RequestInformation when successful
 func (m *V2LocationRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2LocationRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {

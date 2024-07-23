@@ -6,7 +6,7 @@ import (
     i4bcdc892e61ac17e2afc10b5e2b536b29f4fd6c1ad30f4a5a68df47495db3347 "github.com/microsoft/kiota-serialization-form-go"
     i56887720f41ac882814261620b1c8459c4a992a0207af547c4453dd39fabc426 "github.com/microsoft/kiota-serialization-multipart-go"
     i7294a22093d408fdca300f11b81a887d89c47b764af06c8b803e2323973fdb83 "github.com/microsoft/kiota-serialization-text-go"
-    i86b84250d39d6cfbbe8b58c8d98a27f25063c40122ae88bd75e2c1b68a3fca2d "go.artefactual.dev/ssclient/kiota/api"
+    i111cbfbcc23956e697736132dbcec98bb912df59a099c727d8a0877b916f278a "go.artefactual.dev/ssclient/kiota/api"
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
@@ -16,8 +16,8 @@ type Client struct {
 }
 // Api the api property
 // returns a *ApiRequestBuilder when successful
-func (m *Client) Api()(*i86b84250d39d6cfbbe8b58c8d98a27f25063c40122ae88bd75e2c1b68a3fca2d.ApiRequestBuilder) {
-    return i86b84250d39d6cfbbe8b58c8d98a27f25063c40122ae88bd75e2c1b68a3fca2d.NewApiRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+func (m *Client) Api()(*i111cbfbcc23956e697736132dbcec98bb912df59a099c727d8a0877b916f278a.ApiRequestBuilder) {
+    return i111cbfbcc23956e697736132dbcec98bb912df59a099c727d8a0877b916f278a.NewApiRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 // NewClient instantiates a new Client and sets the default values.
 func NewClient(requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*Client) {

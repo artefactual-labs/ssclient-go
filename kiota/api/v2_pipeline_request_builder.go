@@ -3,7 +3,7 @@ package api
 import (
     "context"
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
-    i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a "go.artefactual.dev/ssclient/kiota/models"
+    i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6 "go.artefactual.dev/ssclient/kiota/models"
 )
 
 // V2PipelineRequestBuilder builds and executes requests for operations under \api\v2\pipeline
@@ -49,19 +49,19 @@ func NewV2PipelineRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee263
     return NewV2PipelineRequestBuilderInternal(urlParams, requestAdapter)
 }
 // returns a PipelineListable when successful
-func (m *V2PipelineRequestBuilder) Get(ctx context.Context, requestConfiguration *V2PipelineRequestBuilderGetRequestConfiguration)(i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.PipelineListable, error) {
+func (m *V2PipelineRequestBuilder) Get(ctx context.Context, requestConfiguration *V2PipelineRequestBuilderGetRequestConfiguration)(i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.PipelineListable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
     }
-    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.CreatePipelineListFromDiscriminatorValue, nil)
+    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.CreatePipelineListFromDiscriminatorValue, nil)
     if err != nil {
         return nil, err
     }
     if res == nil {
         return nil, nil
     }
-    return res.(i2b7a3625368152c59661ed1a63c26960f7e9cda05d0fbc8e5d79ac57ca250e0a.PipelineListable), nil
+    return res.(i5eae3f230e3a868fd5ed587b59b87d827ef9c38f913daa0399cfa5b236eabfd6.PipelineListable), nil
 }
 // returns a *RequestInformation when successful
 func (m *V2PipelineRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2PipelineRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {

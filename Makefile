@@ -39,7 +39,7 @@ ssclient:
 
 .PHONY: update-kiota-imports
 update-kiota-imports:
-	find ./kiota -type f -name '*.go' -exec sed -i 's|goescaped.artefactual.dev/ssclient/kiota/|go.artefactual.dev/ssclient/kiota/|g' {} +
+	find ./kiota -type f -name '*.go' -exec sed -i 's|goEscaped.artefactual.dev/ssclient/kiota/|go.artefactual.dev/ssclient/kiota/|g' {} +
 
 .PHONY: typespec
 typespec:
