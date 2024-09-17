@@ -13,36 +13,43 @@ paths:
           required: false
           schema:
             type: string
+          explode: false
         - name: purpose
           in: query
           required: false
           schema:
             $ref: '#/components/schemas/LocationPurpose'
+          explode: false
         - name: quota
           in: query
           required: false
           schema:
             type: integer
+          explode: false
         - name: relative_path
           in: query
           required: false
           schema:
             type: string
+          explode: false
         - name: used
           in: query
           required: false
           schema:
             type: integer
+          explode: false
         - name: uuid
           in: query
           required: false
           schema:
             $ref: '#/components/schemas/uuid'
+          explode: false
         - name: pipeline__uuid
           in: query
           required: false
           schema:
             $ref: '#/components/schemas/uuid'
+          explode: false
         - $ref: '#/components/parameters/ListOpQueries.orderBy'
         - $ref: '#/components/parameters/ListOpQueries.limit'
         - $ref: '#/components/parameters/ListOpQueries.offset'
@@ -137,11 +144,13 @@ paths:
           required: false
           schema:
             type: string
+          explode: false
         - name: uuid
           in: query
           required: false
           schema:
             $ref: '#/components/schemas/uuid'
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -183,18 +192,21 @@ components:
       required: false
       schema:
         type: integer
+      explode: false
     ListOpQueries.offset:
       name: offset
       in: query
       required: false
       schema:
         type: integer
+      explode: false
     ListOpQueries.orderBy:
       name: order_by
       in: query
       required: false
       schema:
         type: string
+      explode: false
   schemas:
     Error:
       type: object
