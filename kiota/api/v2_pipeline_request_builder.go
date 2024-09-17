@@ -3,7 +3,7 @@ package api
 import (
     "context"
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
-    if24bd427556b5f40ce1336ebc33d491ebd9ce71ce225ad2b47d523c1b0f25dee "go.artefactual.dev/ssclient/kiota/models"
+    ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588 "go.artefactual.dev/ssclient/kiota/models"
 )
 
 // V2PipelineRequestBuilder builds and executes requests for operations under \api\v2\pipeline
@@ -23,7 +23,7 @@ type V2PipelineRequestBuilderGetRequestConfiguration struct {
     // Request query parameters
     QueryParameters *V2PipelineRequestBuilderGetQueryParameters
 }
-// ByUuid gets an item from the xgo.artefactual.dev/ssclient/kiota.api.v2.pipeline.item collection
+// ByUuid gets an item from the go.artefactual.dev/ssclient/kiota.api.v2.pipeline.item collection
 // returns a *V2PipelineWithUuItemRequestBuilder when successful
 func (m *V2PipelineRequestBuilder) ByUuid(uuid string)(*V2PipelineWithUuItemRequestBuilder) {
     urlTplParams := make(map[string]string)
@@ -38,7 +38,7 @@ func (m *V2PipelineRequestBuilder) ByUuid(uuid string)(*V2PipelineWithUuItemRequ
 // NewV2PipelineRequestBuilderInternal instantiates a new V2PipelineRequestBuilder and sets the default values.
 func NewV2PipelineRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2PipelineRequestBuilder) {
     m := &V2PipelineRequestBuilder{
-        BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/api/v2/pipeline{?description*,uuid*}", pathParameters),
+        BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/api/v2/pipeline{?description,uuid}", pathParameters),
     }
     return m
 }
@@ -49,19 +49,19 @@ func NewV2PipelineRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee263
     return NewV2PipelineRequestBuilderInternal(urlParams, requestAdapter)
 }
 // returns a PipelineListable when successful
-func (m *V2PipelineRequestBuilder) Get(ctx context.Context, requestConfiguration *V2PipelineRequestBuilderGetRequestConfiguration)(if24bd427556b5f40ce1336ebc33d491ebd9ce71ce225ad2b47d523c1b0f25dee.PipelineListable, error) {
+func (m *V2PipelineRequestBuilder) Get(ctx context.Context, requestConfiguration *V2PipelineRequestBuilderGetRequestConfiguration)(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PipelineListable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
     }
-    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, if24bd427556b5f40ce1336ebc33d491ebd9ce71ce225ad2b47d523c1b0f25dee.CreatePipelineListFromDiscriminatorValue, nil)
+    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.CreatePipelineListFromDiscriminatorValue, nil)
     if err != nil {
         return nil, err
     }
     if res == nil {
         return nil, nil
     }
-    return res.(if24bd427556b5f40ce1336ebc33d491ebd9ce71ce225ad2b47d523c1b0f25dee.PipelineListable), nil
+    return res.(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PipelineListable), nil
 }
 // returns a *RequestInformation when successful
 func (m *V2PipelineRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2PipelineRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {

@@ -8,13 +8,13 @@
     "deps": "npx ncu --interactive"
   },
   "dependencies": {
-    "@typespec/compiler": "~0.58.1",
-    "@typespec/http": "~0.58.0",
-    "@typespec/openapi3": "~0.58.0",
-    "@typespec/rest": "~0.58.0"
+    "@typespec/compiler": "~0.60.1",
+    "@typespec/http": "~0.60.0",
+    "@typespec/openapi3": "~0.60.0",
+    "@typespec/rest": "~0.60.0"
   },
   "private": true,
   "devDependencies": {
-    "npm-check-updates": "^16.14.20"
+    "npm-check-updates": "^17.1.1"
   }
 }
