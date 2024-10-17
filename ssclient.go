@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	kabs "github.com/microsoft/kiota-abstractions-go"
@@ -65,9 +64,6 @@ func configureMiddleware(client *http.Client) error {
 		return err
 	}
 
-	// Introduce our middleware to inject the trailing slash.
-	middlewares = append(middlewares, appendTrailingSlashHandler{})
-
 	client.Transport = khttp.NewCustomTransportWithParentTransport(client.Transport, middlewares...)
 
 	return nil
@@ -89,18 +85,4 @@ func (p *authProvider) AuthenticateRequest(ctx context.Context, request *kabs.Re
 	request.Headers.Add("Authorization", fmt.Sprintf("ApiKey %s:%s", p.username, p.key))
 
 	return nil
-}
-
-// appendTrailingSlashHandler is a middleware that ensures that the path has a
-// trailing slash which is the expected in Archivematica Storage Service API.
-// With TypeSpec we can sucessfully describe paths with a trailing slash, but
-// Kiota drops it during generation (issue #4291).
-type appendTrailingSlashHandler struct{}
-
-func (middleware appendTrailingSlashHandler) Intercept(pipeline khttp.Pipeline, middlewareIndex int, req *http.Request) (*http.Response, error) {
-	if !strings.HasSuffix(req.URL.Path, "/") {
-		req.URL.Path += "/"
-	}
-
-	return pipeline.Next(req, middlewareIndex)
 }

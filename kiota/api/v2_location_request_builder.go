@@ -48,7 +48,7 @@ func (m *V2LocationRequestBuilder) ByUuid(uuid string)(*V2LocationWithUuItemRequ
 // NewV2LocationRequestBuilderInternal instantiates a new V2LocationRequestBuilder and sets the default values.
 func NewV2LocationRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2LocationRequestBuilder) {
     m := &V2LocationRequestBuilder{
-        BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/api/v2/location{?description,limit,offset,order_by,pipeline__uuid,purpose,quota,relative_path,used,uuid}", pathParameters),
+        BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/api/v2/location/{?description,limit,offset,order_by,pipeline__uuid,purpose,quota,relative_path,used,uuid}", pathParameters),
     }
     return m
 }
