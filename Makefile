@@ -30,7 +30,7 @@ examplemocks: $(MOCKGEN)
 
 .PHONY: ssclient
 ssclient:
-	@which kiota > /dev/null 2>&1 || (echo "kiota not found in PATH, download v1.18.0 from: https://learn.microsoft.com/en-ca/openapi/kiota/install" && exit 1)
+	@which kiota > /dev/null 2>&1 || (echo "kiota not found in PATH, download v1.19.1 from: https://learn.microsoft.com/en-ca/openapi/kiota/install" && exit 1)
 	kiota generate --language go --clean-output --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --output ./kiota
 
 .PHONY: typespec
