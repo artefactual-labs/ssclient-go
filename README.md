@@ -18,12 +18,43 @@ which offers additional features such as retrieving default locations through
 header inspection, paging results, and more. This could potentially become a
 separate package in this repository.
 
+## Working with the generated client
+
+This repository ships the raw Kiota output. The generated API follows Kiota's
+builder pattern, so you'll often see fluent chains such as:
+
+```go
+client, _ := ssclient.New(http.DefaultClient, url, user, key)
+locations, _ := client.Api().V2().Location().EmptyPathSegment().
+    Get(ctx, &api.V2LocationEmptyPathSegmentRequestBuilderGetRequestConfiguration{})
+
+fixity, _ := client.Api().V2().File().ByUuid(id).
+    CheckFixity().EmptyPathSegment().
+    Get(ctx, &api.V2FileItemCheckFixityEmptyPathSegmentRequestBuilderGetRequestConfiguration{})
+```
+
+Endpoints in Archivematica Storage Service expect a trailing slash, so Kiota
+represents that final `/` as an additional fluent step named
+`EmptyPathSegment()`. If you're new to Kiota, take a look at the
+[`example`](./example/main.go) program for a complete, working walkthrough.
+For a friendlier experience you can wrap these builders in your own helper
+functions, but we keep the generated tree here so you can choose the style that
+fits your project.
+
+Kiota itself aims to provide strongly typed building blocks—request builders,
+models, middleware hooks—without committing to a domain-specific shape. Most
+teams layer thin helpers or full SDKs on top to present a friendlier surface.
+We would like to do the same here by adding a small Go package that wraps the
+generated client (so you can call `pkg.CheckFixity(...)` instead of poking
+through the builder chain), but that work has not happened yet.
+
 ## OpenAPI specification
 
 This module was partially generated using an API client generator ([Kiota]) and
 the [OpenAPI-described API][openapi-schema], which we've built using [TypeSpec].
-The API has not been fully described yet, but we'll be extending support as
-needed.
+You can browse an interactive rendering of that schema at [our published
+OpenAPI docs][openapi-docs]. The API has not been fully described yet, but
+we'll be extending support as needed.
 
 Furthermore, the API service is built with [TastyPie], and old webservice API
 framework for Django. It includes built-in schema inspection capabilities which
