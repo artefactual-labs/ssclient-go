@@ -1,0 +1,470 @@
+package models
+
+import (
+    i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
+)
+
+type PackageEscaped struct {
+    // Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
+    additionalData map[string]any
+    // The current_full_path property
+    current_full_path *string
+    // Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
+    current_location *string
+    // The current_path property
+    current_path *string
+    // The encrypted property
+    encrypted *bool
+    // Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
+    origin_pipeline *string
+    // The package_type property
+    package_type *PackageType
+    // The related_packages property
+    related_packages []string
+    // The replicas property
+    replicas []string
+    // The replicated_package property
+    replicated_package *string
+    // Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
+    resource_uri *string
+    // The size property
+    size *int32
+    // The status property
+    status *string
+    // The stored_date property
+    stored_date *string
+    // The uuid property
+    uuid *string
+}
+// NewPackageEscaped instantiates a new PackageEscaped and sets the default values.
+func NewPackageEscaped()(*PackageEscaped) {
+    m := &PackageEscaped{
+    }
+    m.SetAdditionalData(make(map[string]any))
+    return m
+}
+// CreatePackageEscapedFromDiscriminatorValue creates a new instance of the appropriate class based on discriminator value
+// returns a Parsable when successful
+func CreatePackageEscapedFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, error) {
+    return NewPackageEscaped(), nil
+}
+// GetAdditionalData gets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
+// returns a map[string]any when successful
+func (m *PackageEscaped) GetAdditionalData()(map[string]any) {
+    return m.additionalData
+}
+// GetCurrentFullPath gets the current_full_path property value. The current_full_path property
+// returns a *string when successful
+func (m *PackageEscaped) GetCurrentFullPath()(*string) {
+    return m.current_full_path
+}
+// GetCurrentLocation gets the current_location property value. Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
+// returns a *string when successful
+func (m *PackageEscaped) GetCurrentLocation()(*string) {
+    return m.current_location
+}
+// GetCurrentPath gets the current_path property value. The current_path property
+// returns a *string when successful
+func (m *PackageEscaped) GetCurrentPath()(*string) {
+    return m.current_path
+}
+// GetEncrypted gets the encrypted property value. The encrypted property
+// returns a *bool when successful
+func (m *PackageEscaped) GetEncrypted()(*bool) {
+    return m.encrypted
+}
+// GetFieldDeserializers the deserialization information for the current model
+// returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error) when successful
+func (m *PackageEscaped) GetFieldDeserializers()(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error)) {
+    res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error))
+    res["current_full_path"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetStringValue()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetCurrentFullPath(val)
+        }
+        return nil
+    }
+    res["current_location"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetStringValue()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetCurrentLocation(val)
+        }
+        return nil
+    }
+    res["current_path"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetStringValue()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetCurrentPath(val)
+        }
+        return nil
+    }
+    res["encrypted"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetBoolValue()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetEncrypted(val)
+        }
+        return nil
+    }
+    res["origin_pipeline"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetStringValue()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetOriginPipeline(val)
+        }
+        return nil
+    }
+    res["package_type"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetEnumValue(ParsePackageType)
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetPackageType(val.(*PackageType))
+        }
+        return nil
+    }
+    res["related_packages"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetCollectionOfPrimitiveValues("string")
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            res := make([]string, len(val))
+            for i, v := range val {
+                if v != nil {
+                    res[i] = *(v.(*string))
+                }
+            }
+            m.SetRelatedPackages(res)
+        }
+        return nil
+    }
+    res["replicas"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetCollectionOfPrimitiveValues("string")
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            res := make([]string, len(val))
+            for i, v := range val {
+                if v != nil {
+                    res[i] = *(v.(*string))
+                }
+            }
+            m.SetReplicas(res)
+        }
+        return nil
+    }
+    res["replicated_package"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetStringValue()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetReplicatedPackage(val)
+        }
+        return nil
+    }
+    res["resource_uri"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetStringValue()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetResourceUri(val)
+        }
+        return nil
+    }
+    res["size"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetInt32Value()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetSize(val)
+        }
+        return nil
+    }
+    res["status"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetStringValue()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetStatus(val)
+        }
+        return nil
+    }
+    res["stored_date"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetStringValue()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetStoredDate(val)
+        }
+        return nil
+    }
+    res["uuid"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetStringValue()
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetUuid(val)
+        }
+        return nil
+    }
+    return res
+}
+// GetOriginPipeline gets the origin_pipeline property value. Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
+// returns a *string when successful
+func (m *PackageEscaped) GetOriginPipeline()(*string) {
+    return m.origin_pipeline
+}
+// GetPackageType gets the package_type property value. The package_type property
+// returns a *PackageType when successful
+func (m *PackageEscaped) GetPackageType()(*PackageType) {
+    return m.package_type
+}
+// GetRelatedPackages gets the related_packages property value. The related_packages property
+// returns a []string when successful
+func (m *PackageEscaped) GetRelatedPackages()([]string) {
+    return m.related_packages
+}
+// GetReplicas gets the replicas property value. The replicas property
+// returns a []string when successful
+func (m *PackageEscaped) GetReplicas()([]string) {
+    return m.replicas
+}
+// GetReplicatedPackage gets the replicated_package property value. The replicated_package property
+// returns a *string when successful
+func (m *PackageEscaped) GetReplicatedPackage()(*string) {
+    return m.replicated_package
+}
+// GetResourceUri gets the resource_uri property value. Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
+// returns a *string when successful
+func (m *PackageEscaped) GetResourceUri()(*string) {
+    return m.resource_uri
+}
+// GetSize gets the size property value. The size property
+// returns a *int32 when successful
+func (m *PackageEscaped) GetSize()(*int32) {
+    return m.size
+}
+// GetStatus gets the status property value. The status property
+// returns a *string when successful
+func (m *PackageEscaped) GetStatus()(*string) {
+    return m.status
+}
+// GetStoredDate gets the stored_date property value. The stored_date property
+// returns a *string when successful
+func (m *PackageEscaped) GetStoredDate()(*string) {
+    return m.stored_date
+}
+// GetUuid gets the uuid property value. The uuid property
+// returns a *string when successful
+func (m *PackageEscaped) GetUuid()(*string) {
+    return m.uuid
+}
+// Serialize serializes information the current object
+func (m *PackageEscaped) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter)(error) {
+    {
+        err := writer.WriteStringValue("current_full_path", m.GetCurrentFullPath())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteStringValue("current_location", m.GetCurrentLocation())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteStringValue("current_path", m.GetCurrentPath())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteBoolValue("encrypted", m.GetEncrypted())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteStringValue("origin_pipeline", m.GetOriginPipeline())
+        if err != nil {
+            return err
+        }
+    }
+    if m.GetPackageType() != nil {
+        cast := (*m.GetPackageType()).String()
+        err := writer.WriteStringValue("package_type", &cast)
+        if err != nil {
+            return err
+        }
+    }
+    if m.GetRelatedPackages() != nil {
+        err := writer.WriteCollectionOfStringValues("related_packages", m.GetRelatedPackages())
+        if err != nil {
+            return err
+        }
+    }
+    if m.GetReplicas() != nil {
+        err := writer.WriteCollectionOfStringValues("replicas", m.GetReplicas())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteStringValue("replicated_package", m.GetReplicatedPackage())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteStringValue("resource_uri", m.GetResourceUri())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteInt32Value("size", m.GetSize())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteStringValue("status", m.GetStatus())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteStringValue("stored_date", m.GetStoredDate())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteStringValue("uuid", m.GetUuid())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteAdditionalData(m.GetAdditionalData())
+        if err != nil {
+            return err
+        }
+    }
+    return nil
+}
+// SetAdditionalData sets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
+func (m *PackageEscaped) SetAdditionalData(value map[string]any)() {
+    m.additionalData = value
+}
+// SetCurrentFullPath sets the current_full_path property value. The current_full_path property
+func (m *PackageEscaped) SetCurrentFullPath(value *string)() {
+    m.current_full_path = value
+}
+// SetCurrentLocation sets the current_location property value. Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
+func (m *PackageEscaped) SetCurrentLocation(value *string)() {
+    m.current_location = value
+}
+// SetCurrentPath sets the current_path property value. The current_path property
+func (m *PackageEscaped) SetCurrentPath(value *string)() {
+    m.current_path = value
+}
+// SetEncrypted sets the encrypted property value. The encrypted property
+func (m *PackageEscaped) SetEncrypted(value *bool)() {
+    m.encrypted = value
+}
+// SetOriginPipeline sets the origin_pipeline property value. Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
+func (m *PackageEscaped) SetOriginPipeline(value *string)() {
+    m.origin_pipeline = value
+}
+// SetPackageType sets the package_type property value. The package_type property
+func (m *PackageEscaped) SetPackageType(value *PackageType)() {
+    m.package_type = value
+}
+// SetRelatedPackages sets the related_packages property value. The related_packages property
+func (m *PackageEscaped) SetRelatedPackages(value []string)() {
+    m.related_packages = value
+}
+// SetReplicas sets the replicas property value. The replicas property
+func (m *PackageEscaped) SetReplicas(value []string)() {
+    m.replicas = value
+}
+// SetReplicatedPackage sets the replicated_package property value. The replicated_package property
+func (m *PackageEscaped) SetReplicatedPackage(value *string)() {
+    m.replicated_package = value
+}
+// SetResourceUri sets the resource_uri property value. Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
+func (m *PackageEscaped) SetResourceUri(value *string)() {
+    m.resource_uri = value
+}
+// SetSize sets the size property value. The size property
+func (m *PackageEscaped) SetSize(value *int32)() {
+    m.size = value
+}
+// SetStatus sets the status property value. The status property
+func (m *PackageEscaped) SetStatus(value *string)() {
+    m.status = value
+}
+// SetStoredDate sets the stored_date property value. The stored_date property
+func (m *PackageEscaped) SetStoredDate(value *string)() {
+    m.stored_date = value
+}
+// SetUuid sets the uuid property value. The uuid property
+func (m *PackageEscaped) SetUuid(value *string)() {
+    m.uuid = value
+}
+type PackageEscapedable interface {
+    i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
+    i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+    GetCurrentFullPath()(*string)
+    GetCurrentLocation()(*string)
+    GetCurrentPath()(*string)
+    GetEncrypted()(*bool)
+    GetOriginPipeline()(*string)
+    GetPackageType()(*PackageType)
+    GetRelatedPackages()([]string)
+    GetReplicas()([]string)
+    GetReplicatedPackage()(*string)
+    GetResourceUri()(*string)
+    GetSize()(*int32)
+    GetStatus()(*string)
+    GetStoredDate()(*string)
+    GetUuid()(*string)
+    SetCurrentFullPath(value *string)()
+    SetCurrentLocation(value *string)()
+    SetCurrentPath(value *string)()
+    SetEncrypted(value *bool)()
+    SetOriginPipeline(value *string)()
+    SetPackageType(value *PackageType)()
+    SetRelatedPackages(value []string)()
+    SetReplicas(value []string)()
+    SetReplicatedPackage(value *string)()
+    SetResourceUri(value *string)()
+    SetSize(value *int32)()
+    SetStatus(value *string)()
+    SetStoredDate(value *string)()
+    SetUuid(value *string)()
+}

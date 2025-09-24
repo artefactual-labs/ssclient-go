@@ -1,0 +1,35 @@
+package api
+
+import (
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
+)
+
+// V2FileRequestBuilder builds and executes requests for operations under \api\v2\file
+type V2FileRequestBuilder struct {
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
+}
+// ByUuid gets an item from the go.artefactual.dev/ssclient/kiota.api.v2.file.item collection
+// returns a *V2FileWithUuItemRequestBuilder when successful
+func (m *V2FileRequestBuilder) ByUuid(uuid string)(*V2FileWithUuItemRequestBuilder) {
+    urlTplParams := make(map[string]string)
+    for idx, item := range m.BaseRequestBuilder.PathParameters {
+        urlTplParams[idx] = item
+    }
+    if uuid != "" {
+        urlTplParams["uuid"] = uuid
+    }
+    return NewV2FileWithUuItemRequestBuilderInternal(urlTplParams, m.BaseRequestBuilder.RequestAdapter)
+}
+// NewV2FileRequestBuilderInternal instantiates a new V2FileRequestBuilder and sets the default values.
+func NewV2FileRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2FileRequestBuilder) {
+    m := &V2FileRequestBuilder{
+        BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/api/v2/file", pathParameters),
+    }
+    return m
+}
+// NewV2FileRequestBuilder instantiates a new V2FileRequestBuilder and sets the default values.
+func NewV2FileRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2FileRequestBuilder) {
+    urlParams := make(map[string]string)
+    urlParams["request-raw-url"] = rawUrl
+    return NewV2FileRequestBuilderInternal(urlParams, requestAdapter)
+}
