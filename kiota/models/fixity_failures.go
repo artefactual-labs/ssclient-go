@@ -1,0 +1,80 @@
+package models
+
+import (
+    i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
+)
+
+type FixityFailures struct {
+    // Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
+    additionalData map[string]any
+    // The files property
+    files FixityFailureFilesable
+}
+// NewFixityFailures instantiates a new FixityFailures and sets the default values.
+func NewFixityFailures()(*FixityFailures) {
+    m := &FixityFailures{
+    }
+    m.SetAdditionalData(make(map[string]any))
+    return m
+}
+// CreateFixityFailuresFromDiscriminatorValue creates a new instance of the appropriate class based on discriminator value
+// returns a Parsable when successful
+func CreateFixityFailuresFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, error) {
+    return NewFixityFailures(), nil
+}
+// GetAdditionalData gets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
+// returns a map[string]any when successful
+func (m *FixityFailures) GetAdditionalData()(map[string]any) {
+    return m.additionalData
+}
+// GetFieldDeserializers the deserialization information for the current model
+// returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error) when successful
+func (m *FixityFailures) GetFieldDeserializers()(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error)) {
+    res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error))
+    res["files"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+        val, err := n.GetObjectValue(CreateFixityFailureFilesFromDiscriminatorValue)
+        if err != nil {
+            return err
+        }
+        if val != nil {
+            m.SetFiles(val.(FixityFailureFilesable))
+        }
+        return nil
+    }
+    return res
+}
+// GetFiles gets the files property value. The files property
+// returns a FixityFailureFilesable when successful
+func (m *FixityFailures) GetFiles()(FixityFailureFilesable) {
+    return m.files
+}
+// Serialize serializes information the current object
+func (m *FixityFailures) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter)(error) {
+    {
+        err := writer.WriteObjectValue("files", m.GetFiles())
+        if err != nil {
+            return err
+        }
+    }
+    {
+        err := writer.WriteAdditionalData(m.GetAdditionalData())
+        if err != nil {
+            return err
+        }
+    }
+    return nil
+}
+// SetAdditionalData sets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
+func (m *FixityFailures) SetAdditionalData(value map[string]any)() {
+    m.additionalData = value
+}
+// SetFiles sets the files property value. The files property
+func (m *FixityFailures) SetFiles(value FixityFailureFilesable)() {
+    m.files = value
+}
+type FixityFailuresable interface {
+    i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
+    i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+    GetFiles()(FixityFailureFilesable)
+    SetFiles(value FixityFailureFilesable)()
+}

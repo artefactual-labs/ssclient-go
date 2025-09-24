@@ -126,6 +126,57 @@ namespace Service {
       @statusCode statusCode: 404;
     };
   }
+
+  @route("/file/")
+  namespace Packages {
+    @get
+    op read(@path uuid: uuid): {
+      @statusCode statusCode: 200;
+      @body package: Package;
+    } | {
+      @statusCode statusCode: 400;
+      @body error: Error;
+    } | {
+      @statusCode statusCode: 404;
+    };
+
+    @doc("Move the package to a different storage location.")
+    @route("{uuid}/move/")
+    @post
+    op move(
+      @path
+      uuid: uuid,
+
+      @body
+      body: PackageMoveRequest,
+    ): {
+      @statusCode statusCode: 200;
+    } | {
+      @statusCode statusCode: 400;
+      @body error: Error;
+    } | {
+      @statusCode statusCode: 404;
+    };
+
+    @doc("Run a fixity check for the specified package.")
+    @route("{uuid}/check_fixity/")
+    @get
+    op checkFixity(
+      @path
+      uuid: uuid,
+
+      @query("force_local")
+      forceLocal?: boolean,
+    ): {
+      @statusCode statusCode: 200;
+      @body result: FixityResponse;
+    } | {
+      @statusCode statusCode: 400;
+      @body error: Error;
+    } | {
+      @statusCode statusCode: 404;
+    };
+  }
 }
 
 @format("UUIDv4, e.g.: \"e3bae040-7682-4457-aef8-20a419aed0bd\".")
@@ -198,6 +249,54 @@ model MoveRequest {
 }
 
 alias moveFilesList = moveFile[];
+
+model Package {
+  uuid: uuid;
+  current_full_path: string;
+  current_location: uri;
+  current_path: string;
+  encrypted: boolean;
+  origin_pipeline: uri;
+  package_type: PackageType;
+  related_packages: string[];
+  replicas: string[];
+  replicated_package: string | null;
+  resource_uri: uri;
+  size: integer;
+  status: string;
+  stored_date: string | null;
+}
+
+model PackageMoveRequest {
+  location_uuid: uuid;
+}
+
+model FixityResponse {
+  success: boolean | null;
+  message: string;
+  timestamp: string | null;
+  failures?: FixityFailures;
+}
+
+model FixityFailures {
+  files?: FixityFailureFiles;
+}
+
+model FixityFailureFiles {
+  missing?: string[];
+  changed?: string[];
+  untracked?: string[];
+}
+
+enum PackageType {
+  AIP: "AIP";
+  AIC: "AIC";
+  DIP: "DIP";
+  TRANSFER: "transfer";
+  SIP: "SIP";
+  FILE: "file";
+  DEPOSIT: "deposit";
+}
 
 model moveFile {
   source: string;

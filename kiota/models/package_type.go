@@ -1,0 +1,48 @@
+package models
+type PackageType int
+
+const (
+    AIP_PACKAGETYPE PackageType = iota
+    AIC_PACKAGETYPE
+    DIP_PACKAGETYPE
+    TRANSFER_PACKAGETYPE
+    SIP_PACKAGETYPE
+    FILE_PACKAGETYPE
+    DEPOSIT_PACKAGETYPE
+)
+
+func (i PackageType) String() string {
+    return []string{"AIP", "AIC", "DIP", "transfer", "SIP", "file", "deposit"}[i]
+}
+func ParsePackageType(v string) (any, error) {
+    result := AIP_PACKAGETYPE
+    switch v {
+        case "AIP":
+            result = AIP_PACKAGETYPE
+        case "AIC":
+            result = AIC_PACKAGETYPE
+        case "DIP":
+            result = DIP_PACKAGETYPE
+        case "transfer":
+            result = TRANSFER_PACKAGETYPE
+        case "SIP":
+            result = SIP_PACKAGETYPE
+        case "file":
+            result = FILE_PACKAGETYPE
+        case "deposit":
+            result = DEPOSIT_PACKAGETYPE
+        default:
+            return nil, nil
+    }
+    return &result, nil
+}
+func SerializePackageType(values []PackageType) []string {
+    result := make([]string, len(values))
+    for i, v := range values {
+        result[i] = v.String()
+    }
+    return result
+}
+func (i PackageType) isMultiValue() bool {
+    return false
+}

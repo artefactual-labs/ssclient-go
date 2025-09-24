@@ -4,6 +4,88 @@ info:
   version: v1
 tags: []
 paths:
+  /api/v2/file/{uuid}:
+    get:
+      operationId: Packages_read
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Package'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+  /api/v2/file/{uuid}/check_fixity/:
+    get:
+      operationId: Packages_checkFixity
+      description: Run a fixity check for the specified package.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: force_local
+          in: query
+          required: false
+          schema:
+            type: boolean
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FixityResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+  /api/v2/file/{uuid}/move/:
+    post:
+      operationId: Packages_move
+      description: Move the package to a different storage location.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackageMoveRequest'
   /api/v2/location/:
     get:
       operationId: Locations_list
@@ -215,6 +297,43 @@ components:
       properties:
         error:
           type: string
+    FixityFailureFiles:
+      type: object
+      properties:
+        missing:
+          type: array
+          items:
+            type: string
+        changed:
+          type: array
+          items:
+            type: string
+        untracked:
+          type: array
+          items:
+            type: string
+    FixityFailures:
+      type: object
+      properties:
+        files:
+          $ref: '#/components/schemas/FixityFailureFiles'
+    FixityResponse:
+      type: object
+      required:
+        - success
+        - message
+        - timestamp
+      properties:
+        success:
+          type: boolean
+          nullable: true
+        message:
+          type: string
+        timestamp:
+          type: string
+          nullable: true
+        failures:
+          $ref: '#/components/schemas/FixityFailures'
     ListResponseMeta:
       type: object
       required:
@@ -320,6 +439,75 @@ components:
           items:
             $ref: '#/components/schemas/moveFile'
           description: List of objects containing `source` and `destination`. The source and destination are paths relative to their Location of the files to be moved.
+    Package:
+      type: object
+      required:
+        - uuid
+        - current_full_path
+        - current_location
+        - current_path
+        - encrypted
+        - origin_pipeline
+        - package_type
+        - related_packages
+        - replicas
+        - replicated_package
+        - resource_uri
+        - size
+        - status
+        - stored_date
+      properties:
+        uuid:
+          $ref: '#/components/schemas/uuid'
+        current_full_path:
+          type: string
+        current_location:
+          $ref: '#/components/schemas/uri'
+        current_path:
+          type: string
+        encrypted:
+          type: boolean
+        origin_pipeline:
+          $ref: '#/components/schemas/uri'
+        package_type:
+          $ref: '#/components/schemas/PackageType'
+        related_packages:
+          type: array
+          items:
+            type: string
+        replicas:
+          type: array
+          items:
+            type: string
+        replicated_package:
+          type: string
+          nullable: true
+        resource_uri:
+          $ref: '#/components/schemas/uri'
+        size:
+          type: integer
+        status:
+          type: string
+        stored_date:
+          type: string
+          nullable: true
+    PackageMoveRequest:
+      type: object
+      required:
+        - location_uuid
+      properties:
+        location_uuid:
+          $ref: '#/components/schemas/uuid'
+    PackageType:
+      type: string
+      enum:
+        - AIP
+        - AIC
+        - DIP
+        - transfer
+        - SIP
+        - file
+        - deposit
     Pipeline:
       type: object
       required:

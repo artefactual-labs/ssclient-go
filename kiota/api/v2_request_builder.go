@@ -21,6 +21,11 @@ func NewV2RequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee263371cb1c9
     urlParams["request-raw-url"] = rawUrl
     return NewV2RequestBuilderInternal(urlParams, requestAdapter)
 }
+// File the file property
+// returns a *V2FileRequestBuilder when successful
+func (m *V2RequestBuilder) File()(*V2FileRequestBuilder) {
+    return NewV2FileRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
 // Location the location property
 // returns a *V2LocationRequestBuilder when successful
 func (m *V2RequestBuilder) Location()(*V2LocationRequestBuilder) {
