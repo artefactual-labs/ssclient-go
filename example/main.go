@@ -62,8 +62,8 @@ type application struct {
 
 // locations prints a list of locations found in the storage server.
 func (app application) locations(ctx context.Context) error {
-	reqConfig := &api.V2LocationRequestBuilderGetRequestConfiguration{}
-	listable, err := app.client.Location().Get(ctx, reqConfig)
+	reqConfig := &api.V2LocationEmptyPathSegmentRequestBuilderGetRequestConfiguration{}
+	listable, err := app.client.Location().EmptyPathSegment().Get(ctx, reqConfig)
 	if err != nil {
 		return err
 	}
