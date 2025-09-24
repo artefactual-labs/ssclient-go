@@ -30,12 +30,11 @@ examplemocks: $(MOCKGEN)
 
 .PHONY: ssclient
 ssclient:
-	@which kiota > /dev/null 2>&1 || (echo "kiota not found in PATH, download v1.19.1 from: https://learn.microsoft.com/en-ca/openapi/kiota/install" && exit 1)
-	kiota generate --language go --clean-output --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --output ./kiota
+	mise exec -- kiota generate --language go --clean-output --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --output ./kiota
 
 .PHONY: typespec
 typespec:
-	npm --prefix=$(CURDIR)/typespec run compile
+	mise exec -- npm --prefix=$(CURDIR)/typespec run compile
 
 .PHONY: gen
 gen: typespec ssclient examplemocks
