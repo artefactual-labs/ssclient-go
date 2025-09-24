@@ -56,7 +56,7 @@ func TestClient(t *testing.T) {
 	client, err := ssclient.New(&http.Client{}, srv.URL, "test", "test")
 	assertEqual(t, err, nil)
 
-	locations, err := client.Api().V2().Location().Get(context.Background(), nil)
+	locations, err := client.Api().V2().Location().EmptyPathSegment().Get(context.Background(), nil)
 	assertEqual(t, err, nil)
 	assertEqual(t, len(locations.GetObjects()), 1)
 }
