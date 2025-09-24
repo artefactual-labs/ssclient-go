@@ -34,6 +34,7 @@ ssclient:
 
 .PHONY: typespec
 typespec:
+	mise exec -- npm --prefix=$(CURDIR)/typespec clean-install
 	mise exec -- npm --prefix=$(CURDIR)/typespec run compile
 
 .PHONY: gen
