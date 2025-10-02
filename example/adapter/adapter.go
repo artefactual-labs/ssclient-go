@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	abstractions "github.com/microsoft/kiota-abstractions-go"
+	kiota_abstractions_go "github.com/microsoft/kiota-abstractions-go"
 	serialization "github.com/microsoft/kiota-abstractions-go/serialization"
 	store "github.com/microsoft/kiota-abstractions-go/store"
 	gomock "go.uber.org/mock/gomock"
@@ -23,6 +23,7 @@ import (
 type MockRequestAdapter struct {
 	ctrl     *gomock.Controller
 	recorder *MockRequestAdapterMockRecorder
+	isgomock struct{}
 }
 
 // MockRequestAdapterMockRecorder is the mock recorder for MockRequestAdapter.
@@ -43,18 +44,18 @@ func (m *MockRequestAdapter) EXPECT() *MockRequestAdapterMockRecorder {
 }
 
 // ConvertToNativeRequest mocks base method.
-func (m *MockRequestAdapter) ConvertToNativeRequest(arg0 context.Context, arg1 *abstractions.RequestInformation) (any, error) {
+func (m *MockRequestAdapter) ConvertToNativeRequest(arg0 context.Context, requestInfo *kiota_abstractions_go.RequestInformation) (any, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConvertToNativeRequest", arg0, arg1)
+	ret := m.ctrl.Call(m, "ConvertToNativeRequest", arg0, requestInfo)
 	ret0, _ := ret[0].(any)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ConvertToNativeRequest indicates an expected call of ConvertToNativeRequest.
-func (mr *MockRequestAdapterMockRecorder) ConvertToNativeRequest(arg0, arg1 any) *MockRequestAdapterConvertToNativeRequestCall {
+func (mr *MockRequestAdapterMockRecorder) ConvertToNativeRequest(arg0, requestInfo any) *MockRequestAdapterConvertToNativeRequestCall {
 	mr.mock.ctrl.T.Helper()
-	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConvertToNativeRequest", reflect.TypeOf((*MockRequestAdapter)(nil).ConvertToNativeRequest), arg0, arg1)
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConvertToNativeRequest", reflect.TypeOf((*MockRequestAdapter)(nil).ConvertToNativeRequest), arg0, requestInfo)
 	return &MockRequestAdapterConvertToNativeRequestCall{Call: call}
 }
 
@@ -70,27 +71,27 @@ func (c *MockRequestAdapterConvertToNativeRequestCall) Return(arg0 any, arg1 err
 }
 
 // Do rewrite *gomock.Call.Do
-func (c *MockRequestAdapterConvertToNativeRequestCall) Do(f func(context.Context, *abstractions.RequestInformation) (any, error)) *MockRequestAdapterConvertToNativeRequestCall {
+func (c *MockRequestAdapterConvertToNativeRequestCall) Do(f func(context.Context, *kiota_abstractions_go.RequestInformation) (any, error)) *MockRequestAdapterConvertToNativeRequestCall {
 	c.Call = c.Call.Do(f)
 	return c
 }
 
 // DoAndReturn rewrite *gomock.Call.DoAndReturn
-func (c *MockRequestAdapterConvertToNativeRequestCall) DoAndReturn(f func(context.Context, *abstractions.RequestInformation) (any, error)) *MockRequestAdapterConvertToNativeRequestCall {
+func (c *MockRequestAdapterConvertToNativeRequestCall) DoAndReturn(f func(context.Context, *kiota_abstractions_go.RequestInformation) (any, error)) *MockRequestAdapterConvertToNativeRequestCall {
 	c.Call = c.Call.DoAndReturn(f)
 	return c
 }
 
 // EnableBackingStore mocks base method.
-func (m *MockRequestAdapter) EnableBackingStore(arg0 store.BackingStoreFactory) {
+func (m *MockRequestAdapter) EnableBackingStore(factory store.BackingStoreFactory) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "EnableBackingStore", arg0)
+	m.ctrl.Call(m, "EnableBackingStore", factory)
 }
 
 // EnableBackingStore indicates an expected call of EnableBackingStore.
-func (mr *MockRequestAdapterMockRecorder) EnableBackingStore(arg0 any) *MockRequestAdapterEnableBackingStoreCall {
+func (mr *MockRequestAdapterMockRecorder) EnableBackingStore(factory any) *MockRequestAdapterEnableBackingStoreCall {
 	mr.mock.ctrl.T.Helper()
-	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EnableBackingStore", reflect.TypeOf((*MockRequestAdapter)(nil).EnableBackingStore), arg0)
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EnableBackingStore", reflect.TypeOf((*MockRequestAdapter)(nil).EnableBackingStore), factory)
 	return &MockRequestAdapterEnableBackingStoreCall{Call: call}
 }
 
@@ -194,18 +195,18 @@ func (c *MockRequestAdapterGetSerializationWriterFactoryCall) DoAndReturn(f func
 }
 
 // Send mocks base method.
-func (m *MockRequestAdapter) Send(arg0 context.Context, arg1 *abstractions.RequestInformation, arg2 serialization.ParsableFactory, arg3 abstractions.ErrorMappings) (serialization.Parsable, error) {
+func (m *MockRequestAdapter) Send(arg0 context.Context, requestInfo *kiota_abstractions_go.RequestInformation, constructor serialization.ParsableFactory, errorMappings kiota_abstractions_go.ErrorMappings) (serialization.Parsable, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Send", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "Send", arg0, requestInfo, constructor, errorMappings)
 	ret0, _ := ret[0].(serialization.Parsable)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Send indicates an expected call of Send.
-func (mr *MockRequestAdapterMockRecorder) Send(arg0, arg1, arg2, arg3 any) *MockRequestAdapterSendCall {
+func (mr *MockRequestAdapterMockRecorder) Send(arg0, requestInfo, constructor, errorMappings any) *MockRequestAdapterSendCall {
 	mr.mock.ctrl.T.Helper()
-	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockRequestAdapter)(nil).Send), arg0, arg1, arg2, arg3)
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockRequestAdapter)(nil).Send), arg0, requestInfo, constructor, errorMappings)
 	return &MockRequestAdapterSendCall{Call: call}
 }
 
@@ -221,30 +222,30 @@ func (c *MockRequestAdapterSendCall) Return(arg0 serialization.Parsable, arg1 er
 }
 
 // Do rewrite *gomock.Call.Do
-func (c *MockRequestAdapterSendCall) Do(f func(context.Context, *abstractions.RequestInformation, serialization.ParsableFactory, abstractions.ErrorMappings) (serialization.Parsable, error)) *MockRequestAdapterSendCall {
+func (c *MockRequestAdapterSendCall) Do(f func(context.Context, *kiota_abstractions_go.RequestInformation, serialization.ParsableFactory, kiota_abstractions_go.ErrorMappings) (serialization.Parsable, error)) *MockRequestAdapterSendCall {
 	c.Call = c.Call.Do(f)
 	return c
 }
 
 // DoAndReturn rewrite *gomock.Call.DoAndReturn
-func (c *MockRequestAdapterSendCall) DoAndReturn(f func(context.Context, *abstractions.RequestInformation, serialization.ParsableFactory, abstractions.ErrorMappings) (serialization.Parsable, error)) *MockRequestAdapterSendCall {
+func (c *MockRequestAdapterSendCall) DoAndReturn(f func(context.Context, *kiota_abstractions_go.RequestInformation, serialization.ParsableFactory, kiota_abstractions_go.ErrorMappings) (serialization.Parsable, error)) *MockRequestAdapterSendCall {
 	c.Call = c.Call.DoAndReturn(f)
 	return c
 }
 
 // SendCollection mocks base method.
-func (m *MockRequestAdapter) SendCollection(arg0 context.Context, arg1 *abstractions.RequestInformation, arg2 serialization.ParsableFactory, arg3 abstractions.ErrorMappings) ([]serialization.Parsable, error) {
+func (m *MockRequestAdapter) SendCollection(arg0 context.Context, requestInfo *kiota_abstractions_go.RequestInformation, constructor serialization.ParsableFactory, errorMappings kiota_abstractions_go.ErrorMappings) ([]serialization.Parsable, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendCollection", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "SendCollection", arg0, requestInfo, constructor, errorMappings)
 	ret0, _ := ret[0].([]serialization.Parsable)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SendCollection indicates an expected call of SendCollection.
-func (mr *MockRequestAdapterMockRecorder) SendCollection(arg0, arg1, arg2, arg3 any) *MockRequestAdapterSendCollectionCall {
+func (mr *MockRequestAdapterMockRecorder) SendCollection(arg0, requestInfo, constructor, errorMappings any) *MockRequestAdapterSendCollectionCall {
 	mr.mock.ctrl.T.Helper()
-	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendCollection", reflect.TypeOf((*MockRequestAdapter)(nil).SendCollection), arg0, arg1, arg2, arg3)
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendCollection", reflect.TypeOf((*MockRequestAdapter)(nil).SendCollection), arg0, requestInfo, constructor, errorMappings)
 	return &MockRequestAdapterSendCollectionCall{Call: call}
 }
 
@@ -260,30 +261,30 @@ func (c *MockRequestAdapterSendCollectionCall) Return(arg0 []serialization.Parsa
 }
 
 // Do rewrite *gomock.Call.Do
-func (c *MockRequestAdapterSendCollectionCall) Do(f func(context.Context, *abstractions.RequestInformation, serialization.ParsableFactory, abstractions.ErrorMappings) ([]serialization.Parsable, error)) *MockRequestAdapterSendCollectionCall {
+func (c *MockRequestAdapterSendCollectionCall) Do(f func(context.Context, *kiota_abstractions_go.RequestInformation, serialization.ParsableFactory, kiota_abstractions_go.ErrorMappings) ([]serialization.Parsable, error)) *MockRequestAdapterSendCollectionCall {
 	c.Call = c.Call.Do(f)
 	return c
 }
 
 // DoAndReturn rewrite *gomock.Call.DoAndReturn
-func (c *MockRequestAdapterSendCollectionCall) DoAndReturn(f func(context.Context, *abstractions.RequestInformation, serialization.ParsableFactory, abstractions.ErrorMappings) ([]serialization.Parsable, error)) *MockRequestAdapterSendCollectionCall {
+func (c *MockRequestAdapterSendCollectionCall) DoAndReturn(f func(context.Context, *kiota_abstractions_go.RequestInformation, serialization.ParsableFactory, kiota_abstractions_go.ErrorMappings) ([]serialization.Parsable, error)) *MockRequestAdapterSendCollectionCall {
 	c.Call = c.Call.DoAndReturn(f)
 	return c
 }
 
 // SendEnum mocks base method.
-func (m *MockRequestAdapter) SendEnum(arg0 context.Context, arg1 *abstractions.RequestInformation, arg2 serialization.EnumFactory, arg3 abstractions.ErrorMappings) (any, error) {
+func (m *MockRequestAdapter) SendEnum(arg0 context.Context, requestInfo *kiota_abstractions_go.RequestInformation, parser serialization.EnumFactory, errorMappings kiota_abstractions_go.ErrorMappings) (any, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendEnum", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "SendEnum", arg0, requestInfo, parser, errorMappings)
 	ret0, _ := ret[0].(any)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SendEnum indicates an expected call of SendEnum.
-func (mr *MockRequestAdapterMockRecorder) SendEnum(arg0, arg1, arg2, arg3 any) *MockRequestAdapterSendEnumCall {
+func (mr *MockRequestAdapterMockRecorder) SendEnum(arg0, requestInfo, parser, errorMappings any) *MockRequestAdapterSendEnumCall {
 	mr.mock.ctrl.T.Helper()
-	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendEnum", reflect.TypeOf((*MockRequestAdapter)(nil).SendEnum), arg0, arg1, arg2, arg3)
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendEnum", reflect.TypeOf((*MockRequestAdapter)(nil).SendEnum), arg0, requestInfo, parser, errorMappings)
 	return &MockRequestAdapterSendEnumCall{Call: call}
 }
 
@@ -299,30 +300,30 @@ func (c *MockRequestAdapterSendEnumCall) Return(arg0 any, arg1 error) *MockReque
 }
 
 // Do rewrite *gomock.Call.Do
-func (c *MockRequestAdapterSendEnumCall) Do(f func(context.Context, *abstractions.RequestInformation, serialization.EnumFactory, abstractions.ErrorMappings) (any, error)) *MockRequestAdapterSendEnumCall {
+func (c *MockRequestAdapterSendEnumCall) Do(f func(context.Context, *kiota_abstractions_go.RequestInformation, serialization.EnumFactory, kiota_abstractions_go.ErrorMappings) (any, error)) *MockRequestAdapterSendEnumCall {
 	c.Call = c.Call.Do(f)
 	return c
 }
 
 // DoAndReturn rewrite *gomock.Call.DoAndReturn
-func (c *MockRequestAdapterSendEnumCall) DoAndReturn(f func(context.Context, *abstractions.RequestInformation, serialization.EnumFactory, abstractions.ErrorMappings) (any, error)) *MockRequestAdapterSendEnumCall {
+func (c *MockRequestAdapterSendEnumCall) DoAndReturn(f func(context.Context, *kiota_abstractions_go.RequestInformation, serialization.EnumFactory, kiota_abstractions_go.ErrorMappings) (any, error)) *MockRequestAdapterSendEnumCall {
 	c.Call = c.Call.DoAndReturn(f)
 	return c
 }
 
 // SendEnumCollection mocks base method.
-func (m *MockRequestAdapter) SendEnumCollection(arg0 context.Context, arg1 *abstractions.RequestInformation, arg2 serialization.EnumFactory, arg3 abstractions.ErrorMappings) ([]any, error) {
+func (m *MockRequestAdapter) SendEnumCollection(arg0 context.Context, requestInfo *kiota_abstractions_go.RequestInformation, parser serialization.EnumFactory, errorMappings kiota_abstractions_go.ErrorMappings) ([]any, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendEnumCollection", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "SendEnumCollection", arg0, requestInfo, parser, errorMappings)
 	ret0, _ := ret[0].([]any)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SendEnumCollection indicates an expected call of SendEnumCollection.
-func (mr *MockRequestAdapterMockRecorder) SendEnumCollection(arg0, arg1, arg2, arg3 any) *MockRequestAdapterSendEnumCollectionCall {
+func (mr *MockRequestAdapterMockRecorder) SendEnumCollection(arg0, requestInfo, parser, errorMappings any) *MockRequestAdapterSendEnumCollectionCall {
 	mr.mock.ctrl.T.Helper()
-	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendEnumCollection", reflect.TypeOf((*MockRequestAdapter)(nil).SendEnumCollection), arg0, arg1, arg2, arg3)
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendEnumCollection", reflect.TypeOf((*MockRequestAdapter)(nil).SendEnumCollection), arg0, requestInfo, parser, errorMappings)
 	return &MockRequestAdapterSendEnumCollectionCall{Call: call}
 }
 
@@ -338,29 +339,29 @@ func (c *MockRequestAdapterSendEnumCollectionCall) Return(arg0 []any, arg1 error
 }
 
 // Do rewrite *gomock.Call.Do
-func (c *MockRequestAdapterSendEnumCollectionCall) Do(f func(context.Context, *abstractions.RequestInformation, serialization.EnumFactory, abstractions.ErrorMappings) ([]any, error)) *MockRequestAdapterSendEnumCollectionCall {
+func (c *MockRequestAdapterSendEnumCollectionCall) Do(f func(context.Context, *kiota_abstractions_go.RequestInformation, serialization.EnumFactory, kiota_abstractions_go.ErrorMappings) ([]any, error)) *MockRequestAdapterSendEnumCollectionCall {
 	c.Call = c.Call.Do(f)
 	return c
 }
 
 // DoAndReturn rewrite *gomock.Call.DoAndReturn
-func (c *MockRequestAdapterSendEnumCollectionCall) DoAndReturn(f func(context.Context, *abstractions.RequestInformation, serialization.EnumFactory, abstractions.ErrorMappings) ([]any, error)) *MockRequestAdapterSendEnumCollectionCall {
+func (c *MockRequestAdapterSendEnumCollectionCall) DoAndReturn(f func(context.Context, *kiota_abstractions_go.RequestInformation, serialization.EnumFactory, kiota_abstractions_go.ErrorMappings) ([]any, error)) *MockRequestAdapterSendEnumCollectionCall {
 	c.Call = c.Call.DoAndReturn(f)
 	return c
 }
 
 // SendNoContent mocks base method.
-func (m *MockRequestAdapter) SendNoContent(arg0 context.Context, arg1 *abstractions.RequestInformation, arg2 abstractions.ErrorMappings) error {
+func (m *MockRequestAdapter) SendNoContent(arg0 context.Context, requestInfo *kiota_abstractions_go.RequestInformation, errorMappings kiota_abstractions_go.ErrorMappings) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendNoContent", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "SendNoContent", arg0, requestInfo, errorMappings)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SendNoContent indicates an expected call of SendNoContent.
-func (mr *MockRequestAdapterMockRecorder) SendNoContent(arg0, arg1, arg2 any) *MockRequestAdapterSendNoContentCall {
+func (mr *MockRequestAdapterMockRecorder) SendNoContent(arg0, requestInfo, errorMappings any) *MockRequestAdapterSendNoContentCall {
 	mr.mock.ctrl.T.Helper()
-	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendNoContent", reflect.TypeOf((*MockRequestAdapter)(nil).SendNoContent), arg0, arg1, arg2)
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendNoContent", reflect.TypeOf((*MockRequestAdapter)(nil).SendNoContent), arg0, requestInfo, errorMappings)
 	return &MockRequestAdapterSendNoContentCall{Call: call}
 }
 
@@ -376,30 +377,30 @@ func (c *MockRequestAdapterSendNoContentCall) Return(arg0 error) *MockRequestAda
 }
 
 // Do rewrite *gomock.Call.Do
-func (c *MockRequestAdapterSendNoContentCall) Do(f func(context.Context, *abstractions.RequestInformation, abstractions.ErrorMappings) error) *MockRequestAdapterSendNoContentCall {
+func (c *MockRequestAdapterSendNoContentCall) Do(f func(context.Context, *kiota_abstractions_go.RequestInformation, kiota_abstractions_go.ErrorMappings) error) *MockRequestAdapterSendNoContentCall {
 	c.Call = c.Call.Do(f)
 	return c
 }
 
 // DoAndReturn rewrite *gomock.Call.DoAndReturn
-func (c *MockRequestAdapterSendNoContentCall) DoAndReturn(f func(context.Context, *abstractions.RequestInformation, abstractions.ErrorMappings) error) *MockRequestAdapterSendNoContentCall {
+func (c *MockRequestAdapterSendNoContentCall) DoAndReturn(f func(context.Context, *kiota_abstractions_go.RequestInformation, kiota_abstractions_go.ErrorMappings) error) *MockRequestAdapterSendNoContentCall {
 	c.Call = c.Call.DoAndReturn(f)
 	return c
 }
 
 // SendPrimitive mocks base method.
-func (m *MockRequestAdapter) SendPrimitive(arg0 context.Context, arg1 *abstractions.RequestInformation, arg2 string, arg3 abstractions.ErrorMappings) (any, error) {
+func (m *MockRequestAdapter) SendPrimitive(arg0 context.Context, requestInfo *kiota_abstractions_go.RequestInformation, typeName string, errorMappings kiota_abstractions_go.ErrorMappings) (any, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendPrimitive", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "SendPrimitive", arg0, requestInfo, typeName, errorMappings)
 	ret0, _ := ret[0].(any)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SendPrimitive indicates an expected call of SendPrimitive.
-func (mr *MockRequestAdapterMockRecorder) SendPrimitive(arg0, arg1, arg2, arg3 any) *MockRequestAdapterSendPrimitiveCall {
+func (mr *MockRequestAdapterMockRecorder) SendPrimitive(arg0, requestInfo, typeName, errorMappings any) *MockRequestAdapterSendPrimitiveCall {
 	mr.mock.ctrl.T.Helper()
-	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendPrimitive", reflect.TypeOf((*MockRequestAdapter)(nil).SendPrimitive), arg0, arg1, arg2, arg3)
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendPrimitive", reflect.TypeOf((*MockRequestAdapter)(nil).SendPrimitive), arg0, requestInfo, typeName, errorMappings)
 	return &MockRequestAdapterSendPrimitiveCall{Call: call}
 }
 
@@ -415,30 +416,30 @@ func (c *MockRequestAdapterSendPrimitiveCall) Return(arg0 any, arg1 error) *Mock
 }
 
 // Do rewrite *gomock.Call.Do
-func (c *MockRequestAdapterSendPrimitiveCall) Do(f func(context.Context, *abstractions.RequestInformation, string, abstractions.ErrorMappings) (any, error)) *MockRequestAdapterSendPrimitiveCall {
+func (c *MockRequestAdapterSendPrimitiveCall) Do(f func(context.Context, *kiota_abstractions_go.RequestInformation, string, kiota_abstractions_go.ErrorMappings) (any, error)) *MockRequestAdapterSendPrimitiveCall {
 	c.Call = c.Call.Do(f)
 	return c
 }
 
 // DoAndReturn rewrite *gomock.Call.DoAndReturn
-func (c *MockRequestAdapterSendPrimitiveCall) DoAndReturn(f func(context.Context, *abstractions.RequestInformation, string, abstractions.ErrorMappings) (any, error)) *MockRequestAdapterSendPrimitiveCall {
+func (c *MockRequestAdapterSendPrimitiveCall) DoAndReturn(f func(context.Context, *kiota_abstractions_go.RequestInformation, string, kiota_abstractions_go.ErrorMappings) (any, error)) *MockRequestAdapterSendPrimitiveCall {
 	c.Call = c.Call.DoAndReturn(f)
 	return c
 }
 
 // SendPrimitiveCollection mocks base method.
-func (m *MockRequestAdapter) SendPrimitiveCollection(arg0 context.Context, arg1 *abstractions.RequestInformation, arg2 string, arg3 abstractions.ErrorMappings) ([]any, error) {
+func (m *MockRequestAdapter) SendPrimitiveCollection(arg0 context.Context, requestInfo *kiota_abstractions_go.RequestInformation, typeName string, errorMappings kiota_abstractions_go.ErrorMappings) ([]any, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendPrimitiveCollection", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "SendPrimitiveCollection", arg0, requestInfo, typeName, errorMappings)
 	ret0, _ := ret[0].([]any)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SendPrimitiveCollection indicates an expected call of SendPrimitiveCollection.
-func (mr *MockRequestAdapterMockRecorder) SendPrimitiveCollection(arg0, arg1, arg2, arg3 any) *MockRequestAdapterSendPrimitiveCollectionCall {
+func (mr *MockRequestAdapterMockRecorder) SendPrimitiveCollection(arg0, requestInfo, typeName, errorMappings any) *MockRequestAdapterSendPrimitiveCollectionCall {
 	mr.mock.ctrl.T.Helper()
-	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendPrimitiveCollection", reflect.TypeOf((*MockRequestAdapter)(nil).SendPrimitiveCollection), arg0, arg1, arg2, arg3)
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendPrimitiveCollection", reflect.TypeOf((*MockRequestAdapter)(nil).SendPrimitiveCollection), arg0, requestInfo, typeName, errorMappings)
 	return &MockRequestAdapterSendPrimitiveCollectionCall{Call: call}
 }
 
@@ -454,27 +455,27 @@ func (c *MockRequestAdapterSendPrimitiveCollectionCall) Return(arg0 []any, arg1 
 }
 
 // Do rewrite *gomock.Call.Do
-func (c *MockRequestAdapterSendPrimitiveCollectionCall) Do(f func(context.Context, *abstractions.RequestInformation, string, abstractions.ErrorMappings) ([]any, error)) *MockRequestAdapterSendPrimitiveCollectionCall {
+func (c *MockRequestAdapterSendPrimitiveCollectionCall) Do(f func(context.Context, *kiota_abstractions_go.RequestInformation, string, kiota_abstractions_go.ErrorMappings) ([]any, error)) *MockRequestAdapterSendPrimitiveCollectionCall {
 	c.Call = c.Call.Do(f)
 	return c
 }
 
 // DoAndReturn rewrite *gomock.Call.DoAndReturn
-func (c *MockRequestAdapterSendPrimitiveCollectionCall) DoAndReturn(f func(context.Context, *abstractions.RequestInformation, string, abstractions.ErrorMappings) ([]any, error)) *MockRequestAdapterSendPrimitiveCollectionCall {
+func (c *MockRequestAdapterSendPrimitiveCollectionCall) DoAndReturn(f func(context.Context, *kiota_abstractions_go.RequestInformation, string, kiota_abstractions_go.ErrorMappings) ([]any, error)) *MockRequestAdapterSendPrimitiveCollectionCall {
 	c.Call = c.Call.DoAndReturn(f)
 	return c
 }
 
 // SetBaseUrl mocks base method.
-func (m *MockRequestAdapter) SetBaseUrl(arg0 string) {
+func (m *MockRequestAdapter) SetBaseUrl(baseUrl string) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetBaseUrl", arg0)
+	m.ctrl.Call(m, "SetBaseUrl", baseUrl)
 }
 
 // SetBaseUrl indicates an expected call of SetBaseUrl.
-func (mr *MockRequestAdapterMockRecorder) SetBaseUrl(arg0 any) *MockRequestAdapterSetBaseUrlCall {
+func (mr *MockRequestAdapterMockRecorder) SetBaseUrl(baseUrl any) *MockRequestAdapterSetBaseUrlCall {
 	mr.mock.ctrl.T.Helper()
-	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetBaseUrl", reflect.TypeOf((*MockRequestAdapter)(nil).SetBaseUrl), arg0)
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetBaseUrl", reflect.TypeOf((*MockRequestAdapter)(nil).SetBaseUrl), baseUrl)
 	return &MockRequestAdapterSetBaseUrlCall{Call: call}
 }
 

@@ -1,11 +1,11 @@
 module go.artefactual.dev/ssclient/example
 
-go 1.23.1
+go 1.25.1
 
 require (
 	github.com/microsoft/kiota-abstractions-go v1.7.0
 	go.artefactual.dev/ssclient v0.0.0-00010101000000-000000000000
-	go.uber.org/mock v0.4.0
+	go.uber.org/mock v0.6.0
 )
 
 require (
