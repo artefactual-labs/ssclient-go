@@ -1,32 +1,8 @@
-PROJECT := ssclient
-.DEFAULT_GOAL := ssclient
-UNAME_OS := $(shell uname -s)
-UNAME_ARCH := $(shell uname -m)
-CACHE_BASE ?= $(HOME)/.cache/$(PROJECT)
-CACHE := $(CACHE_BASE)/$(UNAME_OS)/$(UNAME_ARCH)
-CACHE_BIN := $(CACHE)/bin
-CACHE_VERSIONS := $(CACHE)/versions
-CACHE_GOBIN := $(CACHE)/gobin
-CACHE_GOCACHE := $(CACHE)/gocache
-export PATH := $(abspath $(CACHE_BIN)):$(PATH)
-SHELL := /usr/bin/env bash -o pipefail
-MAKEFLAGS += --no-builtin-rules
-MAKEFLAGS += --no-print-directory
-
-MOCKGEN_VERSION ?= 0.4.0
-MOCKGEN := $(CACHE_VERSIONS)/mockgen/$(MOCKGEN_VERSION)
-$(MOCKGEN):
-	@rm -f $(CACHE_BIN)/mockgen
-	@mkdir -p $(CACHE_BIN)
-	@env GOBIN=$(CACHE_BIN) go install go.uber.org/mock/mockgen@v$(MOCKGEN_VERSION)
-	@chmod +x $(CACHE_BIN)/mockgen
-	@rm -rf $(dir $(MOCKGEN))
-	@mkdir -p $(dir $(MOCKGEN))
-	@touch $(MOCKGEN)
+all: gen
 
 .PHONY: examplemocks
 examplemocks: $(MOCKGEN)
-	cd $(CURDIR)/example && mockgen -typed -destination=./adapter/adapter.go -package=adapter github.com/microsoft/kiota-abstractions-go RequestAdapter
+	cd $(CURDIR)/example && mise exec -- mockgen -typed -destination=./adapter/adapter.go -package=adapter github.com/microsoft/kiota-abstractions-go RequestAdapter
 
 .PHONY: ssclient
 ssclient:
