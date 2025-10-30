@@ -62,6 +62,11 @@ func (m *V2FileWithUuItemRequestBuilder) Get(ctx context.Context, requestConfigu
 func (m *V2FileWithUuItemRequestBuilder) Move()(*V2FileItemMoveRequestBuilder) {
     return NewV2FileItemMoveRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
+// Review_aip_deletion the review_aip_deletion property
+// returns a *V2FileItemReview_aip_deletionRequestBuilder when successful
+func (m *V2FileWithUuItemRequestBuilder) Review_aip_deletion()(*V2FileItemReview_aip_deletionRequestBuilder) {
+    return NewV2FileItemReview_aip_deletionRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
 // returns a *RequestInformation when successful
 func (m *V2FileWithUuItemRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2FileWithUuItemRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

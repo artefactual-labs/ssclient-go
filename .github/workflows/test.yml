@@ -1,4 +1,4 @@
-name: Tests
+name: Tests/
 on:
   pull_request:
   push:
@@ -46,5 +46,5 @@ jobs:
         uses: actions/setup-go@v5
       - name: Check
         run: |
-          go mod tidy
-          git diff --name-only --exit-code || (echo "Please run 'go mod tidy'."; exit 1)
+          go mod tidy -diff
+          cd example && go mod tidy -diff
