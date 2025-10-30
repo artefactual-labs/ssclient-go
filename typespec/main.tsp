@@ -7,7 +7,7 @@ using TypeSpec.Http;
 using TypeSpec.Rest;
 using TypeSpec.Versioning;
 
-@service({
+@service(#{
   title: "Archivematica Storage Service",
 })
 @route("/api/v2/")
@@ -176,6 +176,28 @@ namespace Service {
     } | {
       @statusCode statusCode: 404;
     };
+
+    @doc("Approve or reject an AIP deletion request associated with this package.")
+    @route("{uuid}/review_aip_deletion/")
+    @post
+    op reviewAipDeletion(
+      @path
+      uuid: uuid,
+
+      @body
+      body: ReviewAipDeletionRequest,
+    ): {
+      @statusCode statusCode: 200;
+      @body result: ReviewAipDeletionSuccess;
+    } | {
+      @statusCode statusCode: 400;
+      @body error: ReviewAipDeletionFailure;
+    } | {
+      @statusCode statusCode: 403;
+    } | {
+      @statusCode statusCode: 404;
+      @body error: ReviewAipDeletionFailure;
+    };
   }
 }
 
@@ -286,6 +308,32 @@ model FixityFailureFiles {
   missing?: string[];
   changed?: string[];
   untracked?: string[];
+}
+
+model ReviewAipDeletionRequest {
+  @doc("ID of the deletion request event to review.")
+  event_id: int32;
+
+  @doc("Decision to record. Accepted values are \"approve\" and \"reject\".")
+  decision: ReviewAipDeletionDecision;
+
+  @doc("Explanation that will be stored alongside the decision.")
+  reason: string;
+}
+
+enum ReviewAipDeletionDecision {
+  APPROVE: "approve";
+  REJECT: "reject";
+}
+
+model ReviewAipDeletionSuccess {
+  message: string;
+  detail?: string;
+}
+
+model ReviewAipDeletionFailure {
+  error_message: string;
+  detail?: string;
 }
 
 enum PackageType {

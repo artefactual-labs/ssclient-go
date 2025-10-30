@@ -86,6 +86,43 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PackageMoveRequest'
+  /api/v2/file/{uuid}/review_aip_deletion/:
+    post:
+      operationId: Packages_reviewAipDeletion
+      description: Approve or reject an AIP deletion request associated with this package.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewAipDeletionSuccess'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewAipDeletionFailure'
+        '403':
+          description: Access is forbidden.
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewAipDeletionFailure'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewAipDeletionRequest'
   /api/v2/location/:
     get:
       operationId: Locations_list
@@ -536,6 +573,47 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Pipeline'
+    ReviewAipDeletionDecision:
+      type: string
+      enum:
+        - approve
+        - reject
+    ReviewAipDeletionFailure:
+      type: object
+      required:
+        - error_message
+      properties:
+        error_message:
+          type: string
+        detail:
+          type: string
+    ReviewAipDeletionRequest:
+      type: object
+      required:
+        - event_id
+        - decision
+        - reason
+      properties:
+        event_id:
+          type: integer
+          format: int32
+          description: ID of the deletion request event to review.
+        decision:
+          allOf:
+            - $ref: '#/components/schemas/ReviewAipDeletionDecision'
+          description: Decision to record. Accepted values are "approve" and "reject".
+        reason:
+          type: string
+          description: Explanation that will be stored alongside the decision.
+    ReviewAipDeletionSuccess:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+        detail:
+          type: string
     Versions:
       type: string
       enum:
