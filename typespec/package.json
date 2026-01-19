@@ -8,14 +8,14 @@
     "deps": "npx ncu --interactive"
   },
   "dependencies": {
-    "@typespec/compiler": "~1.5.0",
-    "@typespec/http": "~1.5.0",
-    "@typespec/openapi3": "~1.5.0",
-    "@typespec/rest": "~0.75.0",
-    "@typespec/versioning": "^0.75.0"
+    "@typespec/compiler": "~1.8.0",
+    "@typespec/http": "~1.8.0",
+    "@typespec/openapi3": "~1.8.0",
+    "@typespec/rest": "~0.78.0",
+    "@typespec/versioning": "^0.78.0"
   },
   "private": true,
   "devDependencies": {
-    "npm-check-updates": "^19.1.2"
+    "npm-check-updates": "^19.3.1"
   }
 }

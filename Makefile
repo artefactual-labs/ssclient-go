@@ -1,5 +1,9 @@
 all: gen
 
+.PHONY: deps
+deps:
+	mise exec -- go list -u -m -json all | go-mod-outdated -update -direct
+
 .PHONY: examplemocks
 examplemocks: $(MOCKGEN)
 	cd $(CURDIR)/example && mise exec -- mockgen -typed -destination=./adapter/adapter.go -package=adapter github.com/microsoft/kiota-abstractions-go RequestAdapter

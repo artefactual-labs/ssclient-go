@@ -2,7 +2,7 @@
   "descriptionHash": "613E3F1F5472A65E2C621AD81CBCAB9F57F1B90E69D9F82472C47799A16310DC11ED0950FFEF142EDDD5C37EECBC39B51700C7B3D4806DB48B046D4E7B8F0BB1",
   "descriptionLocation": "../typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml",
   "lockFileVersion": "1.0.0",
-  "kiotaVersion": "1.28.0",
+  "kiotaVersion": "1.29.0",
   "clientClassName": "Client",
   "typeAccessModifier": "Public",
   "clientNamespaceName": "go.artefactual.dev/ssclient/kiota",
