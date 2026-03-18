@@ -3,8 +3,12 @@ package ssclient
 import (
 	"context"
 	"fmt"
+	"io"
+	"mime"
 	"net/http"
+	"strconv"
 
+	kabs "github.com/microsoft/kiota-abstractions-go"
 	kapi "go.artefactual.dev/ssclient/kiota/api"
 	"go.artefactual.dev/ssclient/kiota/models"
 )
@@ -39,6 +43,19 @@ type DeleteAIPResult struct {
 	AlreadyExists *DeleteAIPAlreadyExists
 }
 
+// FileStream captures a successful streamed file response.
+type FileStream struct {
+	StatusCode    int
+	ContentType   string
+	ContentLength int64
+	Filename      string
+	Body          io.ReadCloser
+}
+
+type extractFileQuery struct {
+	RelativePathToFile *string `uriparametername:"relative_path_to_file"`
+}
+
 // IsAccepted reports whether the request created a new deletion event.
 func (r *DeleteAIPResult) IsAccepted() bool {
 	return r != nil && r.Accepted != nil
@@ -66,6 +83,114 @@ func (s *PackagesService) Get(ctx context.Context, uuid string) (*models.Package
 	}
 
 	return typed, nil
+}
+
+// DownloadPackage returns the package archive as downloaded by Storage Service.
+func (s *PackagesService) DownloadPackage(ctx context.Context, uuid string) (*FileStream, error) {
+	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(uuid).ToGetRequestInformation(ctx, nil)
+	if err != nil {
+		return nil, normalizeError(err)
+	}
+
+	requestInfo.UrlTemplate = "{+baseurl}/api/v2/file/{uuid}/download/"
+	requestInfo.Headers.Remove("Accept")
+	requestInfo.Headers.Add("Accept", "*/*")
+
+	return s.streamPackageRequest(ctx, requestInfo, "download")
+}
+
+// DownloadFile extracts a file from a package and streams it back.
+func (s *PackagesService) DownloadFile(ctx context.Context, uuid string, relativePathToFile string) (*FileStream, error) {
+	if relativePathToFile == "" {
+		return nil, fmt.Errorf("relative path to file is required")
+	}
+
+	requestInfo := kabs.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(
+		kabs.GET,
+		"{+baseurl}/api/v2/file/{uuid}/extract_file/{?relative_path_to_file}",
+		map[string]string{"uuid": uuid},
+	)
+	requestInfo.AddQueryParameters(extractFileQuery{
+		RelativePathToFile: &relativePathToFile,
+	})
+	requestInfo.Headers.Add("Accept", "*/*")
+
+	return s.streamPackageRequest(ctx, requestInfo, "extract file")
+}
+
+// DownloadPointerFile returns the package pointer file as a stream.
+func (s *PackagesService) DownloadPointerFile(ctx context.Context, uuid string) (*FileStream, error) {
+	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(uuid).ToGetRequestInformation(ctx, nil)
+	if err != nil {
+		return nil, normalizeError(err)
+	}
+
+	requestInfo.UrlTemplate = "{+baseurl}/api/v2/file/{uuid}/pointer_file/"
+	requestInfo.Headers.Remove("Accept")
+	requestInfo.Headers.Add("Accept", "*/*")
+
+	return s.streamPackageRequest(ctx, requestInfo, "pointer file")
+}
+
+func (s *PackagesService) streamPackageRequest(ctx context.Context, requestInfo *kabs.RequestInformation, action string) (*FileStream, error) {
+	resp, err := s.client.executeStream(ctx, requestInfo)
+	if err != nil {
+		return nil, normalizeError(err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		defer resp.Body.Close()
+
+		body, readErr := io.ReadAll(resp.Body)
+		if readErr != nil {
+			return nil, normalizeError(fmt.Errorf("read %s error response body: %w", action, readErr))
+		}
+
+		snapshot := &responseSnapshot{
+			StatusCode: resp.StatusCode,
+			Headers:    resp.Headers,
+			Body:       body,
+		}
+		if resp.StatusCode == http.StatusAccepted {
+			return nil, newNotAvailableErrorFromSnapshot(snapshot, fmt.Sprintf("%s not locally available", action))
+		}
+
+		return nil, newResponseErrorFromSnapshot(snapshot, fmt.Sprintf("unexpected %s response status %d", action, resp.StatusCode))
+	}
+
+	return &FileStream{
+		StatusCode:    resp.StatusCode,
+		ContentType:   resp.Headers.Get("Content-Type"),
+		ContentLength: parseContentLength(resp.Headers.Get("Content-Length")),
+		Filename:      parseFilename(resp.Headers.Get("Content-Disposition")),
+		Body:          resp.Body,
+	}, nil
+}
+
+func parseContentLength(value string) int64 {
+	if value == "" {
+		return -1
+	}
+
+	length, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return -1
+	}
+
+	return length
+}
+
+func parseFilename(value string) string {
+	if value == "" {
+		return ""
+	}
+
+	_, params, err := mime.ParseMediaType(value)
+	if err != nil {
+		return ""
+	}
+
+	return params["filename"]
 }
 
 // DeleteAIP creates an AIP deletion request for the given package. The server

@@ -177,6 +177,136 @@ namespace Service {
       @statusCode statusCode: 404;
     };
 
+    @doc("Download the package archive. Successful responses stream the file body.")
+    @route("{uuid}/download/")
+    @get
+    op download(
+      @path
+      uuid: uuid,
+    ): File | {
+      @statusCode statusCode: 202;
+      @body result: AvailabilityResponse;
+    } | {
+      @statusCode statusCode: 404;
+    } | {
+      @statusCode statusCode: 502;
+      @body error: AvailabilityResponse;
+    };
+
+    @doc("Check package download availability. The current server implementation handles HEAD the same way as GET.")
+    @route("{uuid}/download/")
+    @head
+    op downloadHead(
+      @path
+      uuid: uuid,
+    ): {
+      @statusCode statusCode: 200;
+    } | {
+      @statusCode statusCode: 202;
+    } | {
+      @statusCode statusCode: 404;
+    } | {
+      @statusCode statusCode: 502;
+    };
+
+    @doc("Download a LOCKSS package chunk. Successful responses stream the file body.")
+    @route("{uuid}/download/{chunkNumber}/")
+    @get
+    op downloadChunk(
+      @path
+      uuid: uuid,
+
+      @path
+      chunkNumber: int32,
+    ): File | {
+      @statusCode statusCode: 202;
+      @body result: AvailabilityResponse;
+    } | {
+      @statusCode statusCode: 404;
+    } | {
+      @statusCode statusCode: 502;
+      @body error: AvailabilityResponse;
+    };
+
+    @doc("Check LOCKSS package chunk download availability. The current server implementation handles HEAD the same way as GET.")
+    @route("{uuid}/download/{chunkNumber}/")
+    @head
+    op downloadChunkHead(
+      @path
+      uuid: uuid,
+
+      @path
+      chunkNumber: int32,
+    ): {
+      @statusCode statusCode: 200;
+    } | {
+      @statusCode statusCode: 202;
+    } | {
+      @statusCode statusCode: 404;
+    } | {
+      @statusCode statusCode: 502;
+    };
+
+    @doc("Download a single file from the package. Compressed packages may be extracted on demand.")
+    @route("{uuid}/extract_file/")
+    @get
+    op downloadFile(
+      @path
+      uuid: uuid,
+
+      @query("relative_path_to_file")
+      relativePathToFile: string,
+    ): File | {
+      @statusCode statusCode: 202;
+      @body result: AvailabilityResponse;
+    } | {
+      @statusCode statusCode: 400;
+      @body error: string;
+    } | {
+      @statusCode statusCode: 404;
+      @body error: string;
+    } | {
+      @statusCode statusCode: 501;
+      @body error: string;
+    } | {
+      @statusCode statusCode: 502;
+      @body error: AvailabilityResponse;
+    };
+
+    @doc("Check extracted-file download availability. The current server implementation handles HEAD the same way as GET.")
+    @route("{uuid}/extract_file/")
+    @head
+    op downloadFileHead(
+      @path
+      uuid: uuid,
+
+      @query("relative_path_to_file")
+      relativePathToFile: string,
+    ): {
+      @statusCode statusCode: 200;
+    } | {
+      @statusCode statusCode: 202;
+    } | {
+      @statusCode statusCode: 400;
+    } | {
+      @statusCode statusCode: 404;
+    } | {
+      @statusCode statusCode: 501;
+    } | {
+      @statusCode statusCode: 502;
+    };
+
+    @doc("Download the package pointer file.")
+    @route("{uuid}/pointer_file/")
+    @get
+    op downloadPointerFile(
+      @path
+      uuid: uuid,
+    ): File | {
+      @statusCode statusCode: 404;
+      @body error: string;
+    };
+
     @doc("Create an AIP deletion request for this package. This does not perform the deletion itself.")
     @route("{uuid}/delete_aip/")
     @post
@@ -386,6 +516,11 @@ model ReviewAipDeletionSuccess {
 model ReviewAipDeletionFailure {
   error_message: string;
   detail?: string;
+}
+
+model AvailabilityResponse {
+  error: boolean;
+  message: string;
 }
 
 enum PackageType {

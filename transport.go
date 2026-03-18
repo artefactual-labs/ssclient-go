@@ -20,6 +20,12 @@ type responseSnapshot struct {
 	Body       []byte
 }
 
+type responseStream struct {
+	StatusCode int
+	Headers    http.Header
+	Body       io.ReadCloser
+}
+
 func (r *responseSnapshot) decodeJSON(dst any) error {
 	if dst == nil {
 		return fmt.Errorf("decode target is required")
@@ -36,6 +42,25 @@ func (r *responseSnapshot) decodeJSON(dst any) error {
 }
 
 func (c *Client) execute(ctx context.Context, requestInfo *kabs.RequestInformation) (*responseSnapshot, error) {
+	resp, err := c.executeStream(ctx, requestInfo)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("read response body: %w", err)
+	}
+
+	return &responseSnapshot{
+		StatusCode: resp.StatusCode,
+		Headers:    cloneHeaders(resp.Headers),
+		Body:       body,
+	}, nil
+}
+
+func (c *Client) executeStream(ctx context.Context, requestInfo *kabs.RequestInformation) (*responseStream, error) {
 	requestInfo.AddRequestOptions([]kabs.RequestOption{
 		&khttp.RedirectHandlerOptions{
 			ShouldRedirect: func(req *http.Request, res *http.Response) bool {
@@ -77,17 +102,11 @@ func (c *Client) execute(ctx context.Context, requestInfo *kabs.RequestInformati
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("read response body: %w", err)
-	}
-
-	return &responseSnapshot{
+	return &responseStream{
 		StatusCode: resp.StatusCode,
 		Headers:    cloneHeaders(resp.Header),
-		Body:       body,
+		Body:       resp.Body,
 	}, nil
 }
 
