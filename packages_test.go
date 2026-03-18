@@ -36,7 +36,7 @@ func TestPackages(t *testing.T) {
 					t.Fatal("expected request info")
 				}
 
-				assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/file/{uuid}")
+				assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/file/{uuid}/")
 				assertEqual(t, requestInfo.PathParameters["uuid"], packageID)
 				assertEqual(t, requestInfo.Headers.Get("Accept"), []string{"application/json"})
 
@@ -231,7 +231,7 @@ func TestPackages(t *testing.T) {
 			raw.RequestAdapter = &fakeRequestAdapter{
 				baseURL: "http://storage.service",
 				convertToNativeRequest: func(ctx context.Context, requestInfo *kabs.RequestInformation) (any, error) {
-					assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/file/{uuid}/extract_file/{?relative_path_to_file}")
+					assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/file/{uuid}/extract_file/?relative_path_to_file={relative_path_to_file}")
 					assertEqual(t, requestInfo.PathParameters["uuid"], packageID)
 					assertEqual(t, requestInfo.QueryParameters["relative_path_to_file"], relativePath)
 					assertEqual(t, requestInfo.Headers.Get("Accept"), []string{"*/*"})

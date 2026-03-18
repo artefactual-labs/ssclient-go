@@ -66,7 +66,7 @@ func TestPipelines(t *testing.T) {
 		raw.RequestAdapter = &fakeRequestAdapter{
 			baseURL: "http://storage.service",
 			send: func(ctx context.Context, requestInfo *kabs.RequestInformation, constructor serialization.ParsableFactory, errorMappings kabs.ErrorMappings) (serialization.Parsable, error) {
-				assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/pipeline/{uuid}")
+				assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/pipeline/{uuid}/")
 				assertEqual(t, requestInfo.PathParameters["uuid"], pipelineID)
 
 				pipeline := models.NewPipeline()

@@ -53,10 +53,6 @@ type FileStream struct {
 	Body               io.ReadCloser
 }
 
-type extractFileQuery struct {
-	RelativePathToFile *string `uriparametername:"relative_path_to_file"`
-}
-
 // IsAccepted reports whether the request created a new deletion event.
 func (r *DeleteAIPResult) IsAccepted() bool {
 	return r != nil && r.Accepted != nil
@@ -70,7 +66,7 @@ func (r *DeleteAIPResult) HasExistingRequest() bool {
 
 // Get returns a package by UUID.
 func (s *PackagesService) Get(ctx context.Context, uuid string) (*models.PackageEscaped, error) {
-	pkg, err := s.client.raw.Api().V2().File().ByUuid(uuid).Get(ctx, nil)
+	pkg, err := s.client.raw.Api().V2().File().ByUuid(uuid).EmptyPathSegment().Get(ctx, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
@@ -88,12 +84,10 @@ func (s *PackagesService) Get(ctx context.Context, uuid string) (*models.Package
 
 // DownloadPackage returns the package archive as downloaded by Storage Service.
 func (s *PackagesService) DownloadPackage(ctx context.Context, uuid string) (*FileStream, error) {
-	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(uuid).ToGetRequestInformation(ctx, nil)
+	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(uuid).Download().EmptyPathSegment().ToGetRequestInformation(ctx, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
-
-	requestInfo.UrlTemplate = "{+baseurl}/api/v2/file/{uuid}/download/"
 	requestInfo.Headers.Remove("Accept")
 	requestInfo.Headers.Add("Accept", "*/*")
 
@@ -106,14 +100,15 @@ func (s *PackagesService) DownloadFile(ctx context.Context, uuid string, relativ
 		return nil, fmt.Errorf("relative path to file is required")
 	}
 
-	requestInfo := kabs.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(
-		kabs.GET,
-		"{+baseurl}/api/v2/file/{uuid}/extract_file/{?relative_path_to_file}",
-		map[string]string{"uuid": uuid},
-	)
-	requestInfo.AddQueryParameters(extractFileQuery{
-		RelativePathToFile: &relativePathToFile,
+	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(uuid).Extract_file().EmptyPathSegment().ToGetRequestInformation(ctx, &kapi.V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetRequestConfiguration{
+		QueryParameters: &kapi.V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetQueryParameters{
+			Relative_path_to_file: &relativePathToFile,
+		},
 	})
+	if err != nil {
+		return nil, normalizeError(err)
+	}
+	requestInfo.Headers.Remove("Accept")
 	requestInfo.Headers.Add("Accept", "*/*")
 
 	return s.streamPackageRequest(ctx, requestInfo, "extract file")
@@ -121,12 +116,10 @@ func (s *PackagesService) DownloadFile(ctx context.Context, uuid string, relativ
 
 // DownloadPointerFile returns the package pointer file as a stream.
 func (s *PackagesService) DownloadPointerFile(ctx context.Context, uuid string) (*FileStream, error) {
-	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(uuid).ToGetRequestInformation(ctx, nil)
+	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(uuid).Pointer_file().EmptyPathSegment().ToGetRequestInformation(ctx, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
-
-	requestInfo.UrlTemplate = "{+baseurl}/api/v2/file/{uuid}/pointer_file/"
 	requestInfo.Headers.Remove("Accept")
 	requestInfo.Headers.Add("Accept", "*/*")
 

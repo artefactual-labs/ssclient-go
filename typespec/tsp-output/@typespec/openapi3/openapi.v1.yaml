@@ -4,7 +4,7 @@ info:
   version: v1
 tags: []
 paths:
-  /api/v2/file/{uuid}:
+  /api/v2/file/{uuid}/:
     get:
       operationId: Packages_read
       parameters:
@@ -465,7 +465,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: The server cannot find the requested resource.
-  /api/v2/location/{uuid}:
+  /api/v2/location/{uuid}/:
     get:
       operationId: Locations_read
       parameters:
@@ -538,7 +538,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PipelineList'
-  /api/v2/pipeline/{uuid}:
+  /api/v2/pipeline/{uuid}/:
     get:
       operationId: Pipelines_read
       parameters:
