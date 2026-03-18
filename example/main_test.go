@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"reflect"
 	"testing"
 
@@ -12,7 +11,6 @@ import (
 
 	"go.artefactual.dev/ssclient"
 	"go.artefactual.dev/ssclient/example/adapter"
-	"go.artefactual.dev/ssclient/kiota"
 	"go.artefactual.dev/ssclient/kiota/models"
 )
 
@@ -30,58 +28,6 @@ func TestRunUsage(t *testing.T) {
 
 	err := run(ctx, stdout, []string{})
 	assertEqual(t, err.Error(), "flag: help requested")
-}
-
-func TestRun(t *testing.T) {
-	ctx := context.Background()
-	stdout := bytes.NewBuffer([]byte{})
-
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assertEqual(t, r.URL.Path, "/api/v2/location/")
-		assertEqual(t, r.Header, http.Header(map[string][]string{
-			"Accept":          {"application/json"},
-			"Accept-Encoding": {"gzip"},
-			"Authorization":   {"ApiKey test:test"},
-			"User-Agent":      {"ssclient-go/v0"},
-		}))
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{
-			"meta": {
-				"limit": 20,
-				"next": null,
-				"offset": 0,
-				"previous": null,
-				"total_count": 1
-			},
-			"objects": [
-				{
-					"enabled": true,
-					"path": "/home",
-					"pipeline": ["/api/v2/pipeline/a64e061a-5688-49b5-95c1-0b6885c40c04/"],
-					"purpose": "DS",
-					"quota": null,
-					"relative_path": "home",
-					"resource_uri": "/api/v2/location/fff70864-a5d4-4ca6-ab29-b4ce67d8eeab/",
-					"space": "/api/v2/space/218caeb7-fd59-4b7b-99b1-f5771a2dd34f/",
-					"uuid": "fff70864-a5d4-4ca6-ab29-b4ce67d8eeab"
-				}
-			]
-		}`))
-	}))
-	t.Cleanup(func() { srv.Close() })
-
-	if err := run(ctx, stdout, []string{"-url=" + srv.URL, "-user=test", "-key=test"}); err != nil {
-		t.Fatal(err)
-	}
-
-	want := `Found 1 locations!
-» Location fff70864-a5d4-4ca6-ab29-b4ce67d8eeab with purpose DS.
-`
-	if got := stdout.String(); want != got {
-		t.Fatalf("unexpected output; got:\n%v\nwant:\n%v\n", got, want)
-	}
 }
 
 // TestApplication tests the application using a fake client.
@@ -106,15 +52,24 @@ func TestApplication(t *testing.T) {
 		list.SetObjects([]models.Locationable{location})
 
 		param := gomock.Any()
-		adapter.EXPECT().Send(param, param, param, param).Times(1).Return(list, nil)
+		adapter.EXPECT().Send(param, param, param, param).Times(2).Return(list, nil)
 	}
 
-	app := application{client.Api().V2(), stdout}
+	app := application{
+		client: client,
+		raw:    client.Raw().Api().V2(),
+		stdout: stdout,
+	}
 	if err := app.locations(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if err := app.locationsRaw(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 
 	want := `Found 1 locations!
+» Location fff70864-a5d4-4ca6-ab29-b4ce67d8eeab with purpose DS.
+Found 1 locations!
 » Location fff70864-a5d4-4ca6-ab29-b4ce67d8eeab with purpose DS.
 `
 	if got := stdout.String(); want != got {
@@ -122,16 +77,21 @@ func TestApplication(t *testing.T) {
 	}
 }
 
-func createClient(t *testing.T) (*kiota.Client, *adapter.MockRequestAdapter) {
+func createClient(t *testing.T) (*ssclient.Client, *adapter.MockRequestAdapter) {
 	t.Helper()
 
-	client, err := ssclient.New(&http.Client{}, "http://127.0.0.1:62081", "test", "test")
+	client, err := ssclient.New(ssclient.Config{
+		BaseURL:    "http://127.0.0.1:62081",
+		Username:   "test",
+		Key:        "test",
+		HTTPClient: &http.Client{},
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	adapter := adapter.NewMockRequestAdapter(gomock.NewController(t))
-	client.RequestAdapter = adapter
+	client.Raw().RequestAdapter = adapter
 
 	return client, adapter
 }
