@@ -11,7 +11,7 @@ The API is still **experimental**, breaking changes MAY occur.
 ## Usage
 
 Check out [`example`], a small program that imports this module to print a list
-of locations in Archivematica Storage Service.
+of locations and pipelines found in Archivematica Storage Service.
 
 ### Working with the high-level client
 
