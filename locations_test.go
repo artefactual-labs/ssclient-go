@@ -75,7 +75,7 @@ func TestLocations(t *testing.T) {
 		raw.RequestAdapter = &fakeRequestAdapter{
 			baseURL: "http://storage.service",
 			send: func(ctx context.Context, requestInfo *kabs.RequestInformation, constructor serialization.ParsableFactory, errorMappings kabs.ErrorMappings) (serialization.Parsable, error) {
-				assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/location/{uuid}")
+				assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/location/{uuid}/")
 				assertEqual(t, requestInfo.PathParameters["uuid"], locationID)
 
 				location := models.NewLocation()
@@ -157,7 +157,7 @@ func TestLocations(t *testing.T) {
 				serializationWriterFactory: writerFactory,
 				sendPrimitive: func(ctx context.Context, requestInfo *kabs.RequestInformation, typeName string, errorMappings kabs.ErrorMappings) (any, error) {
 					assertEqual(t, typeName, "[]byte")
-					assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/location/{uuid}")
+					assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/location/{uuid}/")
 					assertEqual(t, requestInfo.PathParameters["uuid"], locationID)
 					assertEqual(t, requestInfo.Headers.Get("Content-Type"), []string{"application/json"})
 

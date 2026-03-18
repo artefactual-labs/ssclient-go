@@ -32,6 +32,7 @@ namespace Service {
       @body list: PipelineList;
     };
 
+    @route("{uuid}/")
     @get
     op read(@path uuid: string): {
       @statusCode statusCode: 200;
@@ -79,6 +80,7 @@ namespace Service {
       @body list: LocationList;
     };
 
+    @route("{uuid}/")
     @get
     op read(@path uuid: uuid): {
       @statusCode statusCode: 200;
@@ -110,6 +112,7 @@ namespace Service {
     };
 
     @doc("Move files to the specified location.")
+    @route("{uuid}/")
     @post
     op move(
       @path
@@ -129,6 +132,7 @@ namespace Service {
 
   @route("/file/")
   namespace Packages {
+    @route("{uuid}/")
     @get
     op read(@path uuid: uuid): {
       @statusCode statusCode: 200;

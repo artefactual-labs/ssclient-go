@@ -64,7 +64,7 @@ func (s *LocationsService) List(ctx context.Context, query ListLocationsQuery) (
 
 // Get returns a location by UUID.
 func (s *LocationsService) Get(ctx context.Context, uuid string) (*models.Location, error) {
-	res, err := s.client.raw.Api().V2().Location().ByUuid(uuid).Get(ctx, nil)
+	res, err := s.client.raw.Api().V2().Location().ByUuid(uuid).EmptyPathSegment().Get(ctx, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
@@ -112,6 +112,6 @@ func (s *LocationsService) Move(ctx context.Context, uuid string, body *models.M
 		return fmt.Errorf("location move request is required")
 	}
 
-	_, err := s.client.raw.Api().V2().Location().ByUuid(uuid).Post(ctx, body, nil)
+	_, err := s.client.raw.Api().V2().Location().ByUuid(uuid).EmptyPathSegment().Post(ctx, body, nil)
 	return normalizeError(err)
 }

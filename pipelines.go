@@ -47,7 +47,7 @@ func (s *PipelinesService) List(ctx context.Context, query ListPipelinesQuery) (
 
 // Get returns a pipeline by UUID.
 func (s *PipelinesService) Get(ctx context.Context, uuid string) (*models.Pipeline, error) {
-	res, err := s.client.raw.Api().V2().Pipeline().ByUuid(uuid).Get(ctx, nil)
+	res, err := s.client.raw.Api().V2().Pipeline().ByUuid(uuid).EmptyPathSegment().Get(ctx, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
