@@ -43,6 +43,16 @@ func NewV2FileWithUuItemRequestBuilder(rawUrl string, requestAdapter i2ae4187f7d
 func (m *V2FileWithUuItemRequestBuilder) Delete_aip()(*V2FileItemDelete_aipRequestBuilder) {
     return NewV2FileItemDelete_aipRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
+// Download the download property
+// returns a *V2FileItemDownloadRequestBuilder when successful
+func (m *V2FileWithUuItemRequestBuilder) Download()(*V2FileItemDownloadRequestBuilder) {
+    return NewV2FileItemDownloadRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+// Extract_file the extract_file property
+// returns a *V2FileItemExtract_fileRequestBuilder when successful
+func (m *V2FileWithUuItemRequestBuilder) Extract_file()(*V2FileItemExtract_fileRequestBuilder) {
+    return NewV2FileItemExtract_fileRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
 // returns a PackageEscapedable when successful
 // returns a ErrorEscaped error when the service returns a 400 status code
 func (m *V2FileWithUuItemRequestBuilder) Get(ctx context.Context, requestConfiguration *V2FileWithUuItemRequestBuilderGetRequestConfiguration)(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PackageEscapedable, error) {
@@ -66,6 +76,11 @@ func (m *V2FileWithUuItemRequestBuilder) Get(ctx context.Context, requestConfigu
 // returns a *V2FileItemMoveRequestBuilder when successful
 func (m *V2FileWithUuItemRequestBuilder) Move()(*V2FileItemMoveRequestBuilder) {
     return NewV2FileItemMoveRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+// Pointer_file the pointer_file property
+// returns a *V2FileItemPointer_fileRequestBuilder when successful
+func (m *V2FileWithUuItemRequestBuilder) Pointer_file()(*V2FileItemPointer_fileRequestBuilder) {
+    return NewV2FileItemPointer_fileRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 // Review_aip_deletion the review_aip_deletion property
 // returns a *V2FileItemReview_aip_deletionRequestBuilder when successful

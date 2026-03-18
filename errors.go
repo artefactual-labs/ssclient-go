@@ -21,6 +21,15 @@ type ResponseError struct {
 	Cause      error
 }
 
+// NotAvailableError describes a 202 response indicating the requested content
+// is not locally available for download yet.
+type NotAvailableError struct {
+	StatusCode int
+	Headers    http.Header
+	Body       []byte
+	Message    string
+}
+
 // Error returns a readable representation of the failed response.
 func (e *ResponseError) Error() string {
 	if e == nil {
@@ -58,11 +67,30 @@ func (e *ResponseError) Unwrap() error {
 	return e.Cause
 }
 
-// StatusCode returns the HTTP status code from a ResponseError, if present.
+// Error returns a readable representation of the unavailable response.
+func (e *NotAvailableError) Error() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if e.Message != "" {
+		return e.Message
+	}
+	if e.StatusCode > 0 {
+		return fmt.Sprintf("storage service content unavailable with status %d", e.StatusCode)
+	}
+	return "storage service content unavailable"
+}
+
+// StatusCode returns the HTTP status code from a supported Storage Service
+// error, if present.
 func StatusCode(err error) (int, bool) {
 	var responseErr *ResponseError
 	if errors.As(err, &responseErr) && responseErr.StatusCode > 0 {
 		return responseErr.StatusCode, true
+	}
+	var unavailableErr *NotAvailableError
+	if errors.As(err, &unavailableErr) && unavailableErr.StatusCode > 0 {
+		return unavailableErr.StatusCode, true
 	}
 	return 0, false
 }
@@ -118,6 +146,24 @@ func newResponseErrorFromSnapshot(resp *responseSnapshot, fallbackMessage string
 		Body:       append([]byte(nil), resp.Body...),
 		Message:    message,
 		Detail:     detail,
+	}
+}
+
+func newNotAvailableErrorFromSnapshot(resp *responseSnapshot, fallbackMessage string) *NotAvailableError {
+	if resp == nil {
+		return &NotAvailableError{Message: fallbackMessage}
+	}
+
+	message, _ := decodeErrorPayload(resp.Body)
+	if message == "" {
+		message = fallbackMessage
+	}
+
+	return &NotAvailableError{
+		StatusCode: resp.StatusCode,
+		Headers:    cloneHeaders(resp.Headers),
+		Body:       append([]byte(nil), resp.Body...),
+		Message:    message,
 	}
 }
 

@@ -102,6 +102,200 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/DeleteAipRequest'
+  /api/v2/file/{uuid}/download/:
+    get:
+      operationId: Packages_download
+      description: Download the package archive. Successful responses stream the file body.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '202':
+          description: The request has been accepted for processing, but processing has not yet completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityResponse'
+        '404':
+          description: The server cannot find the requested resource.
+        '502':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityResponse'
+    head:
+      operationId: Packages_downloadHead
+      description: Check package download availability. The current server implementation handles HEAD the same way as GET.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+        '202':
+          description: The request has been accepted for processing, but processing has not yet completed.
+        '404':
+          description: The server cannot find the requested resource.
+        '502':
+          description: Server error
+  /api/v2/file/{uuid}/download/{chunkNumber}/:
+    get:
+      operationId: Packages_downloadChunk
+      description: Download a LOCKSS package chunk. Successful responses stream the file body.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: chunkNumber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '202':
+          description: The request has been accepted for processing, but processing has not yet completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityResponse'
+        '404':
+          description: The server cannot find the requested resource.
+        '502':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityResponse'
+    head:
+      operationId: Packages_downloadChunkHead
+      description: Check LOCKSS package chunk download availability. The current server implementation handles HEAD the same way as GET.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: chunkNumber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: The request has succeeded.
+        '202':
+          description: The request has been accepted for processing, but processing has not yet completed.
+        '404':
+          description: The server cannot find the requested resource.
+        '502':
+          description: Server error
+  /api/v2/file/{uuid}/extract_file/:
+    get:
+      operationId: Packages_downloadFile
+      description: Download a single file from the package. Compressed packages may be extracted on demand.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: relative_path_to_file
+          in: query
+          required: true
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '202':
+          description: The request has been accepted for processing, but processing has not yet completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '501':
+          description: Server error
+          content:
+            text/plain:
+              schema:
+                type: string
+        '502':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityResponse'
+    head:
+      operationId: Packages_downloadFileHead
+      description: Check extracted-file download availability. The current server implementation handles HEAD the same way as GET.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+        - name: relative_path_to_file
+          in: query
+          required: true
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+        '202':
+          description: The request has been accepted for processing, but processing has not yet completed.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '404':
+          description: The server cannot find the requested resource.
+        '501':
+          description: Server error
+        '502':
+          description: Server error
   /api/v2/file/{uuid}/move/:
     post:
       operationId: Packages_move
@@ -129,6 +323,30 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PackageMoveRequest'
+  /api/v2/file/{uuid}/pointer_file/:
+    get:
+      operationId: Packages_downloadPointerFile
+      description: Download the package pointer file.
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/uuid'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            text/plain:
+              schema:
+                type: string
   /api/v2/file/{uuid}/review_aip_deletion/:
     post:
       operationId: Packages_reviewAipDeletion
@@ -370,6 +588,16 @@ components:
         type: string
       explode: false
   schemas:
+    AvailabilityResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: boolean
+        message:
+          type: string
     DeleteAipAccepted:
       type: object
       required:
