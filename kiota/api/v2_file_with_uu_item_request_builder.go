@@ -38,6 +38,11 @@ func NewV2FileWithUuItemRequestBuilder(rawUrl string, requestAdapter i2ae4187f7d
     urlParams["request-raw-url"] = rawUrl
     return NewV2FileWithUuItemRequestBuilderInternal(urlParams, requestAdapter)
 }
+// Delete_aip the delete_aip property
+// returns a *V2FileItemDelete_aipRequestBuilder when successful
+func (m *V2FileWithUuItemRequestBuilder) Delete_aip()(*V2FileItemDelete_aipRequestBuilder) {
+    return NewV2FileItemDelete_aipRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
 // returns a PackageEscapedable when successful
 // returns a ErrorEscaped error when the service returns a 400 status code
 func (m *V2FileWithUuItemRequestBuilder) Get(ctx context.Context, requestConfiguration *V2FileWithUuItemRequestBuilderGetRequestConfiguration)(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PackageEscapedable, error) {

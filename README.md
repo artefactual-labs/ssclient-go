@@ -13,68 +13,61 @@ The API is still **experimental**, breaking changes MAY occur.
 Check out [`example`], a small program that imports this module to print a list
 of locations in Archivematica Storage Service.
 
-For a more detailed example, refer to CCP's [ssclient package][ccp-ssclient],
-which offers additional features such as retrieving default locations through
-header inspection, paging results, and more. This could potentially become a
-separate package in this repository.
+### Working with the high-level client
 
-## Working with the generated client
+The main entrypoint is `ssclient.New`, which constructs a client with small,
+domain-oriented helpers such as `Locations()`, `Packages()`, and
+`Pipelines()`. This is the recommended way to use the module for common
+operations.
 
-This repository ships the raw Kiota output. The generated API follows Kiota's
-builder pattern, so you'll often see fluent chains such as:
+### Working with the generated client
 
-```go
-client, _ := ssclient.New(http.DefaultClient, url, user, key)
-locations, _ := client.Api().V2().Location().EmptyPathSegment().
-    Get(ctx, &api.V2LocationEmptyPathSegmentRequestBuilderGetRequestConfiguration{})
+This repository also ships a generated client based on the project's OpenAPI
+description. If you need an endpoint that the high-level wrapper does not
+expose yet, `Client.Raw()` returns that lower-level client as an escape hatch.
 
-fixity, _ := client.Api().V2().File().ByUuid(id).
-    CheckFixity().EmptyPathSegment().
-    Get(ctx, &api.V2FileItemCheckFixityEmptyPathSegmentRequestBuilderGetRequestConfiguration{})
-```
+That generated API uses Kiota's request-builder pattern, including
+`EmptyPathSegment()` for Storage Service endpoints that require a trailing
+slash. See [`example`] for a side-by-side example using both the high-level
+client and the generated client.
 
-Endpoints in Archivematica Storage Service expect a trailing slash, so Kiota
-represents that final `/` as an additional fluent step named
-`EmptyPathSegment()`. If you're new to Kiota, take a look at the
-[`example`](./example/main.go) program for a complete, working walkthrough.
-For a friendlier experience you can wrap these builders in your own helper
-functions, but we keep the generated tree here so you can choose the style that
-fits your project.
-
-Kiota itself aims to provide strongly typed building blocks—request builders,
-models, middleware hooks—without committing to a domain-specific shape. Most
-teams layer thin helpers or full SDKs on top to present a friendlier surface.
-We would like to do the same here by adding a small Go package that wraps the
-generated client (so you can call `pkg.CheckFixity(...)` instead of poking
-through the builder chain), but that work has not happened yet.
+The generated client also inherits some Kiota limitations. The high-level
+wrapper exists in part to smooth over those rough edges, so prefer it when a
+wrapper method is available. For background, see [issue #20].
 
 ## OpenAPI specification
 
-This module was partially generated using an API client generator ([Kiota]) and
-the [OpenAPI-described API][openapi-schema], which we've built using [TypeSpec].
-You can browse an interactive rendering of that schema at [our published
-OpenAPI docs][openapi-docs]. The API has not been fully described yet, but
-we'll be extending support as needed.
+We use [TypeSpec] to describe the Storage Service API as an OpenAPI schema.
 
-Furthermore, the API service is built with [TastyPie], and old webservice API
-framework for Django. It includes built-in schema inspection capabilities which
-has been instrumental for this project, e.g.:
+You can browse the schema in two forms:
 
-    curl http://127.0.0.1:62081/api/v2/?fullschema=true
+- [Interactive OpenAPI docs][openapi-docs]
+- [Raw OpenAPI YAML][openapi-schema]
 
-Visit [ss-schema.json] to see the output. We should explore options for
-using this feature in order to describe the API further.
-[django-tastypie-swagger] could be a really good start since it's already
-doing all the mapping. TypeSpec could be a target by using the [emitter
-framework].
+The description is still incomplete, and we expect to extend it over time as we
+cover more of the API.
+
+### Notes
+
+The Storage Service API itself is built with [TastyPie], which provides schema
+introspection endpoints such as:
+
+```sh
+curl http://127.0.0.1:62081/api/v2/?fullschema=true
+```
+
+An example of that output is available at [ss-schema.json]. That data has been
+useful as reference material while building the TypeSpec description.
+
+If we want to expand coverage further, [django-tastypie-swagger] may be useful
+prior art because it already maps Tastypie resources into Swagger-style schema
+data.
 
 [`example`]: ./example/main.go
-[Kiota]: https://learn.microsoft.com/en-us/openapi/kiota/overview
 [TypeSpec]: https://typespec.io
 [openapi-schema]: https://raw.githubusercontent.com/artefactual-labs/ssclient-go/main/typespec/tsp-output/%40typespec/openapi3/openapi.v1.yaml
 [openapi-docs]: https://artefactual-labs.github.io/ssclient-go/
 [TastyPie]: https://django-tastypie.readthedocs.io/
 [ss-schema.json]: https://gist.github.com/sevein/379f101ab9305235844c1e5101eeba04
 [django-tastypie-swagger]: https://github.com/concentricsky/django-tastypie-swagger
-[emitter framework]: https://typespec.io/docs/next/extending-typespec/emitter-framework
-[ccp-ssclient]: https://github.com/artefactual-labs/ccp/tree/ccp/hack/ccp/internal/ssclient
+[issue #20]: https://github.com/artefactual-labs/ssclient-go/issues/20

@@ -12,43 +12,105 @@ import (
 	"go.artefactual.dev/ssclient/kiota"
 )
 
-func New(httpClient *http.Client, baseURL, username, key string) (*kiota.Client, error) {
+const (
+	defaultUserAgentProductName    = "ssclient-go"
+	defaultUserAgentProductVersion = "v0"
+)
+
+// Config configures a Storage Service client.
+type Config struct {
+	BaseURL     string
+	Username    string
+	Key         string
+	HTTPClient  *http.Client
+	Middlewares []khttp.Middleware
+}
+
+// Client is the public entrypoint for the wrapper around the generated
+// Kiota client.
+type Client struct {
+	raw        *kiota.Client
+	adapter    kabs.RequestAdapter
+	httpClient *http.Client
+
+	locations *LocationsService
+	packages  *PackagesService
+	pipelines *PipelinesService
+}
+
+// New constructs a Storage Service client backed by the generated Kiota client.
+func New(cfg Config) (*Client, error) {
+	httpClient := cfg.HTTPClient
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
+	httpClient = cloneHTTPClient(httpClient)
 
-	if err := configureMiddleware(httpClient); err != nil {
-		return nil, fmt.Errorf("configure client middleware: %v", err)
+	if err := configureMiddleware(httpClient, cfg.Middlewares); err != nil {
+		return nil, fmt.Errorf("configure client middleware: %w", err)
 	}
 
 	adapter, err := khttp.NewNetHttpRequestAdapterWithParseNodeFactoryAndSerializationWriterFactoryAndHttpClient(
-		&authProvider{username: username, key: key},
+		&authProvider{username: cfg.Username, key: cfg.Key},
 		nil,
 		nil,
 		httpClient,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("create client adapter: %v", err)
+		return nil, fmt.Errorf("create client adapter: %w", err)
 	}
 
-	adapter.SetBaseUrl(baseURL)
+	adapter.SetBaseUrl(cfg.BaseURL)
 
-	return kiota.NewClient(adapter), nil
+	client := &Client{
+		raw:        kiota.NewClient(adapter),
+		adapter:    adapter,
+		httpClient: httpClient,
+	}
+	client.locations = &LocationsService{client: client}
+	client.packages = &PackagesService{client: client}
+	client.pipelines = &PipelinesService{client: client}
+
+	return client, nil
+}
+
+// Raw returns the generated Kiota client as an escape hatch.
+func (c *Client) Raw() *kiota.Client {
+	return c.raw
+}
+
+// Adapter returns the underlying request adapter.
+func (c *Client) Adapter() kabs.RequestAdapter {
+	return c.adapter
+}
+
+// Locations returns location-related operations.
+func (c *Client) Locations() *LocationsService {
+	return c.locations
+}
+
+// Packages returns package-related operations. The Storage Service transport
+// uses "/file/" for these resources, but the public API exposes them as
+// packages.
+func (c *Client) Packages() *PackagesService {
+	return c.packages
+}
+
+// Pipelines returns pipeline-related operations.
+func (c *Client) Pipelines() *PipelinesService {
+	return c.pipelines
 }
 
 // configureMiddleware installs the middlewares needed by this client.
-func configureMiddleware(client *http.Client) error {
-	var middlewares []khttp.Middleware
-
+func configureMiddleware(client *http.Client, extra []khttp.Middleware) error {
 	userAgentOpts := khttp.UserAgentHandlerOptions{
 		Enabled:        true,
-		ProductName:    "ssclient-go",
-		ProductVersion: "v0",
+		ProductName:    defaultUserAgentProductName,
+		ProductVersion: defaultUserAgentProductVersion,
 	}
-	compressionOpts := khttp.NewCompressionOptions(false)
+	compressionOpts := khttp.NewCompressionOptionsReference(false)
 	retryOpts := khttp.RetryHandlerOptions{
 		ShouldRetry: func(delay time.Duration, executionCount int, request *http.Request, response *http.Response) bool {
-			// TODO: we use go-retryablehttp but this could be provided instead.
 			return false
 		},
 	}
@@ -57,28 +119,27 @@ func configureMiddleware(client *http.Client) error {
 	// number of customizations.
 	middlewares, err := khttp.GetDefaultMiddlewaresWithOptions(
 		&userAgentOpts,
-		&compressionOpts,
+		compressionOpts,
 		&retryOpts,
 	)
 	if err != nil {
 		return err
 	}
+	middlewares = append(middlewares, extra...)
 
 	client.Transport = khttp.NewCustomTransportWithParentTransport(client.Transport, middlewares...)
 
 	return nil
 }
 
+func cloneHTTPClient(client *http.Client) *http.Client {
+	clone := *client
+	return &clone
+}
+
 type authProvider struct {
 	username string
 	key      string
-}
-
-func NewStorageServiceAuthProvider(username, key string) *authProvider {
-	return &authProvider{
-		username: username,
-		key:      key,
-	}
 }
 
 func (p *authProvider) AuthenticateRequest(ctx context.Context, request *kabs.RequestInformation, additionalAuthenticationContext map[string]interface{}) error {

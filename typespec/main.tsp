@@ -177,6 +177,31 @@ namespace Service {
       @statusCode statusCode: 404;
     };
 
+    @doc("Create an AIP deletion request for this package. This does not perform the deletion itself.")
+    @route("{uuid}/delete_aip/")
+    @post
+    op deleteAip(
+      @path
+      uuid: uuid,
+
+      @body
+      body: DeleteAipRequest,
+    ): {
+      @statusCode statusCode: 202;
+      @body result: DeleteAipAccepted;
+    } | {
+      @statusCode statusCode: 200;
+      @body result: DeleteAipAlreadyExists;
+    } | {
+      @statusCode statusCode: 400;
+      @body error: Error;
+    } | {
+      @statusCode statusCode: 404;
+    } | {
+      @statusCode statusCode: 405;
+      @body error: DeleteAipNotAllowed;
+    };
+
     @doc("Approve or reject an AIP deletion request associated with this package.")
     @route("{uuid}/review_aip_deletion/")
     @post
@@ -308,6 +333,33 @@ model FixityFailureFiles {
   missing?: string[];
   changed?: string[];
   untracked?: string[];
+}
+
+model DeleteAipRequest {
+  @doc("Explanation recorded with the deletion request.")
+  event_reason: string;
+
+  @doc("UUID of the pipeline creating the deletion request.")
+  pipeline: uuid;
+
+  @doc("Identifier of the user creating the deletion request.")
+  user_id: int32;
+
+  @doc("Email address of the user creating the deletion request.")
+  user_email: string;
+}
+
+model DeleteAipAccepted {
+  message: string;
+  id: int32;
+}
+
+model DeleteAipAlreadyExists {
+  error_message: string;
+}
+
+model DeleteAipNotAllowed {
+  message: string;
 }
 
 model ReviewAipDeletionRequest {
