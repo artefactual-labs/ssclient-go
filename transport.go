@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	khttp "github.com/microsoft/kiota-http-go"
@@ -74,6 +75,8 @@ func (c *Client) executeStream(ctx context.Context, requestInfo *kabs.RequestInf
 		requestAdapter = c.raw.RequestAdapter
 	}
 
+	ensureRequestBaseURL(requestAdapter, requestInfo)
+
 	native, err := requestAdapter.ConvertToNativeRequest(ctx, requestInfo)
 	if err != nil {
 		return nil, err
@@ -108,6 +111,23 @@ func (c *Client) executeStream(ctx context.Context, requestInfo *kabs.RequestInf
 		Headers:    cloneHeaders(resp.Header),
 		Body:       resp.Body,
 	}, nil
+}
+
+func ensureRequestBaseURL(adapter kabs.RequestAdapter, requestInfo *kabs.RequestInformation) {
+	if adapter == nil || requestInfo == nil {
+		return
+	}
+	if !strings.Contains(strings.ToLower(requestInfo.UrlTemplate), "{+baseurl}") {
+		return
+	}
+	if requestInfo.PathParameters == nil {
+		requestInfo.PathParameters = make(map[string]string)
+	}
+	if requestInfo.PathParameters["baseurl"] != "" {
+		return
+	}
+
+	requestInfo.PathParameters["baseurl"] = adapter.GetBaseUrl()
 }
 
 func cloneHeaders(headers http.Header) http.Header {

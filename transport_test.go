@@ -15,6 +15,7 @@ import (
 	"github.com/microsoft/kiota-abstractions-go/serialization"
 	"github.com/microsoft/kiota-abstractions-go/store"
 	khttp "github.com/microsoft/kiota-http-go"
+	"go.artefactual.dev/ssclient/kiota/models"
 )
 
 type executeTestAdapter struct {
@@ -76,6 +77,10 @@ type executeMiddleware struct{}
 func (m *executeMiddleware) Intercept(pipeline khttp.Pipeline, middlewareIndex int, req *http.Request) (*http.Response, error) {
 	req.Header.Set("X-Execute-Middleware", "true")
 	return pipeline.Next(req, middlewareIndex)
+}
+
+func executePtr[T any](value T) *T {
+	return &value
 }
 
 func TestExecuteCapturesStatusHeadersAndBody(t *testing.T) {
@@ -233,6 +238,152 @@ func TestExecuteHonorsHTTPClientTimeout(t *testing.T) {
 	if !errors.Is(err, context.DeadlineExceeded) {
 		t.Fatalf("expected deadline exceeded error, got %v", err)
 	}
+}
+
+func TestExecuteSeedsBaseURLForRealAdapter(t *testing.T) {
+	const baseURL = "http://storage.service"
+
+	client, err := New(Config{
+		BaseURL:  baseURL,
+		Username: "test",
+		Key:      "test",
+		HTTPClient: &http.Client{
+			Transport: executeRoundTripFunc(func(r *http.Request) (*http.Response, error) {
+				if got, want := r.URL.String(), baseURL+"/api/v2/location/default/DS/"; got != want {
+					t.Fatalf("unexpected URL %q want %q", got, want)
+				}
+				return &http.Response{
+					StatusCode: http.StatusFound,
+					Header:     http.Header{"Location": {baseURL + "/api/v2/location/123"}},
+					Body:       io.NopCloser(strings.NewReader("")),
+					Request:    r,
+				}, nil
+			}),
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	reqInfo := kabs.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(kabs.GET, "{+baseurl}/api/v2/location/default/DS/", map[string]string{})
+
+	resp, err := client.execute(context.Background(), reqInfo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := resp.StatusCode, http.StatusFound; got != want {
+		t.Fatalf("unexpected status %d want %d", got, want)
+	}
+	if got, want := reqInfo.PathParameters["baseurl"], baseURL; got != want {
+		t.Fatalf("unexpected baseurl %q want %q", got, want)
+	}
+}
+
+func TestExecuteStreamWithoutBaseURLFailsWithRealAdapterBeforeSeeding(t *testing.T) {
+	const baseURL = "http://storage.service"
+
+	client, err := New(Config{
+		BaseURL:    baseURL,
+		Username:   "test",
+		Key:        "test",
+		HTTPClient: &http.Client{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	reqInfo := kabs.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(kabs.GET, "{+baseurl}/api/v2/file/pkg/pointer_file/", map[string]string{})
+	ensureRequestBaseURL(client.Adapter(), reqInfo)
+	if _, err := client.Adapter().ConvertToNativeRequest(context.Background(), reqInfo); err != nil {
+		t.Fatalf("expected baseurl-seeded native request, got %v", err)
+	}
+}
+
+func TestEnsureRequestBaseURLNoopWithoutTemplate(t *testing.T) {
+	reqInfo := kabs.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(kabs.GET, "http://storage.service/static", nil)
+	ensureRequestBaseURL(&executeTestAdapter{}, reqInfo)
+	if _, ok := reqInfo.PathParameters["baseurl"]; ok {
+		t.Fatal("did not expect baseurl to be injected")
+	}
+}
+
+func TestPackagesDeleteAndReviewWorkWithRealAdapter(t *testing.T) {
+	const packageID = "7c8a3549-2fe0-41d3-9d83-f485f1a43be3"
+	const baseURL = "http://storage.service"
+
+	t.Run("DeleteAIP", func(t *testing.T) {
+		client, err := New(Config{
+			BaseURL:  baseURL,
+			Username: "test",
+			Key:      "test",
+			HTTPClient: &http.Client{
+				Transport: executeRoundTripFunc(func(r *http.Request) (*http.Response, error) {
+					if got, want := r.URL.String(), baseURL+"/api/v2/file/"+packageID+"/delete_aip/"; got != want {
+						t.Fatalf("unexpected URL %q want %q", got, want)
+					}
+					return &http.Response{
+						StatusCode: http.StatusAccepted,
+						Header:     http.Header{"Content-Type": {"application/json"}},
+						Body:       io.NopCloser(strings.NewReader(`{"message":"Delete request created successfully.","id":17}`)),
+						Request:    r,
+					}, nil
+				}),
+			},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		body := models.NewDeleteAipRequest()
+		body.SetEventReason(executePtr("Delete please!"))
+		body.SetPipeline(executePtr("4b9e8af5-b0af-4abf-80b8-4b7d76281f61"))
+		body.SetUserId(executePtr(int32(1)))
+		body.SetUserEmail(executePtr("user@example.com"))
+
+		res, err := client.Packages().DeleteAIP(context.Background(), packageID, body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if res == nil || !res.IsAccepted() {
+			t.Fatalf("unexpected delete result %#v", res)
+		}
+	})
+
+	t.Run("ReviewAIPDeletion", func(t *testing.T) {
+		client, err := New(Config{
+			BaseURL:  baseURL,
+			Username: "test",
+			Key:      "test",
+			HTTPClient: &http.Client{
+				Transport: executeRoundTripFunc(func(r *http.Request) (*http.Response, error) {
+					if got, want := r.URL.String(), baseURL+"/api/v2/file/"+packageID+"/review_aip_deletion/"; got != want {
+						t.Fatalf("unexpected URL %q want %q", got, want)
+					}
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Header:     http.Header{"Content-Type": {"application/json"}},
+						Body:       io.NopCloser(strings.NewReader(`{"message":"done"}`)),
+						Request:    r,
+					}, nil
+				}),
+			},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		body := models.NewReviewAipDeletionRequest()
+		body.SetEventId(executePtr(int32(99)))
+		decision := models.APPROVE_REVIEWAIPDELETIONDECISION
+		body.SetDecision(&decision)
+		body.SetReason(executePtr("approved by workflow"))
+
+		res, err := client.Packages().ReviewAIPDeletion(context.Background(), packageID, body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_ = res
+	})
 }
 
 func TestResponseSnapshotDecodeJSON(t *testing.T) {
