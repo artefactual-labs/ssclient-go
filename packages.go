@@ -45,11 +45,12 @@ type DeleteAIPResult struct {
 
 // FileStream captures a successful streamed file response.
 type FileStream struct {
-	StatusCode    int
-	ContentType   string
-	ContentLength int64
-	Filename      string
-	Body          io.ReadCloser
+	StatusCode         int
+	ContentType        string
+	ContentLength      int64
+	ContentDisposition string
+	Filename           string
+	Body               io.ReadCloser
 }
 
 type extractFileQuery struct {
@@ -159,11 +160,12 @@ func (s *PackagesService) streamPackageRequest(ctx context.Context, requestInfo 
 	}
 
 	return &FileStream{
-		StatusCode:    resp.StatusCode,
-		ContentType:   resp.Headers.Get("Content-Type"),
-		ContentLength: parseContentLength(resp.Headers.Get("Content-Length")),
-		Filename:      parseFilename(resp.Headers.Get("Content-Disposition")),
-		Body:          resp.Body,
+		StatusCode:         resp.StatusCode,
+		ContentType:        resp.Headers.Get("Content-Type"),
+		ContentLength:      parseContentLength(resp.Headers.Get("Content-Length")),
+		ContentDisposition: resp.Headers.Get("Content-Disposition"),
+		Filename:           parseFilename(resp.Headers.Get("Content-Disposition")),
+		Body:               resp.Body,
 	}, nil
 }
 
