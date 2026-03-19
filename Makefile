@@ -43,6 +43,11 @@ typespec: # @HELP Install TypeSpec deps and compile the API spec.
 gen: # @HELP Generate code.
 gen: typespec ssclient examplemocks
 
+test: # @HELP Run tests.
+test:
+	go test -v ./...
+	cd $(CURDIR)/example && go test -v ./...
+
 help: # @HELP Print this message.
 help:
 	echo "TARGETS:"
@@ -51,3 +56,4 @@ help:
 	        BEGIN {FS = ": *# *@HELP"};           \
 	        { printf "  %-30s %s\n", $$1, $$2 };  \
 	    '
+
