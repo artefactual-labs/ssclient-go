@@ -4,6 +4,7 @@
 package models
 
 import (
+    i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
@@ -13,7 +14,7 @@ type DeleteAipRequest struct {
     // Explanation recorded with the deletion request.
     event_reason *string
     // UUID of the pipeline creating the deletion request.
-    pipeline *string
+    pipeline *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
     // Email address of the user creating the deletion request.
     user_email *string
     // Identifier of the user creating the deletion request.
@@ -56,7 +57,7 @@ func (m *DeleteAipRequest) GetFieldDeserializers()(map[string]func(i878a80d2330e
         return nil
     }
     res["pipeline"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-        val, err := n.GetStringValue()
+        val, err := n.GetUUIDValue()
         if err != nil {
             return err
         }
@@ -88,8 +89,8 @@ func (m *DeleteAipRequest) GetFieldDeserializers()(map[string]func(i878a80d2330e
     return res
 }
 // GetPipeline gets the pipeline property value. UUID of the pipeline creating the deletion request.
-// returns a *string when successful
-func (m *DeleteAipRequest) GetPipeline()(*string) {
+// returns a *UUID when successful
+func (m *DeleteAipRequest) GetPipeline()(*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
     return m.pipeline
 }
 // GetUserEmail gets the user_email property value. Email address of the user creating the deletion request.
@@ -111,7 +112,7 @@ func (m *DeleteAipRequest) Serialize(writer i878a80d2330e89d26896388a3f487eef27b
         }
     }
     {
-        err := writer.WriteStringValue("pipeline", m.GetPipeline())
+        err := writer.WriteUUIDValue("pipeline", m.GetPipeline())
         if err != nil {
             return err
         }
@@ -145,7 +146,7 @@ func (m *DeleteAipRequest) SetEventReason(value *string)() {
     m.event_reason = value
 }
 // SetPipeline sets the pipeline property value. UUID of the pipeline creating the deletion request.
-func (m *DeleteAipRequest) SetPipeline(value *string)() {
+func (m *DeleteAipRequest) SetPipeline(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)() {
     m.pipeline = value
 }
 // SetUserEmail sets the user_email property value. Email address of the user creating the deletion request.
@@ -160,11 +161,11 @@ type DeleteAipRequestable interface {
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
     GetEventReason()(*string)
-    GetPipeline()(*string)
+    GetPipeline()(*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
     GetUserEmail()(*string)
     GetUserId()(*int32)
     SetEventReason(value *string)()
-    SetPipeline(value *string)()
+    SetPipeline(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)()
     SetUserEmail(value *string)()
     SetUserId(value *int32)()
 }

@@ -5,6 +5,7 @@ package api
 
 import (
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
+    i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 )
 
 // V2FileRequestBuilder builds and executes requests for operations under \api\v2\file
@@ -12,6 +13,7 @@ type V2FileRequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 // ByUuid gets an item from the go.artefactual.dev/ssclient/kiota.api.v2.file.item collection
+// Deprecated: This indexer is deprecated and will be removed in the next major version. Use the one with the typed parameter instead.
 // returns a *V2FileWithUuItemRequestBuilder when successful
 func (m *V2FileRequestBuilder) ByUuid(uuid string)(*V2FileWithUuItemRequestBuilder) {
     urlTplParams := make(map[string]string)
@@ -21,6 +23,16 @@ func (m *V2FileRequestBuilder) ByUuid(uuid string)(*V2FileWithUuItemRequestBuild
     if uuid != "" {
         urlTplParams["uuid"] = uuid
     }
+    return NewV2FileWithUuItemRequestBuilderInternal(urlTplParams, m.BaseRequestBuilder.RequestAdapter)
+}
+// ByUuidGuid gets an item from the go.artefactual.dev/ssclient/kiota.api.v2.file.item collection
+// returns a *V2FileWithUuItemRequestBuilder when successful
+func (m *V2FileRequestBuilder) ByUuidGuid(uuid i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)(*V2FileWithUuItemRequestBuilder) {
+    urlTplParams := make(map[string]string)
+    for idx, item := range m.BaseRequestBuilder.PathParameters {
+        urlTplParams[idx] = item
+    }
+    urlTplParams["uuid"] = uuid.String()
     return NewV2FileWithUuItemRequestBuilderInternal(urlTplParams, m.BaseRequestBuilder.RequestAdapter)
 }
 // NewV2FileRequestBuilderInternal instantiates a new V2FileRequestBuilder and sets the default values.

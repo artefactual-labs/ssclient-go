@@ -4,14 +4,15 @@
 package models
 
 import (
+    i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
 type PackageMoveRequest struct {
     // Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additionalData map[string]any
-    // The location_uuid property
-    location_uuid *string
+    // UUID identifier. Storage Service uses UUIDv4 values.
+    location_uuid *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 }
 // NewPackageMoveRequest instantiates a new PackageMoveRequest and sets the default values.
 func NewPackageMoveRequest()(*PackageMoveRequest) {
@@ -35,7 +36,7 @@ func (m *PackageMoveRequest) GetAdditionalData()(map[string]any) {
 func (m *PackageMoveRequest) GetFieldDeserializers()(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error)) {
     res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error))
     res["location_uuid"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-        val, err := n.GetStringValue()
+        val, err := n.GetUUIDValue()
         if err != nil {
             return err
         }
@@ -46,15 +47,15 @@ func (m *PackageMoveRequest) GetFieldDeserializers()(map[string]func(i878a80d233
     }
     return res
 }
-// GetLocationUuid gets the location_uuid property value. The location_uuid property
-// returns a *string when successful
-func (m *PackageMoveRequest) GetLocationUuid()(*string) {
+// GetLocationUuid gets the location_uuid property value. UUID identifier. Storage Service uses UUIDv4 values.
+// returns a *UUID when successful
+func (m *PackageMoveRequest) GetLocationUuid()(*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
     return m.location_uuid
 }
 // Serialize serializes information the current object
 func (m *PackageMoveRequest) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter)(error) {
     {
-        err := writer.WriteStringValue("location_uuid", m.GetLocationUuid())
+        err := writer.WriteUUIDValue("location_uuid", m.GetLocationUuid())
         if err != nil {
             return err
         }
@@ -71,13 +72,13 @@ func (m *PackageMoveRequest) Serialize(writer i878a80d2330e89d26896388a3f487eef2
 func (m *PackageMoveRequest) SetAdditionalData(value map[string]any)() {
     m.additionalData = value
 }
-// SetLocationUuid sets the location_uuid property value. The location_uuid property
-func (m *PackageMoveRequest) SetLocationUuid(value *string)() {
+// SetLocationUuid sets the location_uuid property value. UUID identifier. Storage Service uses UUIDv4 values.
+func (m *PackageMoveRequest) SetLocationUuid(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)() {
     m.location_uuid = value
 }
 type PackageMoveRequestable interface {
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
-    GetLocationUuid()(*string)
-    SetLocationUuid(value *string)()
+    GetLocationUuid()(*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
+    SetLocationUuid(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)()
 }

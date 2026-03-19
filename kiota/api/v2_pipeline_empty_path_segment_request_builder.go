@@ -6,6 +6,7 @@ package api
 import (
     "context"
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
+    i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
     ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588 "go.artefactual.dev/ssclient/kiota/models"
 )
 
@@ -15,7 +16,7 @@ type V2PipelineEmptyPathSegmentRequestBuilder struct {
 }
 type V2PipelineEmptyPathSegmentRequestBuilderGetQueryParameters struct {
     Description *string `uriparametername:"description"`
-    Uuid *string `uriparametername:"uuid"`
+    Uuid *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID `uriparametername:"uuid"`
 }
 // V2PipelineEmptyPathSegmentRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
 type V2PipelineEmptyPathSegmentRequestBuilderGetRequestConfiguration struct {

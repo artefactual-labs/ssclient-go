@@ -4,6 +4,7 @@
 package models
 
 import (
+    i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
@@ -16,8 +17,8 @@ type Pipeline struct {
     remote_name *string
     // The resource_uri property
     resource_uri *string
-    // The uuid property
-    uuid *string
+    // UUID identifier. Storage Service uses UUIDv4 values.
+    uuid *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 }
 // NewPipeline instantiates a new Pipeline and sets the default values.
 func NewPipeline()(*Pipeline) {
@@ -76,7 +77,7 @@ func (m *Pipeline) GetFieldDeserializers()(map[string]func(i878a80d2330e89d26896
         return nil
     }
     res["uuid"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-        val, err := n.GetStringValue()
+        val, err := n.GetUUIDValue()
         if err != nil {
             return err
         }
@@ -97,9 +98,9 @@ func (m *Pipeline) GetRemoteName()(*string) {
 func (m *Pipeline) GetResourceUri()(*string) {
     return m.resource_uri
 }
-// GetUuid gets the uuid property value. The uuid property
-// returns a *string when successful
-func (m *Pipeline) GetUuid()(*string) {
+// GetUuid gets the uuid property value. UUID identifier. Storage Service uses UUIDv4 values.
+// returns a *UUID when successful
+func (m *Pipeline) GetUuid()(*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
     return m.uuid
 }
 // Serialize serializes information the current object
@@ -123,7 +124,7 @@ func (m *Pipeline) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c01
         }
     }
     {
-        err := writer.WriteStringValue("uuid", m.GetUuid())
+        err := writer.WriteUUIDValue("uuid", m.GetUuid())
         if err != nil {
             return err
         }
@@ -152,8 +153,8 @@ func (m *Pipeline) SetRemoteName(value *string)() {
 func (m *Pipeline) SetResourceUri(value *string)() {
     m.resource_uri = value
 }
-// SetUuid sets the uuid property value. The uuid property
-func (m *Pipeline) SetUuid(value *string)() {
+// SetUuid sets the uuid property value. UUID identifier. Storage Service uses UUIDv4 values.
+func (m *Pipeline) SetUuid(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)() {
     m.uuid = value
 }
 type Pipelineable interface {
@@ -162,9 +163,9 @@ type Pipelineable interface {
     GetDescription()(*string)
     GetRemoteName()(*string)
     GetResourceUri()(*string)
-    GetUuid()(*string)
+    GetUuid()(*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
     SetDescription(value *string)()
     SetRemoteName(value *string)()
     SetResourceUri(value *string)()
-    SetUuid(value *string)()
+    SetUuid(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)()
 }
