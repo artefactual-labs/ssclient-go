@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	"github.com/microsoft/kiota-abstractions-go/serialization"
 
@@ -28,11 +29,11 @@ func TestPipelines(t *testing.T) {
 			send: func(ctx context.Context, requestInfo *kabs.RequestInformation, constructor serialization.ParsableFactory, errorMappings kabs.ErrorMappings) (serialization.Parsable, error) {
 				assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/pipeline/{?description,uuid}")
 				assertEqual(t, requestInfo.QueryParameters["description"], "pipeline")
-				assertEqual(t, requestInfo.QueryParameters["uuid"], "a64e061a-5688-49b5-95c1-0b6885c40c04")
+				assertEqual(t, requestInfo.QueryParametersAny["uuid"], "a64e061a-5688-49b5-95c1-0b6885c40c04")
 
 				list := models.NewPipelineList()
 				pipeline := models.NewPipeline()
-				pipeline.SetUuid(ptr("a64e061a-5688-49b5-95c1-0b6885c40c04"))
+				pipeline.SetUuid(ptr(uuid.MustParse("a64e061a-5688-49b5-95c1-0b6885c40c04")))
 				list.SetObjects([]models.Pipelineable{pipeline})
 				return list, nil
 			},
@@ -70,7 +71,7 @@ func TestPipelines(t *testing.T) {
 				assertEqual(t, requestInfo.PathParameters["uuid"], pipelineID)
 
 				pipeline := models.NewPipeline()
-				pipeline.SetUuid(ptr(pipelineID))
+				pipeline.SetUuid(ptr(uuid.MustParse(pipelineID)))
 				return pipeline, nil
 			},
 		}
@@ -80,6 +81,6 @@ func TestPipelines(t *testing.T) {
 		if res == nil {
 			t.Fatal("expected pipeline")
 		}
-		assertEqual(t, *res.GetUuid(), pipelineID)
+		assertEqual(t, res.GetUuid().String(), pipelineID)
 	})
 }

@@ -3,6 +3,7 @@ module go.artefactual.dev/ssclient/example
 go 1.26.1
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/microsoft/kiota-abstractions-go v1.9.4
 	go.artefactual.dev/ssclient v0.0.0-00010101000000-000000000000
 	go.uber.org/mock v0.6.0
@@ -11,7 +12,6 @@ require (
 require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/microsoft/kiota-http-go v1.5.5 // indirect
 	github.com/microsoft/kiota-serialization-form-go v1.1.3 // indirect
 	github.com/microsoft/kiota-serialization-json-go v1.1.2 // indirect

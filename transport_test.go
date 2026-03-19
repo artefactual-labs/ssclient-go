@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	"github.com/microsoft/kiota-abstractions-go/serialization"
 	"github.com/microsoft/kiota-abstractions-go/store"
@@ -336,7 +337,7 @@ func TestPackagesDeleteAndReviewWorkWithRealAdapter(t *testing.T) {
 
 		body := models.NewDeleteAipRequest()
 		body.SetEventReason(executePtr("Delete please!"))
-		body.SetPipeline(executePtr("4b9e8af5-b0af-4abf-80b8-4b7d76281f61"))
+		body.SetPipeline(executePtr(uuid.MustParse("4b9e8af5-b0af-4abf-80b8-4b7d76281f61")))
 		body.SetUserId(executePtr(int32(1)))
 		body.SetUserEmail(executePtr("user@example.com"))
 

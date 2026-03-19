@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	"github.com/microsoft/kiota-abstractions-go/serialization"
 
@@ -38,7 +39,7 @@ func TestLocations(t *testing.T) {
 
 				list := models.NewLocationList()
 				location := models.NewLocation()
-				location.SetUuid(ptr("fff70864-a5d4-4ca6-ab29-b4ce67d8eeab"))
+				location.SetUuid(ptr(uuid.MustParse("fff70864-a5d4-4ca6-ab29-b4ce67d8eeab")))
 				list.SetObjects([]models.Locationable{location})
 				return list, nil
 			},
@@ -79,7 +80,7 @@ func TestLocations(t *testing.T) {
 				assertEqual(t, requestInfo.PathParameters["uuid"], locationID)
 
 				location := models.NewLocation()
-				location.SetUuid(ptr(locationID))
+				location.SetUuid(ptr(uuid.MustParse(locationID)))
 				return location, nil
 			},
 		}
@@ -89,7 +90,7 @@ func TestLocations(t *testing.T) {
 		if res == nil {
 			t.Fatal("expected location")
 		}
-		assertEqual(t, *res.GetUuid(), locationID)
+		assertEqual(t, res.GetUuid().String(), locationID)
 	})
 
 	t.Run("Default", func(t *testing.T) {

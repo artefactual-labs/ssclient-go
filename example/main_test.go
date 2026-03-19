@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	"github.com/microsoft/kiota-abstractions-go/serialization"
 	"go.uber.org/mock/gomock"
@@ -47,7 +48,8 @@ func TestApplication(t *testing.T) {
 	locationID := "fff70864-a5d4-4ca6-ab29-b4ce67d8eeab"
 	locationPurpose := models.DS_LOCATIONPURPOSE
 	location := models.NewLocation()
-	location.SetUuid(&locationID)
+	locationUUID := uuid.MustParse(locationID)
+	location.SetUuid(&locationUUID)
 	location.SetPurpose(&locationPurpose)
 	locationList.SetObjects([]models.Locationable{location})
 
@@ -61,7 +63,8 @@ func TestApplication(t *testing.T) {
 	pipelineName := "Archivematica"
 	pipelineDescription := "Default pipeline"
 	pipeline := models.NewPipeline()
-	pipeline.SetUuid(&pipelineID)
+	pipelineUUID := uuid.MustParse(pipelineID)
+	pipeline.SetUuid(&pipelineUUID)
 	pipeline.SetRemoteName(&pipelineName)
 	pipeline.SetDescription(&pipelineDescription)
 	pipelineList.SetObjects([]models.Pipelineable{pipeline})

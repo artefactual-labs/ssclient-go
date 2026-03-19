@@ -31,18 +31,28 @@ type ListLocationsQuery struct {
 
 // List returns a filtered list of locations.
 func (s *LocationsService) List(ctx context.Context, query ListLocationsQuery) (*models.LocationList, error) {
+	pipelineUUID, err := parseOptionalUUID(query.PipelineUUID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid pipeline UUID %q: %w", *query.PipelineUUID, err)
+	}
+
+	locationUUID, err := parseOptionalUUID(query.UUID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid location UUID %q: %w", *query.UUID, err)
+	}
+
 	reqConfig := &kapi.V2LocationEmptyPathSegmentRequestBuilderGetRequestConfiguration{
 		QueryParameters: &kapi.V2LocationEmptyPathSegmentRequestBuilderGetQueryParameters{
 			Description:              query.Description,
 			Limit:                    query.Limit,
 			Offset:                   query.Offset,
 			Order_by:                 query.OrderBy,
-			Pipeline__uuid:           query.PipelineUUID,
+			Pipeline__uuid:           pipelineUUID,
 			PurposeAsLocationPurpose: query.Purpose,
 			Quota:                    query.Quota,
 			Relative_path:            query.RelativePath,
 			Used:                     query.Used,
-			Uuid:                     query.UUID,
+			Uuid:                     locationUUID,
 		},
 	}
 

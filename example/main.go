@@ -150,7 +150,11 @@ func (app application) printLocations(listable models.LocationListable) error {
 
 	fmt.Fprintf(app.stdout, "Found %d locations!\n", count)
 	for _, location := range listable.GetObjects() {
-		fmt.Fprintf(app.stdout, "» Location %s with purpose %s.\n", *location.GetUuid(), location.GetPurpose())
+		locationUUID := ""
+		if value := location.GetUuid(); value != nil {
+			locationUUID = value.String()
+		}
+		fmt.Fprintf(app.stdout, "» Location %s with purpose %s.\n", locationUUID, location.GetPurpose())
 	}
 
 	return nil
@@ -170,7 +174,11 @@ func (app application) printPipelines(listable models.PipelineListable) error {
 
 	fmt.Fprintf(app.stdout, "Found %d pipelines!\n", count)
 	for _, pipeline := range listable.GetObjects() {
-		fmt.Fprintf(app.stdout, "» Pipeline %s with remote name %s.\n", valueOrEmpty(pipeline.GetUuid()), valueOrEmpty(pipeline.GetRemoteName()))
+		pipelineUUID := ""
+		if value := pipeline.GetUuid(); value != nil {
+			pipelineUUID = value.String()
+		}
+		fmt.Fprintf(app.stdout, "» Pipeline %s with remote name %s.\n", pipelineUUID, valueOrEmpty(pipeline.GetRemoteName()))
 	}
 
 	return nil
