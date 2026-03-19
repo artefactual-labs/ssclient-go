@@ -4,6 +4,7 @@
 package models
 
 import (
+    i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
@@ -30,8 +31,8 @@ type Location struct {
     space *string
     // The used property
     used *int32
-    // The uuid property
-    uuid *string
+    // UUID identifier. Storage Service uses UUIDv4 values.
+    uuid *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 }
 // NewLocation instantiates a new Location and sets the default values.
 func NewLocation()(*Location) {
@@ -171,7 +172,7 @@ func (m *Location) GetFieldDeserializers()(map[string]func(i878a80d2330e89d26896
         return nil
     }
     res["uuid"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-        val, err := n.GetStringValue()
+        val, err := n.GetUUIDValue()
         if err != nil {
             return err
         }
@@ -222,9 +223,9 @@ func (m *Location) GetSpace()(*string) {
 func (m *Location) GetUsed()(*int32) {
     return m.used
 }
-// GetUuid gets the uuid property value. The uuid property
-// returns a *string when successful
-func (m *Location) GetUuid()(*string) {
+// GetUuid gets the uuid property value. UUID identifier. Storage Service uses UUIDv4 values.
+// returns a *UUID when successful
+func (m *Location) GetUuid()(*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
     return m.uuid
 }
 // Serialize serializes information the current object
@@ -291,7 +292,7 @@ func (m *Location) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c01
         }
     }
     {
-        err := writer.WriteStringValue("uuid", m.GetUuid())
+        err := writer.WriteUUIDValue("uuid", m.GetUuid())
         if err != nil {
             return err
         }
@@ -348,8 +349,8 @@ func (m *Location) SetSpace(value *string)() {
 func (m *Location) SetUsed(value *int32)() {
     m.used = value
 }
-// SetUuid sets the uuid property value. The uuid property
-func (m *Location) SetUuid(value *string)() {
+// SetUuid sets the uuid property value. UUID identifier. Storage Service uses UUIDv4 values.
+func (m *Location) SetUuid(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)() {
     m.uuid = value
 }
 type Locationable interface {
@@ -365,7 +366,7 @@ type Locationable interface {
     GetResourceUri()(*string)
     GetSpace()(*string)
     GetUsed()(*int32)
-    GetUuid()(*string)
+    GetUuid()(*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
     SetDescription(value *string)()
     SetEnabled(value *bool)()
     SetPath(value *string)()
@@ -376,5 +377,5 @@ type Locationable interface {
     SetResourceUri(value *string)()
     SetSpace(value *string)()
     SetUsed(value *int32)()
-    SetUuid(value *string)()
+    SetUuid(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)()
 }

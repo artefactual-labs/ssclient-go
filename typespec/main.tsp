@@ -10,6 +10,7 @@ using TypeSpec.Versioning;
 @service(#{
   title: "Archivematica Storage Service",
 })
+@server("https://example.invalid", "Placeholder origin; clients should override this at runtime.")
 @route("/api/v2/")
 @useAuth(ApiKeyAuth<ApiKeyLocation.header, "ApiKey">)
 @versioned(Versions)
@@ -360,7 +361,9 @@ namespace Service {
   }
 }
 
-@format("UUIDv4, e.g.: \"e3bae040-7682-4457-aef8-20a419aed0bd\".")
+@format("uuid")
+@doc("UUID identifier. Storage Service uses UUIDv4 values.")
+@example("e3bae040-7682-4457-aef8-20a419aed0bd")
 scalar uuid extends string;
 
 @doc("Uniform Resource Identifier, e.g. \"/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/\".")

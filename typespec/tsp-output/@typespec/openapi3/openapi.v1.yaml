@@ -951,9 +951,15 @@ components:
       description: Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
     uuid:
       type: string
-      format: 'UUIDv4, e.g.: "e3bae040-7682-4457-aef8-20a419aed0bd".'
+      format: uuid
+      description: UUID identifier. Storage Service uses UUIDv4 values.
+      example: e3bae040-7682-4457-aef8-20a419aed0bd
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
       in: header
       name: ApiKey
+servers:
+  - url: https://example.invalid
+    description: Placeholder origin; clients should override this at runtime.
+    variables: {}
