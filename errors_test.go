@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	"github.com/microsoft/kiota-abstractions-go/serialization"
 	"go.artefactual.dev/ssclient"
@@ -104,7 +105,7 @@ func TestPackagesDeleteAIPNormalizesManualError(t *testing.T) {
 
 	body := models.NewDeleteAipRequest()
 	body.SetEventReason(ptr("Delete please!"))
-	body.SetPipeline(ptr("4b9e8af5-b0af-4abf-80b8-4b7d76281f61"))
+	body.SetPipeline(ptr(uuid.MustParse("4b9e8af5-b0af-4abf-80b8-4b7d76281f61")))
 	body.SetUserId(ptr(int32(1)))
 	body.SetUserEmail(ptr("user@example.com"))
 

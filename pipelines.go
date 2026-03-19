@@ -22,10 +22,15 @@ type ListPipelinesQuery struct {
 
 // List returns a filtered list of pipelines.
 func (s *PipelinesService) List(ctx context.Context, query ListPipelinesQuery) (*models.PipelineList, error) {
+	pipelineUUID, err := parseOptionalUUID(query.UUID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid pipeline UUID %q: %w", *query.UUID, err)
+	}
+
 	reqConfig := &kapi.V2PipelineEmptyPathSegmentRequestBuilderGetRequestConfiguration{
 		QueryParameters: &kapi.V2PipelineEmptyPathSegmentRequestBuilderGetQueryParameters{
 			Description: query.Description,
-			Uuid:        query.UUID,
+			Uuid:        pipelineUUID,
 		},
 	}
 

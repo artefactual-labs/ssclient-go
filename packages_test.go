@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	"github.com/microsoft/kiota-abstractions-go/serialization"
 
@@ -41,7 +42,7 @@ func TestPackages(t *testing.T) {
 				assertEqual(t, requestInfo.Headers.Get("Accept"), []string{"application/json"})
 
 				pkg := models.NewPackageEscaped()
-				pkg.SetUuid(ptr(packageID))
+				pkg.SetUuid(ptr(uuid.MustParse(packageID)))
 				pkg.SetStatus(ptr("UPLOADED"))
 				pkg.SetCurrentLocation(ptr("/api/v2/location/154660b9-b4a3-4886-8d68-5e170c0923b8/"))
 				pkg.SetReplicas([]string{
@@ -59,7 +60,7 @@ func TestPackages(t *testing.T) {
 			t.Fatal("expected package")
 		}
 
-		assertEqual(t, *pkg.GetUuid(), packageID)
+		assertEqual(t, pkg.GetUuid().String(), packageID)
 		assertEqual(t, *pkg.GetStatus(), "UPLOADED")
 		assertEqual(t, len(pkg.GetReplicas()), 2)
 		assertEqual(t, *pkg.GetCurrentLocation(), "/api/v2/location/154660b9-b4a3-4886-8d68-5e170c0923b8/")
@@ -480,7 +481,7 @@ func TestPackages(t *testing.T) {
 
 			body := models.NewDeleteAipRequest()
 			body.SetEventReason(ptr("Delete please!"))
-			body.SetPipeline(ptr("4b9e8af5-b0af-4abf-80b8-4b7d76281f61"))
+			body.SetPipeline(ptr(uuid.MustParse("4b9e8af5-b0af-4abf-80b8-4b7d76281f61")))
 			body.SetUserId(ptr(int32(1)))
 			body.SetUserEmail(ptr("user@example.com"))
 
@@ -544,7 +545,7 @@ func TestPackages(t *testing.T) {
 
 			body := models.NewDeleteAipRequest()
 			body.SetEventReason(ptr("Delete please!"))
-			body.SetPipeline(ptr("4b9e8af5-b0af-4abf-80b8-4b7d76281f61"))
+			body.SetPipeline(ptr(uuid.MustParse("4b9e8af5-b0af-4abf-80b8-4b7d76281f61")))
 			body.SetUserId(ptr(int32(1)))
 			body.SetUserEmail(ptr("user@example.com"))
 
@@ -650,7 +651,7 @@ func TestPackages(t *testing.T) {
 			}
 
 			body := models.NewPackageMoveRequest()
-			body.SetLocationUuid(ptr(locationID))
+			body.SetLocationUuid(ptr(uuid.MustParse(locationID)))
 			assertEqual(t, client.Packages().Move(context.Background(), packageID, body), nil)
 		})
 
