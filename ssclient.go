@@ -40,6 +40,10 @@ type Client struct {
 
 // New constructs a Storage Service client backed by the generated Kiota client.
 func New(cfg Config) (*Client, error) {
+	if cfg.BaseURL == "" {
+		return nil, fmt.Errorf("base URL is required")
+	}
+
 	httpClient := cfg.HTTPClient
 	if httpClient == nil {
 		httpClient = http.DefaultClient

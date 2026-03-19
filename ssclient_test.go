@@ -98,6 +98,19 @@ func ptr[T any](value T) *T {
 }
 
 func TestClient(t *testing.T) {
+	t.Run("New requires BaseURL", func(t *testing.T) {
+		client, err := ssclient.New(ssclient.Config{})
+		if err == nil {
+			t.Fatal("expected error")
+		}
+		if got, want := err.Error(), "base URL is required"; got != want {
+			t.Fatalf("unexpected error %q want %q", got, want)
+		}
+		if client != nil {
+			t.Fatal("expected nil client")
+		}
+	})
+
 	t.Run("Raw", func(t *testing.T) {
 		client, err := ssclient.New(ssclient.Config{
 			BaseURL:    "http://storage.service",
