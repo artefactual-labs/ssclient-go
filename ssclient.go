@@ -56,7 +56,7 @@ func New(cfg Config) (*Client, error) {
 
 	adapter, err := khttp.NewNetHttpRequestAdapterWithParseNodeFactoryAndSerializationWriterFactoryAndHttpClient(
 		&authProvider{username: cfg.Username, key: cfg.Key},
-		nil,
+		newTolerantParseNodeFactory(),
 		nil,
 		httpClient,
 	)

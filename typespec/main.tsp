@@ -448,7 +448,7 @@ model Package {
   resource_uri: uri;
   size: integer;
   status: string;
-  stored_date: string | null;
+  stored_date: utcDateTime | null;
 }
 
 model PackageMoveRequest {
@@ -458,7 +458,7 @@ model PackageMoveRequest {
 model FixityResponse {
   success: boolean | null;
   message: string;
-  timestamp: string | null;
+  timestamp: utcDateTime | null;
   failures?: FixityFailures;
 }
 

@@ -4,6 +4,7 @@
 package models
 
 import (
+    i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e "time"
     i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
@@ -17,7 +18,7 @@ type FixityResponse struct {
     // The success property
     success *bool
     // The timestamp property
-    timestamp *string
+    timestamp *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 }
 // NewFixityResponse instantiates a new FixityResponse and sets the default values.
 func NewFixityResponse()(*FixityResponse) {
@@ -76,7 +77,7 @@ func (m *FixityResponse) GetFieldDeserializers()(map[string]func(i878a80d2330e89
         return nil
     }
     res["timestamp"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-        val, err := n.GetStringValue()
+        val, err := n.GetTimeValue()
         if err != nil {
             return err
         }
@@ -98,8 +99,8 @@ func (m *FixityResponse) GetSuccess()(*bool) {
     return m.success
 }
 // GetTimestamp gets the timestamp property value. The timestamp property
-// returns a *string when successful
-func (m *FixityResponse) GetTimestamp()(*string) {
+// returns a *Time when successful
+func (m *FixityResponse) GetTimestamp()(*i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
     return m.timestamp
 }
 // Serialize serializes information the current object
@@ -123,7 +124,7 @@ func (m *FixityResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a
         }
     }
     {
-        err := writer.WriteStringValue("timestamp", m.GetTimestamp())
+        err := writer.WriteTimeValue("timestamp", m.GetTimestamp())
         if err != nil {
             return err
         }
@@ -153,7 +154,7 @@ func (m *FixityResponse) SetSuccess(value *bool)() {
     m.success = value
 }
 // SetTimestamp sets the timestamp property value. The timestamp property
-func (m *FixityResponse) SetTimestamp(value *string)() {
+func (m *FixityResponse) SetTimestamp(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)() {
     m.timestamp = value
 }
 type FixityResponseable interface {
@@ -162,9 +163,9 @@ type FixityResponseable interface {
     GetFailures()(FixityFailuresable)
     GetMessage()(*string)
     GetSuccess()(*bool)
-    GetTimestamp()(*string)
+    GetTimestamp()(*i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
     SetFailures(value FixityFailuresable)()
     SetMessage(value *string)()
     SetSuccess(value *bool)()
-    SetTimestamp(value *string)()
+    SetTimestamp(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)()
 }

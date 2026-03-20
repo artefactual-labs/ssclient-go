@@ -686,6 +686,7 @@ components:
           type: string
         timestamp:
           type: string
+          format: date-time
           nullable: true
         failures:
           $ref: '#/components/schemas/FixityFailures'
@@ -845,6 +846,7 @@ components:
           type: string
         stored_date:
           type: string
+          format: date-time
           nullable: true
     PackageMoveRequest:
       type: object
