@@ -18,6 +18,11 @@ examplemocks: # @HELP Generate the example app mocks.
 examplemocks: $(MOCKGEN)
 	cd $(CURDIR)/example && mise exec -- mockgen -typed -destination=./adapter/adapter.go -package=adapter github.com/microsoft/kiota-abstractions-go RequestAdapter
 
+lint: # @HELP Lint the project Go files with golangci-lint (linters + formatters).
+lint: LINT_FLAGS ?= --fix=1
+lint:
+	mise exec -- golangci-lint run $(LINT_FLAGS)
+
 ssclient: # @HELP Generate the Kiota client from the OpenAPI spec.
 	KIOTA_TUTORIAL_ENABLED=false mise exec -- kiota generate --language go --clean-output --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --output ./kiota
 	@printf '%s\n' \

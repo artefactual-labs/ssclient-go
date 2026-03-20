@@ -5,6 +5,18 @@ on:
 permissions:
   contents: read
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install mise and tools
+        uses: jdx/mise-action@v4
+        with:
+          install: true
+      - name: Run lint
+        run: make lint LINT_FLAGS=
   test:
     name: Test
     strategy:

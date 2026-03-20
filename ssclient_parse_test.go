@@ -47,11 +47,11 @@ func TestKiotaParsesTolerantTimestampsAsUTC(t *testing.T) {
 						Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
 							body := `{"success":true,"message":"","timestamp":"` + tc.timestamp + `"}`
 							return &http.Response{
-								StatusCode: http.StatusOK,
-								Header:     http.Header{"Content-Type": {"application/json"}},
+								StatusCode:    http.StatusOK,
+								Header:        http.Header{"Content-Type": {"application/json"}},
 								ContentLength: int64(len(body)),
 								Body:          ioNopCloserString(body),
-								Request:    r,
+								Request:       r,
 							}, nil
 						}),
 					},
@@ -86,8 +86,8 @@ func TestKiotaParsesTolerantTimestampsAsUTC(t *testing.T) {
 					}
 					body := `{"uuid":"7c8a3549-2fe0-41d3-9d83-f485f1a43be3","status":"UPLOADED","stored_date":"2026-03-19T05:34:31.352112"}`
 					return &http.Response{
-						StatusCode: http.StatusOK,
-						Header:     http.Header{"Content-Type": {"application/json"}},
+						StatusCode:    http.StatusOK,
+						Header:        http.Header{"Content-Type": {"application/json"}},
 						ContentLength: int64(len(body)),
 						Body:          ioNopCloserString(body),
 						Request:       r,
@@ -177,9 +177,9 @@ func newClientForJSONResponse(t *testing.T, body string) (*ssclient.Client, *htt
 	}
 
 	client, err := ssclient.New(ssclient.Config{
-		BaseURL:  "http://storage.service",
-		Username: "test",
-		Key:      "test",
+		BaseURL:    "http://storage.service",
+		Username:   "test",
+		Key:        "test",
 		HTTPClient: httpClient,
 	})
 	if err != nil {
@@ -207,7 +207,7 @@ func replaceWithStockKiotaAdapter(t *testing.T, client *ssclient.Client, httpCli
 
 type noopAuthProvider struct{}
 
-func (noopAuthProvider) AuthenticateRequest(context.Context, *kabs.RequestInformation, map[string]interface{}) error {
+func (noopAuthProvider) AuthenticateRequest(context.Context, *kabs.RequestInformation, map[string]any) error {
 	return nil
 }
 

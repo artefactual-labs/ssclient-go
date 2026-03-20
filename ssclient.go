@@ -146,7 +146,7 @@ type authProvider struct {
 	key      string
 }
 
-func (p *authProvider) AuthenticateRequest(ctx context.Context, request *kabs.RequestInformation, additionalAuthenticationContext map[string]interface{}) error {
+func (p *authProvider) AuthenticateRequest(ctx context.Context, request *kabs.RequestInformation, additionalAuthenticationContext map[string]any) error {
 	request.Headers.Add("Authorization", fmt.Sprintf("ApiKey %s:%s", p.username, p.key))
 
 	return nil

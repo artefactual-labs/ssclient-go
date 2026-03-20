@@ -133,7 +133,7 @@ func (s *PackagesService) streamPackageRequest(ctx context.Context, requestInfo 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		defer resp.Body.Close()
+		defer closeBody(resp.Body)
 
 		body, readErr := io.ReadAll(resp.Body)
 		if readErr != nil {

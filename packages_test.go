@@ -17,6 +17,14 @@ import (
 	"go.artefactual.dev/ssclient/kiota/models"
 )
 
+func closeBody(tb testing.TB, body io.ReadCloser) {
+	tb.Helper()
+	if body == nil {
+		return
+	}
+	_ = body.Close()
+}
+
 func TestPackages(t *testing.T) {
 	t.Run("Get", func(t *testing.T) {
 		const packageID = "7c8a3549-2fe0-41d3-9d83-f485f1a43be3"
@@ -122,7 +130,7 @@ func TestPackages(t *testing.T) {
 			if res == nil {
 				t.Fatal("expected download result")
 			}
-			defer res.Body.Close()
+			defer closeBody(t, res.Body)
 
 			body, err := io.ReadAll(res.Body)
 			assertEqual(t, err, nil)
@@ -257,7 +265,7 @@ func TestPackages(t *testing.T) {
 			if res == nil {
 				t.Fatal("expected extract file result")
 			}
-			defer res.Body.Close()
+			defer closeBody(t, res.Body)
 
 			body, err := io.ReadAll(res.Body)
 			assertEqual(t, err, nil)
@@ -341,7 +349,7 @@ func TestPackages(t *testing.T) {
 			if res == nil {
 				t.Fatal("expected pointer file result")
 			}
-			defer res.Body.Close()
+			defer closeBody(t, res.Body)
 
 			body, err := io.ReadAll(res.Body)
 			assertEqual(t, err, nil)
