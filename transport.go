@@ -42,12 +42,14 @@ func (r *responseSnapshot) decodeJSON(dst any) error {
 	return nil
 }
 
+// execute fully consumes the response body and therefore closes it before
+// returning the buffered snapshot.
 func (c *Client) execute(ctx context.Context, requestInfo *kabs.RequestInformation) (*responseSnapshot, error) {
 	resp, err := c.executeStream(ctx, requestInfo)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer closeBody(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -61,6 +63,10 @@ func (c *Client) execute(ctx context.Context, requestInfo *kabs.RequestInformati
 	}, nil
 }
 
+// executeStream returns the live response body to the caller, so the caller is
+// responsible for closing it on successful requests.
+//
+//nolint:contextcheck // The request inherits the caller context and appends Kiota request options before dispatch.
 func (c *Client) executeStream(ctx context.Context, requestInfo *kabs.RequestInformation) (*responseStream, error) {
 	requestInfo.AddRequestOptions([]kabs.RequestOption{
 		&khttp.RedirectHandlerOptions{
@@ -87,20 +93,20 @@ func (c *Client) executeStream(ctx context.Context, requestInfo *kabs.RequestInf
 		return nil, fmt.Errorf("unexpected native request type %T", native)
 	}
 
-	reqCtx := ctx
-	if reqCtx == nil {
-		reqCtx = context.Background()
+	if ctx == nil {
+		ctx = req.Context()
 	}
 	for _, value := range requestInfo.GetRequestOptions() {
-		reqCtx = context.WithValue(reqCtx, value.GetKey(), value)
+		ctx = context.WithValue(ctx, value.GetKey(), value)
 	}
-	req = req.WithContext(reqCtx)
+	req = req.WithContext(ctx)
 
 	client := cloneHTTPClient(c.httpClient)
 	client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}
 
+	//nolint:bodyclose // The caller owns the streamed response body on success.
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -136,4 +142,11 @@ func cloneHeaders(headers http.Header) http.Header {
 		cloned[key] = append([]string(nil), values...)
 	}
 	return cloned
+}
+
+func closeBody(body io.ReadCloser) {
+	if body == nil {
+		return
+	}
+	_ = body.Close()
 }

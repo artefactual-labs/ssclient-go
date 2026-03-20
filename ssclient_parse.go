@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"reflect"
 	"time"
 
@@ -29,9 +30,7 @@ func newTolerantParseNodeFactory() absser.ParseNodeFactory {
 	absser.DefaultParseNodeFactoryInstance.Lock()
 	defer absser.DefaultParseNodeFactoryInstance.Unlock()
 
-	for contentType, factory := range absser.DefaultParseNodeFactoryInstance.ContentTypeAssociatedFactories {
-		registry.ContentTypeAssociatedFactories[contentType] = factory
-	}
+	maps.Copy(registry.ContentTypeAssociatedFactories, absser.DefaultParseNodeFactoryInstance.ContentTypeAssociatedFactories)
 
 	jsonFactory, ok := registry.ContentTypeAssociatedFactories["application/json"]
 	if !ok {
@@ -98,7 +97,7 @@ func (n *tolerantParseNode) GetCollectionOfObjectValues(ctor absser.ParsableFact
 		return nil, err
 	}
 
-	items, ok := raw.([]interface{})
+	items, ok := raw.([]any)
 	if !ok {
 		return nil, errors.New("value is not a collection")
 	}
@@ -122,18 +121,18 @@ func (n *tolerantParseNode) GetCollectionOfObjectValues(ctor absser.ParsableFact
 	return result, nil
 }
 
-func (n *tolerantParseNode) GetCollectionOfPrimitiveValues(targetType string) ([]interface{}, error) {
+func (n *tolerantParseNode) GetCollectionOfPrimitiveValues(targetType string) ([]any, error) {
 	raw, err := n.inner.GetRawValue()
 	if err != nil || raw == nil {
 		return nil, err
 	}
 
-	items, ok := raw.([]interface{})
+	items, ok := raw.([]any)
 	if !ok {
 		return nil, errors.New("value is not a collection")
 	}
 
-	result := make([]interface{}, len(items))
+	result := make([]any, len(items))
 	for i, item := range items {
 		if item == nil {
 			continue
@@ -152,18 +151,18 @@ func (n *tolerantParseNode) GetCollectionOfPrimitiveValues(targetType string) ([
 	return result, nil
 }
 
-func (n *tolerantParseNode) GetCollectionOfEnumValues(parser absser.EnumFactory) ([]interface{}, error) {
+func (n *tolerantParseNode) GetCollectionOfEnumValues(parser absser.EnumFactory) ([]any, error) {
 	raw, err := n.inner.GetRawValue()
 	if err != nil || raw == nil {
 		return nil, err
 	}
 
-	items, ok := raw.([]interface{})
+	items, ok := raw.([]any)
 	if !ok {
 		return nil, errors.New("value is not a collection")
 	}
 
-	result := make([]interface{}, len(items))
+	result := make([]any, len(items))
 	for i, item := range items {
 		if item == nil {
 			continue
@@ -203,15 +202,15 @@ func (n *tolerantParseNode) GetObjectValue(ctor absser.ParsableFactory) (absser.
 
 	abstractions.InvokeParsableAction(n.before, result)
 
-	properties, ok := raw.(map[string]interface{})
+	properties, ok := raw.(map[string]any)
 	if ok {
 		fields := result.GetFieldDeserializers()
 		holder, isHolder := result.(absser.AdditionalDataHolder)
-		var additionalData map[string]interface{}
+		var additionalData map[string]any
 		if isHolder {
 			additionalData = holder.GetAdditionalData()
 			if additionalData == nil {
-				additionalData = make(map[string]interface{})
+				additionalData = make(map[string]any)
 				holder.SetAdditionalData(additionalData)
 			}
 		}
@@ -292,13 +291,13 @@ func toUntypedNode(value any) absser.UntypedNodeable {
 			return absser.NewUntypedNull()
 		}
 		return absser.NewUntypedLong(*v)
-	case map[string]interface{}:
+	case map[string]any:
 		properties := make(map[string]absser.UntypedNodeable, len(v))
 		for key, element := range v {
 			properties[key] = toUntypedNode(element)
 		}
 		return absser.NewUntypedObject(properties)
-	case []interface{}:
+	case []any:
 		items := make([]absser.UntypedNodeable, len(v))
 		for i, element := range v {
 			items[i] = toUntypedNode(element)
@@ -424,7 +423,7 @@ func (n *tolerantParseNode) GetUUIDValue() (*uuid.UUID, error) {
 	return n.inner.GetUUIDValue()
 }
 
-func (n *tolerantParseNode) GetEnumValue(parser absser.EnumFactory) (interface{}, error) {
+func (n *tolerantParseNode) GetEnumValue(parser absser.EnumFactory) (any, error) {
 	if n == nil || isNilParseNode(n.inner) {
 		return nil, nil
 	}
@@ -438,7 +437,7 @@ func (n *tolerantParseNode) GetByteArrayValue() ([]byte, error) {
 	return n.inner.GetByteArrayValue()
 }
 
-func (n *tolerantParseNode) GetRawValue() (interface{}, error) {
+func (n *tolerantParseNode) GetRawValue() (any, error) {
 	if n == nil || isNilParseNode(n.inner) {
 		return nil, nil
 	}
@@ -450,10 +449,10 @@ func (n *tolerantParseNode) GetOnBeforeAssignFieldValues() absser.ParsableAction
 }
 
 func (n *tolerantParseNode) SetOnBeforeAssignFieldValues(action absser.ParsableAction) error {
-	n.before = action
 	if n == nil || isNilParseNode(n.inner) {
 		return nil
 	}
+	n.before = action
 	return n.inner.SetOnBeforeAssignFieldValues(action)
 }
 
@@ -462,10 +461,10 @@ func (n *tolerantParseNode) GetOnAfterAssignFieldValues() absser.ParsableAction 
 }
 
 func (n *tolerantParseNode) SetOnAfterAssignFieldValues(action absser.ParsableAction) error {
-	n.after = action
 	if n == nil || isNilParseNode(n.inner) {
 		return nil
 	}
+	n.after = action
 	return n.inner.SetOnAfterAssignFieldValues(action)
 }
 
@@ -486,7 +485,7 @@ func (n *tolerantParseNode) wrapChild(child absser.ParseNode) (absser.ParseNode,
 	return wrapped, nil
 }
 
-func (n *tolerantParseNode) childFromRaw(raw interface{}) (absser.ParseNode, error) {
+func (n *tolerantParseNode) childFromRaw(raw any) (absser.ParseNode, error) {
 	content, err := json.Marshal(raw)
 	if err != nil {
 		return nil, err
@@ -515,7 +514,7 @@ func (n *tolerantParseNode) childFromRaw(raw interface{}) (absser.ParseNode, err
 	return child, nil
 }
 
-func (n *tolerantParseNode) getPrimitiveValue(targetType string) (interface{}, error) {
+func (n *tolerantParseNode) getPrimitiveValue(targetType string) (any, error) {
 	switch targetType {
 	case "string":
 		return n.GetStringValue()
