@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	"go.artefactual.dev/ssclient"
 	"go.artefactual.dev/ssclient/kiota/models"
 )
@@ -35,7 +36,7 @@ func TestWrapperMethodsEmitTrailingSlashURLs(t *testing.T) {
 		})
 		assertEqual(t, err, nil)
 
-		_, err = client.Packages().Get(context.Background(), packageID)
+		_, err = client.Packages().Get(context.Background(), uuid.MustParse(packageID))
 		assertEqual(t, err, nil)
 	})
 
@@ -60,7 +61,7 @@ func TestWrapperMethodsEmitTrailingSlashURLs(t *testing.T) {
 		})
 		assertEqual(t, err, nil)
 
-		_, err = client.Locations().Get(context.Background(), locationID)
+		_, err = client.Locations().Get(context.Background(), uuid.MustParse(locationID))
 		assertEqual(t, err, nil)
 	})
 
@@ -88,7 +89,7 @@ func TestWrapperMethodsEmitTrailingSlashURLs(t *testing.T) {
 		body := models.NewMoveRequest()
 		body.SetOriginLocation(ptr("/api/v2/location/origin/"))
 		body.SetPipeline(ptr("/api/v2/pipeline/source/"))
-		assertEqual(t, client.Locations().Move(context.Background(), locationID, body), nil)
+		assertEqual(t, client.Locations().Move(context.Background(), uuid.MustParse(locationID), body), nil)
 	})
 
 	t.Run("PipelinesGet", func(t *testing.T) {
@@ -112,7 +113,7 @@ func TestWrapperMethodsEmitTrailingSlashURLs(t *testing.T) {
 		})
 		assertEqual(t, err, nil)
 
-		_, err = client.Pipelines().Get(context.Background(), pipelineID)
+		_, err = client.Pipelines().Get(context.Background(), uuid.MustParse(pipelineID))
 		assertEqual(t, err, nil)
 	})
 }
@@ -141,7 +142,7 @@ func TestGeneratedItemEmptyPathSegmentBuildersEmitTrailingSlashURLs(t *testing.T
 		})
 		assertEqual(t, err, nil)
 
-		_, err = client.Raw().Api().V2().File().ByUuid(packageID).EmptyPathSegment().Get(context.Background(), nil)
+		_, err = client.Raw().Api().V2().File().ByUuid(uuid.MustParse(packageID)).EmptyPathSegment().Get(context.Background(), nil)
 		assertEqual(t, err, nil)
 	})
 
@@ -169,7 +170,7 @@ func TestGeneratedItemEmptyPathSegmentBuildersEmitTrailingSlashURLs(t *testing.T
 		body := models.NewMoveRequest()
 		body.SetOriginLocation(ptr("/api/v2/location/origin/"))
 		body.SetPipeline(ptr("/api/v2/pipeline/source/"))
-		_, err = client.Raw().Api().V2().Location().ByUuid(locationID).EmptyPathSegment().Post(context.Background(), body, nil)
+		_, err = client.Raw().Api().V2().Location().ByUuid(uuid.MustParse(locationID)).EmptyPathSegment().Post(context.Background(), body, nil)
 		assertEqual(t, err, nil)
 	})
 
@@ -194,7 +195,7 @@ func TestGeneratedItemEmptyPathSegmentBuildersEmitTrailingSlashURLs(t *testing.T
 		})
 		assertEqual(t, err, nil)
 
-		_, err = client.Raw().Api().V2().Pipeline().ByUuid(pipelineID).EmptyPathSegment().Get(context.Background(), nil)
+		_, err = client.Raw().Api().V2().Pipeline().ByUuid(uuid.MustParse(pipelineID)).EmptyPathSegment().Get(context.Background(), nil)
 		assertEqual(t, err, nil)
 	})
 }

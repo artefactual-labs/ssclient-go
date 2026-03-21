@@ -24,7 +24,7 @@ lint:
 	mise exec -- golangci-lint run $(LINT_FLAGS)
 
 ssclient: # @HELP Generate the Kiota client from the OpenAPI spec.
-	KIOTA_TUTORIAL_ENABLED=false mise exec -- kiota generate --language go --clean-output --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --output ./kiota
+	KIOTA_TUTORIAL_ENABLED=false mise exec -- kiota generate --language go --clean-output --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --output ./kiota --exclude-backward-compatible
 	@printf '%s\n' \
 		'-------------------------------------------------------------------------' \
 		'# WARNING: kiota emits some expected warnings:                          #' \

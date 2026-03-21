@@ -13,13 +13,6 @@ import (
 type V2FileItemMoveEmptyPathSegmentRequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
-// V2FileItemMoveEmptyPathSegmentRequestBuilderPostRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2FileItemMoveEmptyPathSegmentRequestBuilderPostRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-}
 // NewV2FileItemMoveEmptyPathSegmentRequestBuilderInternal instantiates a new V2FileItemMoveEmptyPathSegmentRequestBuilder and sets the default values.
 func NewV2FileItemMoveEmptyPathSegmentRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2FileItemMoveEmptyPathSegmentRequestBuilder) {
     m := &V2FileItemMoveEmptyPathSegmentRequestBuilder{
@@ -36,7 +29,7 @@ func NewV2FileItemMoveEmptyPathSegmentRequestBuilder(rawUrl string, requestAdapt
 // Post move the package to a different storage location.
 // returns a []byte when successful
 // returns a ErrorEscaped error when the service returns a 400 status code
-func (m *V2FileItemMoveEmptyPathSegmentRequestBuilder) Post(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PackageMoveRequestable, requestConfiguration *V2FileItemMoveEmptyPathSegmentRequestBuilderPostRequestConfiguration)([]byte, error) {
+func (m *V2FileItemMoveEmptyPathSegmentRequestBuilder) Post(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PackageMoveRequestable, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])([]byte, error) {
     requestInfo, err := m.ToPostRequestInformation(ctx, body, requestConfiguration);
     if err != nil {
         return nil, err
@@ -55,12 +48,9 @@ func (m *V2FileItemMoveEmptyPathSegmentRequestBuilder) Post(ctx context.Context,
 }
 // ToPostRequestInformation move the package to a different storage location.
 // returns a *RequestInformation when successful
-func (m *V2FileItemMoveEmptyPathSegmentRequestBuilder) ToPostRequestInformation(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PackageMoveRequestable, requestConfiguration *V2FileItemMoveEmptyPathSegmentRequestBuilderPostRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2FileItemMoveEmptyPathSegmentRequestBuilder) ToPostRequestInformation(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PackageMoveRequestable, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "application/json")
     err := requestInfo.SetContentFromParsable(ctx, m.BaseRequestBuilder.RequestAdapter, "application/json", body)
     if err != nil {

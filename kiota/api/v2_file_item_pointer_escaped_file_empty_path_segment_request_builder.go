@@ -12,13 +12,6 @@ import (
 type V2FileItemPointer_fileEmptyPathSegmentRequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
-// V2FileItemPointer_fileEmptyPathSegmentRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2FileItemPointer_fileEmptyPathSegmentRequestBuilderGetRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-}
 // NewV2FileItemPointer_fileEmptyPathSegmentRequestBuilderInternal instantiates a new V2FileItemPointer_fileEmptyPathSegmentRequestBuilder and sets the default values.
 func NewV2FileItemPointer_fileEmptyPathSegmentRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2FileItemPointer_fileEmptyPathSegmentRequestBuilder) {
     m := &V2FileItemPointer_fileEmptyPathSegmentRequestBuilder{
@@ -34,7 +27,7 @@ func NewV2FileItemPointer_fileEmptyPathSegmentRequestBuilder(rawUrl string, requ
 }
 // Get download the package pointer file.
 // returns a []byte when successful
-func (m *V2FileItemPointer_fileEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *V2FileItemPointer_fileEmptyPathSegmentRequestBuilderGetRequestConfiguration)([]byte, error) {
+func (m *V2FileItemPointer_fileEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])([]byte, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
@@ -50,12 +43,9 @@ func (m *V2FileItemPointer_fileEmptyPathSegmentRequestBuilder) Get(ctx context.C
 }
 // ToGetRequestInformation download the package pointer file.
 // returns a *RequestInformation when successful
-func (m *V2FileItemPointer_fileEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2FileItemPointer_fileEmptyPathSegmentRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2FileItemPointer_fileEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "*/*, text/plain;q=0.9")
     return requestInfo, nil
 }

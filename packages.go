@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	kapi "go.artefactual.dev/ssclient/kiota/api"
 	"go.artefactual.dev/ssclient/kiota/models"
@@ -64,9 +65,9 @@ func (r *DeleteAIPResult) HasExistingRequest() bool {
 	return r != nil && r.AlreadyExists != nil
 }
 
-// Get returns a package by UUID.
-func (s *PackagesService) Get(ctx context.Context, uuid string) (*models.PackageEscaped, error) {
-	pkg, err := s.client.raw.Api().V2().File().ByUuid(uuid).EmptyPathSegment().Get(ctx, nil)
+// Get returns a package by ID.
+func (s *PackagesService) Get(ctx context.Context, id uuid.UUID) (*models.PackageEscaped, error) {
+	pkg, err := s.client.raw.Api().V2().File().ByUuid(id).EmptyPathSegment().Get(ctx, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
@@ -83,8 +84,8 @@ func (s *PackagesService) Get(ctx context.Context, uuid string) (*models.Package
 }
 
 // DownloadPackage returns the package archive as downloaded by Storage Service.
-func (s *PackagesService) DownloadPackage(ctx context.Context, uuid string) (*FileStream, error) {
-	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(uuid).Download().EmptyPathSegment().ToGetRequestInformation(ctx, nil)
+func (s *PackagesService) DownloadPackage(ctx context.Context, id uuid.UUID) (*FileStream, error) {
+	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(id).Download().EmptyPathSegment().ToGetRequestInformation(ctx, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
@@ -95,12 +96,12 @@ func (s *PackagesService) DownloadPackage(ctx context.Context, uuid string) (*Fi
 }
 
 // DownloadFile extracts a file from a package and streams it back.
-func (s *PackagesService) DownloadFile(ctx context.Context, uuid string, relativePathToFile string) (*FileStream, error) {
+func (s *PackagesService) DownloadFile(ctx context.Context, id uuid.UUID, relativePathToFile string) (*FileStream, error) {
 	if relativePathToFile == "" {
 		return nil, fmt.Errorf("relative path to file is required")
 	}
 
-	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(uuid).Extract_file().EmptyPathSegment().ToGetRequestInformation(ctx, &kapi.V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetRequestConfiguration{
+	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(id).Extract_file().EmptyPathSegment().ToGetRequestInformation(ctx, &kabs.RequestConfiguration[kapi.V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetQueryParameters]{
 		QueryParameters: &kapi.V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetQueryParameters{
 			Relative_path_to_file: &relativePathToFile,
 		},
@@ -115,8 +116,8 @@ func (s *PackagesService) DownloadFile(ctx context.Context, uuid string, relativ
 }
 
 // DownloadPointerFile returns the package pointer file as a stream.
-func (s *PackagesService) DownloadPointerFile(ctx context.Context, uuid string) (*FileStream, error) {
-	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(uuid).Pointer_file().EmptyPathSegment().ToGetRequestInformation(ctx, nil)
+func (s *PackagesService) DownloadPointerFile(ctx context.Context, id uuid.UUID) (*FileStream, error) {
+	requestInfo, err := s.client.raw.Api().V2().File().ByUuid(id).Pointer_file().EmptyPathSegment().ToGetRequestInformation(ctx, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
@@ -191,12 +192,12 @@ func parseFilename(value string) string {
 // DeleteAIP creates an AIP deletion request for the given package. The server
 // exposes two non-error outcomes: one for a newly created request and one for
 // an already pending request.
-func (s *PackagesService) DeleteAIP(ctx context.Context, uuid string, body *models.DeleteAipRequest) (*DeleteAIPResult, error) {
+func (s *PackagesService) DeleteAIP(ctx context.Context, id uuid.UUID, body *models.DeleteAipRequest) (*DeleteAIPResult, error) {
 	if body == nil {
 		return nil, fmt.Errorf("delete AIP request is required")
 	}
 
-	builder := s.client.raw.Api().V2().File().ByUuid(uuid).Delete_aip().EmptyPathSegment()
+	builder := s.client.raw.Api().V2().File().ByUuid(id).Delete_aip().EmptyPathSegment()
 	requestInfo, err := builder.ToPostRequestInformation(ctx, body, nil)
 	if err != nil {
 		return nil, normalizeError(err)
@@ -237,16 +238,16 @@ func (s *PackagesService) DeleteAIP(ctx context.Context, uuid string, body *mode
 	}
 }
 
-// CheckFixity runs a fixity check for the given package UUID.
-func (s *PackagesService) CheckFixity(ctx context.Context, uuid string, opts CheckFixityOptions) (*models.FixityResponse, error) {
-	reqConfig := &kapi.V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetRequestConfiguration{}
+// CheckFixity runs a fixity check for the given package ID.
+func (s *PackagesService) CheckFixity(ctx context.Context, id uuid.UUID, opts CheckFixityOptions) (*models.FixityResponse, error) {
+	reqConfig := &kabs.RequestConfiguration[kapi.V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetQueryParameters]{}
 	if opts.ForceLocal != nil {
 		reqConfig.QueryParameters = &kapi.V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetQueryParameters{
 			Force_local: opts.ForceLocal,
 		}
 	}
 
-	res, err := s.client.raw.Api().V2().File().ByUuid(uuid).Check_fixity().EmptyPathSegment().Get(ctx, reqConfig)
+	res, err := s.client.raw.Api().V2().File().ByUuid(id).Check_fixity().EmptyPathSegment().Get(ctx, reqConfig)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
@@ -263,23 +264,23 @@ func (s *PackagesService) CheckFixity(ctx context.Context, uuid string, opts Che
 }
 
 // Move moves a package to a different storage location.
-func (s *PackagesService) Move(ctx context.Context, uuid string, body *models.PackageMoveRequest) error {
+func (s *PackagesService) Move(ctx context.Context, id uuid.UUID, body *models.PackageMoveRequest) error {
 	if body == nil {
 		return fmt.Errorf("package move request is required")
 	}
 
-	_, err := s.client.raw.Api().V2().File().ByUuid(uuid).Move().EmptyPathSegment().Post(ctx, body, nil)
+	_, err := s.client.raw.Api().V2().File().ByUuid(id).Move().EmptyPathSegment().Post(ctx, body, nil)
 	return normalizeError(err)
 }
 
 // ReviewAIPDeletion approves or rejects an AIP deletion request associated with
 // a package.
-func (s *PackagesService) ReviewAIPDeletion(ctx context.Context, uuid string, body *models.ReviewAipDeletionRequest) (*models.ReviewAipDeletionSuccess, error) {
+func (s *PackagesService) ReviewAIPDeletion(ctx context.Context, id uuid.UUID, body *models.ReviewAipDeletionRequest) (*models.ReviewAipDeletionSuccess, error) {
 	if body == nil {
 		return nil, fmt.Errorf("review AIP deletion request is required")
 	}
 
-	res, err := s.client.raw.Api().V2().File().ByUuid(uuid).Review_aip_deletion().EmptyPathSegment().Post(ctx, body, nil)
+	res, err := s.client.raw.Api().V2().File().ByUuid(id).Review_aip_deletion().EmptyPathSegment().Post(ctx, body, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}

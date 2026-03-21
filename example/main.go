@@ -109,8 +109,7 @@ func (app application) wrapped(ctx context.Context) error {
 func (app application) rawClient(ctx context.Context) error {
 	app.printHeading("Using the raw client")
 
-	reqConfigPipeline := &api.V2PipelineEmptyPathSegmentRequestBuilderGetRequestConfiguration{}
-	listablePipelines, err := app.raw.Pipeline().EmptyPathSegment().Get(ctx, reqConfigPipeline)
+	listablePipelines, err := app.raw.Pipeline().EmptyPathSegment().Get(ctx, nil)
 	if err != nil {
 		return err
 	}
@@ -119,8 +118,7 @@ func (app application) rawClient(ctx context.Context) error {
 		return err
 	}
 
-	reqConfig := &api.V2LocationEmptyPathSegmentRequestBuilderGetRequestConfiguration{}
-	listable, err := app.raw.Location().EmptyPathSegment().Get(ctx, reqConfig)
+	listable, err := app.raw.Location().EmptyPathSegment().Get(ctx, nil)
 	if err != nil {
 		return err
 	}
@@ -150,11 +148,11 @@ func (app application) printLocations(listable models.LocationListable) error {
 
 	fmt.Fprintf(app.stdout, "Found %d locations!\n", count)
 	for _, location := range listable.GetObjects() {
-		locationUUID := ""
+		locationID := ""
 		if value := location.GetUuid(); value != nil {
-			locationUUID = value.String()
+			locationID = value.String()
 		}
-		fmt.Fprintf(app.stdout, "» Location %s with purpose %s.\n", locationUUID, location.GetPurpose())
+		fmt.Fprintf(app.stdout, "» Location %s with purpose %s.\n", locationID, location.GetPurpose())
 	}
 
 	return nil
@@ -174,11 +172,11 @@ func (app application) printPipelines(listable models.PipelineListable) error {
 
 	fmt.Fprintf(app.stdout, "Found %d pipelines!\n", count)
 	for _, pipeline := range listable.GetObjects() {
-		pipelineUUID := ""
+		pipelineID := ""
 		if value := pipeline.GetUuid(); value != nil {
-			pipelineUUID = value.String()
+			pipelineID = value.String()
 		}
-		fmt.Fprintf(app.stdout, "» Pipeline %s with remote name %s.\n", pipelineUUID, valueOrEmpty(pipeline.GetRemoteName()))
+		fmt.Fprintf(app.stdout, "» Pipeline %s with remote name %s.\n", pipelineID, valueOrEmpty(pipeline.GetRemoteName()))
 	}
 
 	return nil

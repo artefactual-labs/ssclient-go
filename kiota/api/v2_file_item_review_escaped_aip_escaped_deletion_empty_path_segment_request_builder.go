@@ -13,13 +13,6 @@ import (
 type V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
-// V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilderPostRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilderPostRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-}
 // NewV2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilderInternal instantiates a new V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder and sets the default values.
 func NewV2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder) {
     m := &V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder{
@@ -37,7 +30,7 @@ func NewV2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder(rawUrl strin
 // returns a ReviewAipDeletionSuccessable when successful
 // returns a ReviewAipDeletionFailure error when the service returns a 400 status code
 // returns a ReviewAipDeletionFailure error when the service returns a 404 status code
-func (m *V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder) Post(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionRequestable, requestConfiguration *V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilderPostRequestConfiguration)(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable, error) {
+func (m *V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder) Post(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionRequestable, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable, error) {
     requestInfo, err := m.ToPostRequestInformation(ctx, body, requestConfiguration);
     if err != nil {
         return nil, err
@@ -57,12 +50,9 @@ func (m *V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder) Post(ctx c
 }
 // ToPostRequestInformation approve or reject an AIP deletion request associated with this package.
 // returns a *RequestInformation when successful
-func (m *V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder) ToPostRequestInformation(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionRequestable, requestConfiguration *V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilderPostRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder) ToPostRequestInformation(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionRequestable, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "application/json")
     err := requestInfo.SetContentFromParsable(ctx, m.BaseRequestBuilder.RequestAdapter, "application/json", body)
     if err != nil {

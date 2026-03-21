@@ -42,7 +42,7 @@ func TestPackagesGetNormalizesKiotaError(t *testing.T) {
 		},
 	}
 
-	_, err = client.Packages().Get(context.Background(), packageID)
+	_, err = client.Packages().Get(context.Background(), uuid.MustParse(packageID))
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -109,7 +109,7 @@ func TestPackagesDeleteAIPNormalizesManualError(t *testing.T) {
 	body.SetUserId(ptr(int32(1)))
 	body.SetUserEmail(ptr("user@example.com"))
 
-	_, err = client.Packages().DeleteAIP(context.Background(), packageID, body)
+	_, err = client.Packages().DeleteAIP(context.Background(), uuid.MustParse(packageID), body)
 	if err == nil {
 		t.Fatal("expected error")
 	}

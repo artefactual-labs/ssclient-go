@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	khttp "github.com/microsoft/kiota-http-go"
 	"go.artefactual.dev/ssclient"
@@ -60,7 +61,7 @@ func TestKiotaParsesTolerantTimestampsAsUTC(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				res, err := client.Packages().CheckFixity(context.Background(), "7c8a3549-2fe0-41d3-9d83-f485f1a43be3", ssclient.CheckFixityOptions{})
+				res, err := client.Packages().CheckFixity(context.Background(), uuid.MustParse("7c8a3549-2fe0-41d3-9d83-f485f1a43be3"), ssclient.CheckFixityOptions{})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -99,7 +100,7 @@ func TestKiotaParsesTolerantTimestampsAsUTC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		pkg, err := client.Packages().Get(context.Background(), "7c8a3549-2fe0-41d3-9d83-f485f1a43be3")
+		pkg, err := client.Packages().Get(context.Background(), uuid.MustParse("7c8a3549-2fe0-41d3-9d83-f485f1a43be3"))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -232,14 +233,14 @@ func TestKiotaPreservesScalarFieldBehavior(t *testing.T) {
 		}`
 
 		tolerantClient, _ := newClientForJSONResponse(t, body)
-		tolerantPkg, err := tolerantClient.Packages().Get(context.Background(), "7c8a3549-2fe0-41d3-9d83-f485f1a43be3")
+		tolerantPkg, err := tolerantClient.Packages().Get(context.Background(), uuid.MustParse("7c8a3549-2fe0-41d3-9d83-f485f1a43be3"))
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		stockClient, stockHTTPClient := newClientForJSONResponse(t, body)
 		replaceWithStockKiotaAdapter(t, stockClient, stockHTTPClient)
-		_, err = stockClient.Packages().Get(context.Background(), "7c8a3549-2fe0-41d3-9d83-f485f1a43be3")
+		_, err = stockClient.Packages().Get(context.Background(), uuid.MustParse("7c8a3549-2fe0-41d3-9d83-f485f1a43be3"))
 		if err == nil {
 			t.Fatal("expected stock Kiota parsing to fail on naive timestamp")
 		}
@@ -402,14 +403,14 @@ func TestKiotaPreservesEnumBehavior(t *testing.T) {
 		}`
 
 		tolerantClient, _ := newClientForJSONResponse(t, body)
-		tolerantLocation, err := tolerantClient.Locations().Get(context.Background(), "154660b9-b4a3-4886-8d68-5e170c0923b8")
+		tolerantLocation, err := tolerantClient.Locations().Get(context.Background(), uuid.MustParse("154660b9-b4a3-4886-8d68-5e170c0923b8"))
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		stockClient, stockHTTPClient := newClientForJSONResponse(t, body)
 		replaceWithStockKiotaAdapter(t, stockClient, stockHTTPClient)
-		stockLocation, err := stockClient.Locations().Get(context.Background(), "154660b9-b4a3-4886-8d68-5e170c0923b8")
+		stockLocation, err := stockClient.Locations().Get(context.Background(), uuid.MustParse("154660b9-b4a3-4886-8d68-5e170c0923b8"))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -440,14 +441,14 @@ func TestKiotaPreservesNullHandling(t *testing.T) {
 		}`
 
 		tolerantClient, _ := newClientForJSONResponse(t, body)
-		tolerantLocation, err := tolerantClient.Locations().Get(context.Background(), "154660b9-b4a3-4886-8d68-5e170c0923b8")
+		tolerantLocation, err := tolerantClient.Locations().Get(context.Background(), uuid.MustParse("154660b9-b4a3-4886-8d68-5e170c0923b8"))
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		stockClient, stockHTTPClient := newClientForJSONResponse(t, body)
 		replaceWithStockKiotaAdapter(t, stockClient, stockHTTPClient)
-		stockLocation, err := stockClient.Locations().Get(context.Background(), "154660b9-b4a3-4886-8d68-5e170c0923b8")
+		stockLocation, err := stockClient.Locations().Get(context.Background(), uuid.MustParse("154660b9-b4a3-4886-8d68-5e170c0923b8"))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -499,7 +500,7 @@ func TestKiotaRejectsUnsupportedTimestampLayouts(t *testing.T) {
 		body := `{"success":true,"message":"","timestamp":"Thu, 19 Mar 2026 05:34:31 UTC"}`
 
 		client, _ := newClientForJSONResponse(t, body)
-		res, err := client.Packages().CheckFixity(context.Background(), "7c8a3549-2fe0-41d3-9d83-f485f1a43be3", ssclient.CheckFixityOptions{})
+		res, err := client.Packages().CheckFixity(context.Background(), uuid.MustParse("7c8a3549-2fe0-41d3-9d83-f485f1a43be3"), ssclient.CheckFixityOptions{})
 		if err == nil {
 			t.Fatal("expected parse error")
 		}
@@ -519,7 +520,7 @@ func TestKiotaRejectsUnsupportedTimestampLayouts(t *testing.T) {
 		}`
 
 		client, _ := newClientForJSONResponse(t, body)
-		pkg, err := client.Packages().Get(context.Background(), "7c8a3549-2fe0-41d3-9d83-f485f1a43be3")
+		pkg, err := client.Packages().Get(context.Background(), uuid.MustParse("7c8a3549-2fe0-41d3-9d83-f485f1a43be3"))
 		if err == nil {
 			t.Fatal("expected parse error")
 		}
