@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+
 	"go.artefactual.dev/ssclient"
 	"go.artefactual.dev/ssclient/kiota/models"
 )

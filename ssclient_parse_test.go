@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	khttp "github.com/microsoft/kiota-http-go"
+
 	"go.artefactual.dev/ssclient"
 )
 

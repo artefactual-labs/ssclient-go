@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
+
 	kapi "go.artefactual.dev/ssclient/kiota/api"
 	"go.artefactual.dev/ssclient/kiota/models"
 )

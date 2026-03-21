@@ -85,7 +85,8 @@ func (f *fakeRequestAdapter) ConvertToNativeRequest(ctx context.Context, request
 func assertEqual(t interface {
 	Helper()
 	Errorf(string, ...any)
-}, got, want any) {
+}, got, want any,
+) {
 	t.Helper()
 
 	if !reflect.DeepEqual(got, want) {

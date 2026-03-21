@@ -207,7 +207,7 @@ func extractErrorDetail(err error) string {
 	return ""
 }
 
-func decodeErrorPayload(body []byte) (message string, detail string) {
+func decodeErrorPayload(body []byte) (message, detail string) {
 	if len(body) == 0 {
 		return "", ""
 	}

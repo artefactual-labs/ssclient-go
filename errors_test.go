@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	"github.com/microsoft/kiota-abstractions-go/serialization"
+
 	"go.artefactual.dev/ssclient"
 	"go.artefactual.dev/ssclient/kiota/models"
 )
