@@ -16,6 +16,7 @@ import (
 	"github.com/microsoft/kiota-abstractions-go/serialization"
 	"github.com/microsoft/kiota-abstractions-go/store"
 	khttp "github.com/microsoft/kiota-http-go"
+
 	"go.artefactual.dev/ssclient/kiota/models"
 )
 

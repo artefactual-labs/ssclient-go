@@ -12,3 +12,17 @@ linters:
     - modernize
     - tparallel
     - unparam
+formatters:
+  enable:
+    - gci
+    - gofumpt
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - localmodule
+      no-inline-comments: true
+      no-prefix-comments: false
+    gofumpt:
+      extra-rules: true

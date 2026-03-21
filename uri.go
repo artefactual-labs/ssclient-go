@@ -8,7 +8,7 @@ import (
 
 // ParseResourceURI extracts the resource name and UUID from a Storage Service
 // resource URI.
-func ParseResourceURI(resourceURI string) (resource string, uuid string, err error) {
+func ParseResourceURI(resourceURI string) (resource, uuid string, err error) {
 	if resourceURI == "" {
 		return "", "", fmt.Errorf("empty resource URI")
 	}
@@ -39,7 +39,7 @@ func ParseResourceURI(resourceURI string) (resource string, uuid string, err err
 
 // MustParseResourceURI extracts the resource name and UUID from a Storage
 // Service resource URI and panics if the URI is invalid.
-func MustParseResourceURI(resourceURI string) (resource string, uuid string) {
+func MustParseResourceURI(resourceURI string) (resource, uuid string) {
 	resource, uuid, err := ParseResourceURI(resourceURI)
 	if err != nil {
 		panic(err)
