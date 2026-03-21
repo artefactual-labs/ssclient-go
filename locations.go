@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
+	kabs "github.com/microsoft/kiota-abstractions-go"
 	kapi "go.artefactual.dev/ssclient/kiota/api"
 	"go.artefactual.dev/ssclient/kiota/models"
 )
@@ -21,38 +23,28 @@ type ListLocationsQuery struct {
 	Limit        *int32
 	Offset       *int32
 	OrderBy      *string
-	PipelineUUID *string
+	PipelineID   *uuid.UUID
 	Purpose      *models.LocationPurpose
 	Quota        *int32
 	RelativePath *string
 	Used         *int32
-	UUID         *string
+	ID           *uuid.UUID
 }
 
 // List returns a filtered list of locations.
 func (s *LocationsService) List(ctx context.Context, query ListLocationsQuery) (*models.LocationList, error) {
-	pipelineUUID, err := parseOptionalUUID(query.PipelineUUID)
-	if err != nil {
-		return nil, fmt.Errorf("invalid pipeline UUID %q: %w", *query.PipelineUUID, err)
-	}
-
-	locationUUID, err := parseOptionalUUID(query.UUID)
-	if err != nil {
-		return nil, fmt.Errorf("invalid location UUID %q: %w", *query.UUID, err)
-	}
-
-	reqConfig := &kapi.V2LocationEmptyPathSegmentRequestBuilderGetRequestConfiguration{
+	reqConfig := &kabs.RequestConfiguration[kapi.V2LocationEmptyPathSegmentRequestBuilderGetQueryParameters]{
 		QueryParameters: &kapi.V2LocationEmptyPathSegmentRequestBuilderGetQueryParameters{
-			Description:              query.Description,
-			Limit:                    query.Limit,
-			Offset:                   query.Offset,
-			Order_by:                 query.OrderBy,
-			Pipeline__uuid:           pipelineUUID,
-			PurposeAsLocationPurpose: query.Purpose,
-			Quota:                    query.Quota,
-			Relative_path:            query.RelativePath,
-			Used:                     query.Used,
-			Uuid:                     locationUUID,
+			Description:    query.Description,
+			Limit:          query.Limit,
+			Offset:         query.Offset,
+			Order_by:       query.OrderBy,
+			Pipeline__uuid: query.PipelineID,
+			Purpose:        query.Purpose,
+			Quota:          query.Quota,
+			Relative_path:  query.RelativePath,
+			Used:           query.Used,
+			Uuid:           query.ID,
 		},
 	}
 
@@ -72,9 +64,9 @@ func (s *LocationsService) List(ctx context.Context, query ListLocationsQuery) (
 	return typed, nil
 }
 
-// Get returns a location by UUID.
-func (s *LocationsService) Get(ctx context.Context, uuid string) (*models.Location, error) {
-	res, err := s.client.raw.Api().V2().Location().ByUuid(uuid).EmptyPathSegment().Get(ctx, nil)
+// Get returns a location by ID.
+func (s *LocationsService) Get(ctx context.Context, id uuid.UUID) (*models.Location, error) {
+	res, err := s.client.raw.Api().V2().Location().ByUuid(id).EmptyPathSegment().Get(ctx, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
@@ -117,11 +109,11 @@ func (s *LocationsService) Default(ctx context.Context, purpose models.LocationP
 }
 
 // Move moves files to the specified location.
-func (s *LocationsService) Move(ctx context.Context, uuid string, body *models.MoveRequest) error {
+func (s *LocationsService) Move(ctx context.Context, id uuid.UUID, body *models.MoveRequest) error {
 	if body == nil {
 		return fmt.Errorf("location move request is required")
 	}
 
-	_, err := s.client.raw.Api().V2().Location().ByUuid(uuid).EmptyPathSegment().Post(ctx, body, nil)
+	_, err := s.client.raw.Api().V2().Location().ByUuid(id).EmptyPathSegment().Post(ctx, body, nil)
 	return normalizeError(err)
 }

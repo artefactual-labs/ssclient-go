@@ -48,8 +48,8 @@ func TestApplication(t *testing.T) {
 	locationID := "fff70864-a5d4-4ca6-ab29-b4ce67d8eeab"
 	locationPurpose := models.DS_LOCATIONPURPOSE
 	location := models.NewLocation()
-	locationUUID := uuid.MustParse(locationID)
-	location.SetUuid(&locationUUID)
+	locationParsedID := uuid.MustParse(locationID)
+	location.SetUuid(&locationParsedID)
 	location.SetPurpose(&locationPurpose)
 	locationList.SetObjects([]models.Locationable{location})
 
@@ -63,8 +63,8 @@ func TestApplication(t *testing.T) {
 	pipelineName := "Archivematica"
 	pipelineDescription := "Default pipeline"
 	pipeline := models.NewPipeline()
-	pipelineUUID := uuid.MustParse(pipelineID)
-	pipeline.SetUuid(&pipelineUUID)
+	pipelineParsedID := uuid.MustParse(pipelineID)
+	pipeline.SetUuid(&pipelineParsedID)
 	pipeline.SetRemoteName(&pipelineName)
 	pipeline.SetDescription(&pipelineDescription)
 	pipelineList.SetObjects([]models.Pipelineable{pipeline})

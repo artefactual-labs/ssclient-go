@@ -85,7 +85,7 @@ func TestLocations(t *testing.T) {
 			},
 		}
 
-		res, err := client.Locations().Get(context.Background(), locationID)
+		res, err := client.Locations().Get(context.Background(), uuid.MustParse(locationID))
 		assertEqual(t, err, nil)
 		if res == nil {
 			t.Fatal("expected location")
@@ -177,7 +177,7 @@ func TestLocations(t *testing.T) {
 			body := models.NewMoveRequest()
 			body.SetOriginLocation(ptr("/api/v2/location/origin/"))
 			body.SetPipeline(ptr("/api/v2/pipeline/source/"))
-			assertEqual(t, client.Locations().Move(context.Background(), locationID, body), nil)
+			assertEqual(t, client.Locations().Move(context.Background(), uuid.MustParse(locationID), body), nil)
 		})
 
 		t.Run("NilBody", func(t *testing.T) {
@@ -189,7 +189,7 @@ func TestLocations(t *testing.T) {
 			})
 			assertEqual(t, err, nil)
 
-			if err := client.Locations().Move(context.Background(), "location", nil); err == nil {
+			if err := client.Locations().Move(context.Background(), uuid.Nil, nil); err == nil {
 				t.Fatal("expected error")
 			}
 		})

@@ -20,22 +20,11 @@ type V2LocationEmptyPathSegmentRequestBuilderGetQueryParameters struct {
     Offset *int32 `uriparametername:"offset"`
     Order_by *string `uriparametername:"order_by"`
     Pipeline__uuid *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID `uriparametername:"pipeline__uuid"`
-    // Deprecated: This property is deprecated, use PurposeAsLocationPurpose instead
-    Purpose *string `uriparametername:"purpose"`
-    PurposeAsLocationPurpose *ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.LocationPurpose `uriparametername:"purpose"`
+    Purpose *ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.LocationPurpose `uriparametername:"purpose"`
     Quota *int32 `uriparametername:"quota"`
     Relative_path *string `uriparametername:"relative_path"`
     Used *int32 `uriparametername:"used"`
     Uuid *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID `uriparametername:"uuid"`
-}
-// V2LocationEmptyPathSegmentRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2LocationEmptyPathSegmentRequestBuilderGetRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-    // Request query parameters
-    QueryParameters *V2LocationEmptyPathSegmentRequestBuilderGetQueryParameters
 }
 // NewV2LocationEmptyPathSegmentRequestBuilderInternal instantiates a new V2LocationEmptyPathSegmentRequestBuilder and sets the default values.
 func NewV2LocationEmptyPathSegmentRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2LocationEmptyPathSegmentRequestBuilder) {
@@ -51,7 +40,7 @@ func NewV2LocationEmptyPathSegmentRequestBuilder(rawUrl string, requestAdapter i
     return NewV2LocationEmptyPathSegmentRequestBuilderInternal(urlParams, requestAdapter)
 }
 // returns a LocationListable when successful
-func (m *V2LocationEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *V2LocationEmptyPathSegmentRequestBuilderGetRequestConfiguration)(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.LocationListable, error) {
+func (m *V2LocationEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[V2LocationEmptyPathSegmentRequestBuilderGetQueryParameters])(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.LocationListable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
@@ -66,15 +55,9 @@ func (m *V2LocationEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requ
     return res.(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.LocationListable), nil
 }
 // returns a *RequestInformation when successful
-func (m *V2LocationEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2LocationEmptyPathSegmentRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2LocationEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[V2LocationEmptyPathSegmentRequestBuilderGetQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        if requestConfiguration.QueryParameters != nil {
-            requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
-        }
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "application/json")
     return requestInfo, nil
 }

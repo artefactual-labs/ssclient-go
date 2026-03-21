@@ -62,7 +62,7 @@ func TestPackages(t *testing.T) {
 			},
 		}
 
-		pkg, err := client.Packages().Get(context.Background(), packageID)
+		pkg, err := client.Packages().Get(context.Background(), uuid.MustParse(packageID))
 		assertEqual(t, err, nil)
 		if pkg == nil {
 			t.Fatal("expected package")
@@ -125,7 +125,7 @@ func TestPackages(t *testing.T) {
 				},
 			}
 
-			res, err := client.Packages().DownloadPackage(context.Background(), packageID)
+			res, err := client.Packages().DownloadPackage(context.Background(), uuid.MustParse(packageID))
 			assertEqual(t, err, nil)
 			if res == nil {
 				t.Fatal("expected download result")
@@ -181,7 +181,7 @@ func TestPackages(t *testing.T) {
 				},
 			}
 
-			res, err := client.Packages().DownloadPackage(context.Background(), packageID)
+			res, err := client.Packages().DownloadPackage(context.Background(), uuid.MustParse(packageID))
 			if err == nil {
 				t.Fatal("expected download error")
 			}
@@ -260,7 +260,7 @@ func TestPackages(t *testing.T) {
 				},
 			}
 
-			res, err := client.Packages().DownloadFile(context.Background(), packageID, relativePath)
+			res, err := client.Packages().DownloadFile(context.Background(), uuid.MustParse(packageID), relativePath)
 			assertEqual(t, err, nil)
 			if res == nil {
 				t.Fatal("expected extract file result")
@@ -287,7 +287,7 @@ func TestPackages(t *testing.T) {
 			})
 			assertEqual(t, err, nil)
 
-			if _, err := client.Packages().DownloadFile(context.Background(), "pkg", ""); err == nil {
+			if _, err := client.Packages().DownloadFile(context.Background(), uuid.Nil, ""); err == nil {
 				t.Fatal("expected error")
 			}
 		})
@@ -344,7 +344,7 @@ func TestPackages(t *testing.T) {
 				},
 			}
 
-			res, err := client.Packages().DownloadPointerFile(context.Background(), packageID)
+			res, err := client.Packages().DownloadPointerFile(context.Background(), uuid.MustParse(packageID))
 			assertEqual(t, err, nil)
 			if res == nil {
 				t.Fatal("expected pointer file result")
@@ -400,7 +400,7 @@ func TestPackages(t *testing.T) {
 				},
 			}
 
-			res, err := client.Packages().DownloadPointerFile(context.Background(), packageID)
+			res, err := client.Packages().DownloadPointerFile(context.Background(), uuid.MustParse(packageID))
 			if err == nil {
 				t.Fatal("expected pointer file error")
 			}
@@ -493,7 +493,7 @@ func TestPackages(t *testing.T) {
 			body.SetUserId(ptr(int32(1)))
 			body.SetUserEmail(ptr("user@example.com"))
 
-			res, err := client.Packages().DeleteAIP(context.Background(), packageID, body)
+			res, err := client.Packages().DeleteAIP(context.Background(), uuid.MustParse(packageID), body)
 			assertEqual(t, err, nil)
 			if res == nil {
 				t.Fatal("expected delete AIP result")
@@ -557,7 +557,7 @@ func TestPackages(t *testing.T) {
 			body.SetUserId(ptr(int32(1)))
 			body.SetUserEmail(ptr("user@example.com"))
 
-			res, err := client.Packages().DeleteAIP(context.Background(), packageID, body)
+			res, err := client.Packages().DeleteAIP(context.Background(), uuid.MustParse(packageID), body)
 			assertEqual(t, err, nil)
 			if res == nil {
 				t.Fatal("expected delete AIP result")
@@ -581,7 +581,7 @@ func TestPackages(t *testing.T) {
 			})
 			assertEqual(t, err, nil)
 
-			if _, err := client.Packages().DeleteAIP(context.Background(), "pkg", nil); err == nil {
+			if _, err := client.Packages().DeleteAIP(context.Background(), uuid.Nil, nil); err == nil {
 				t.Fatal("expected error")
 			}
 		})
@@ -615,7 +615,7 @@ func TestPackages(t *testing.T) {
 			},
 		}
 
-		res, err := client.Packages().CheckFixity(context.Background(), packageID, ssclient.CheckFixityOptions{
+		res, err := client.Packages().CheckFixity(context.Background(), uuid.MustParse(packageID), ssclient.CheckFixityOptions{
 			ForceLocal: &forceLocal,
 		})
 		assertEqual(t, err, nil)
@@ -660,7 +660,7 @@ func TestPackages(t *testing.T) {
 
 			body := models.NewPackageMoveRequest()
 			body.SetLocationUuid(ptr(uuid.MustParse(locationID)))
-			assertEqual(t, client.Packages().Move(context.Background(), packageID, body), nil)
+			assertEqual(t, client.Packages().Move(context.Background(), uuid.MustParse(packageID), body), nil)
 		})
 
 		t.Run("NilBody", func(t *testing.T) {
@@ -672,7 +672,7 @@ func TestPackages(t *testing.T) {
 			})
 			assertEqual(t, err, nil)
 
-			if err := client.Packages().Move(context.Background(), "pkg", nil); err == nil {
+			if err := client.Packages().Move(context.Background(), uuid.Nil, nil); err == nil {
 				t.Fatal("expected error")
 			}
 		})
@@ -724,7 +724,7 @@ func TestPackages(t *testing.T) {
 			body.SetDecision(&decision)
 			body.SetReason(ptr("approved by workflow"))
 
-			res, err := client.Packages().ReviewAIPDeletion(context.Background(), packageID, body)
+			res, err := client.Packages().ReviewAIPDeletion(context.Background(), uuid.MustParse(packageID), body)
 			assertEqual(t, err, nil)
 			if res == nil {
 				t.Fatal("expected review deletion response")
@@ -741,7 +741,7 @@ func TestPackages(t *testing.T) {
 			})
 			assertEqual(t, err, nil)
 
-			if _, err := client.Packages().ReviewAIPDeletion(context.Background(), "pkg", nil); err == nil {
+			if _, err := client.Packages().ReviewAIPDeletion(context.Background(), uuid.Nil, nil); err == nil {
 				t.Fatal("expected error")
 			}
 		})

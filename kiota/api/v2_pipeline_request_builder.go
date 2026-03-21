@@ -5,6 +5,7 @@ package api
 
 import (
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
+    i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 )
 
 // V2PipelineRequestBuilder builds and executes requests for operations under \api\v2\pipeline
@@ -13,14 +14,12 @@ type V2PipelineRequestBuilder struct {
 }
 // ByUuid gets an item from the go.artefactual.dev/ssclient/kiota.api.v2.pipeline.item collection
 // returns a *V2PipelineWithUuItemRequestBuilder when successful
-func (m *V2PipelineRequestBuilder) ByUuid(uuid string)(*V2PipelineWithUuItemRequestBuilder) {
+func (m *V2PipelineRequestBuilder) ByUuid(uuid i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)(*V2PipelineWithUuItemRequestBuilder) {
     urlTplParams := make(map[string]string)
     for idx, item := range m.BaseRequestBuilder.PathParameters {
         urlTplParams[idx] = item
     }
-    if uuid != "" {
-        urlTplParams["uuid"] = uuid
-    }
+    urlTplParams["uuid"] = uuid.String()
     return NewV2PipelineWithUuItemRequestBuilderInternal(urlTplParams, m.BaseRequestBuilder.RequestAdapter)
 }
 // NewV2PipelineRequestBuilderInternal instantiates a new V2PipelineRequestBuilder and sets the default values.

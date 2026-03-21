@@ -13,20 +13,6 @@ import (
 type V2LocationItemEmptyPathSegmentRequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
-// V2LocationItemEmptyPathSegmentRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2LocationItemEmptyPathSegmentRequestBuilderGetRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-}
-// V2LocationItemEmptyPathSegmentRequestBuilderPostRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2LocationItemEmptyPathSegmentRequestBuilderPostRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-}
 // NewV2LocationItemEmptyPathSegmentRequestBuilderInternal instantiates a new V2LocationItemEmptyPathSegmentRequestBuilder and sets the default values.
 func NewV2LocationItemEmptyPathSegmentRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2LocationItemEmptyPathSegmentRequestBuilder) {
     m := &V2LocationItemEmptyPathSegmentRequestBuilder{
@@ -42,7 +28,7 @@ func NewV2LocationItemEmptyPathSegmentRequestBuilder(rawUrl string, requestAdapt
 }
 // returns a Locationable when successful
 // returns a ErrorEscaped error when the service returns a 400 status code
-func (m *V2LocationItemEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *V2LocationItemEmptyPathSegmentRequestBuilderGetRequestConfiguration)(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.Locationable, error) {
+func (m *V2LocationItemEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.Locationable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
@@ -62,7 +48,7 @@ func (m *V2LocationItemEmptyPathSegmentRequestBuilder) Get(ctx context.Context, 
 // Post move files to the specified location.
 // returns a []byte when successful
 // returns a ErrorEscaped error when the service returns a 400 status code
-func (m *V2LocationItemEmptyPathSegmentRequestBuilder) Post(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.MoveRequestable, requestConfiguration *V2LocationItemEmptyPathSegmentRequestBuilderPostRequestConfiguration)([]byte, error) {
+func (m *V2LocationItemEmptyPathSegmentRequestBuilder) Post(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.MoveRequestable, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])([]byte, error) {
     requestInfo, err := m.ToPostRequestInformation(ctx, body, requestConfiguration);
     if err != nil {
         return nil, err
@@ -80,23 +66,17 @@ func (m *V2LocationItemEmptyPathSegmentRequestBuilder) Post(ctx context.Context,
     return res.([]byte), nil
 }
 // returns a *RequestInformation when successful
-func (m *V2LocationItemEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2LocationItemEmptyPathSegmentRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2LocationItemEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "application/json")
     return requestInfo, nil
 }
 // ToPostRequestInformation move files to the specified location.
 // returns a *RequestInformation when successful
-func (m *V2LocationItemEmptyPathSegmentRequestBuilder) ToPostRequestInformation(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.MoveRequestable, requestConfiguration *V2LocationItemEmptyPathSegmentRequestBuilderPostRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2LocationItemEmptyPathSegmentRequestBuilder) ToPostRequestInformation(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.MoveRequestable, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "application/json")
     err := requestInfo.SetContentFromParsable(ctx, m.BaseRequestBuilder.RequestAdapter, "application/json", body)
     if err != nil {

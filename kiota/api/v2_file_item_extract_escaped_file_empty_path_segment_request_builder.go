@@ -17,27 +17,9 @@ type V2FileItemExtract_fileEmptyPathSegmentRequestBuilder struct {
 type V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetQueryParameters struct {
     Relative_path_to_file *string `uriparametername:"relative_path_to_file"`
 }
-// V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-    // Request query parameters
-    QueryParameters *V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetQueryParameters
-}
 // V2FileItemExtract_fileEmptyPathSegmentRequestBuilderHeadQueryParameters check extracted-file download availability. The current server implementation handles HEAD the same way as GET.
 type V2FileItemExtract_fileEmptyPathSegmentRequestBuilderHeadQueryParameters struct {
     Relative_path_to_file *string `uriparametername:"relative_path_to_file"`
-}
-// V2FileItemExtract_fileEmptyPathSegmentRequestBuilderHeadRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2FileItemExtract_fileEmptyPathSegmentRequestBuilderHeadRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-    // Request query parameters
-    QueryParameters *V2FileItemExtract_fileEmptyPathSegmentRequestBuilderHeadQueryParameters
 }
 // NewV2FileItemExtract_fileEmptyPathSegmentRequestBuilderInternal instantiates a new V2FileItemExtract_fileEmptyPathSegmentRequestBuilder and sets the default values.
 func NewV2FileItemExtract_fileEmptyPathSegmentRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) {
@@ -55,7 +37,7 @@ func NewV2FileItemExtract_fileEmptyPathSegmentRequestBuilder(rawUrl string, requ
 // Get download a single file from the package. Compressed packages may be extracted on demand.
 // returns a AvailabilityResponseable when successful
 // returns a AvailabilityResponse error when the service returns a 502 status code
-func (m *V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetRequestConfiguration)(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.AvailabilityResponseable, error) {
+func (m *V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetQueryParameters])(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.AvailabilityResponseable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
@@ -73,7 +55,7 @@ func (m *V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) Get(ctx context.C
     return res.(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.AvailabilityResponseable), nil
 }
 // Head check extracted-file download availability. The current server implementation handles HEAD the same way as GET.
-func (m *V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) Head(ctx context.Context, requestConfiguration *V2FileItemExtract_fileEmptyPathSegmentRequestBuilderHeadRequestConfiguration)(error) {
+func (m *V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) Head(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[V2FileItemExtract_fileEmptyPathSegmentRequestBuilderHeadQueryParameters])(error) {
     requestInfo, err := m.ToHeadRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return err
@@ -86,29 +68,17 @@ func (m *V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) Head(ctx context.
 }
 // ToGetRequestInformation download a single file from the package. Compressed packages may be extracted on demand.
 // returns a *RequestInformation when successful
-func (m *V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[V2FileItemExtract_fileEmptyPathSegmentRequestBuilderGetQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        if requestConfiguration.QueryParameters != nil {
-            requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
-        }
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "application/json")
     return requestInfo, nil
 }
 // ToHeadRequestInformation check extracted-file download availability. The current server implementation handles HEAD the same way as GET.
 // returns a *RequestInformation when successful
-func (m *V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) ToHeadRequestInformation(ctx context.Context, requestConfiguration *V2FileItemExtract_fileEmptyPathSegmentRequestBuilderHeadRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2FileItemExtract_fileEmptyPathSegmentRequestBuilder) ToHeadRequestInformation(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[V2FileItemExtract_fileEmptyPathSegmentRequestBuilderHeadQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.HEAD, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        if requestConfiguration.QueryParameters != nil {
-            requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
-        }
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     return requestInfo, nil
 }
 // WithUrl returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.

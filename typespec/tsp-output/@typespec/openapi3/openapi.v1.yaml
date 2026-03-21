@@ -546,7 +546,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/uuid'
       responses:
         '200':
           description: The request has succeeded.

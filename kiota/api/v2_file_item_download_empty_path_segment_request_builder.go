@@ -13,20 +13,6 @@ import (
 type V2FileItemDownloadEmptyPathSegmentRequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
-// V2FileItemDownloadEmptyPathSegmentRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2FileItemDownloadEmptyPathSegmentRequestBuilderGetRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-}
-// V2FileItemDownloadEmptyPathSegmentRequestBuilderHeadRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2FileItemDownloadEmptyPathSegmentRequestBuilderHeadRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-}
 // NewV2FileItemDownloadEmptyPathSegmentRequestBuilderInternal instantiates a new V2FileItemDownloadEmptyPathSegmentRequestBuilder and sets the default values.
 func NewV2FileItemDownloadEmptyPathSegmentRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2FileItemDownloadEmptyPathSegmentRequestBuilder) {
     m := &V2FileItemDownloadEmptyPathSegmentRequestBuilder{
@@ -43,7 +29,7 @@ func NewV2FileItemDownloadEmptyPathSegmentRequestBuilder(rawUrl string, requestA
 // Get download the package archive. Successful responses stream the file body.
 // returns a AvailabilityResponseable when successful
 // returns a AvailabilityResponse error when the service returns a 502 status code
-func (m *V2FileItemDownloadEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *V2FileItemDownloadEmptyPathSegmentRequestBuilderGetRequestConfiguration)(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.AvailabilityResponseable, error) {
+func (m *V2FileItemDownloadEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.AvailabilityResponseable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
@@ -61,7 +47,7 @@ func (m *V2FileItemDownloadEmptyPathSegmentRequestBuilder) Get(ctx context.Conte
     return res.(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.AvailabilityResponseable), nil
 }
 // Head check package download availability. The current server implementation handles HEAD the same way as GET.
-func (m *V2FileItemDownloadEmptyPathSegmentRequestBuilder) Head(ctx context.Context, requestConfiguration *V2FileItemDownloadEmptyPathSegmentRequestBuilderHeadRequestConfiguration)(error) {
+func (m *V2FileItemDownloadEmptyPathSegmentRequestBuilder) Head(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(error) {
     requestInfo, err := m.ToHeadRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return err
@@ -74,23 +60,17 @@ func (m *V2FileItemDownloadEmptyPathSegmentRequestBuilder) Head(ctx context.Cont
 }
 // ToGetRequestInformation download the package archive. Successful responses stream the file body.
 // returns a *RequestInformation when successful
-func (m *V2FileItemDownloadEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2FileItemDownloadEmptyPathSegmentRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2FileItemDownloadEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "application/json")
     return requestInfo, nil
 }
 // ToHeadRequestInformation check package download availability. The current server implementation handles HEAD the same way as GET.
 // returns a *RequestInformation when successful
-func (m *V2FileItemDownloadEmptyPathSegmentRequestBuilder) ToHeadRequestInformation(ctx context.Context, requestConfiguration *V2FileItemDownloadEmptyPathSegmentRequestBuilderHeadRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2FileItemDownloadEmptyPathSegmentRequestBuilder) ToHeadRequestInformation(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.HEAD, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     return requestInfo, nil
 }
 // WithUrl returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.

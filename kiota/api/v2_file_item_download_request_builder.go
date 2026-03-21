@@ -13,21 +13,8 @@ type V2FileItemDownloadRequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 // ByChunkNumber gets an item from the go.artefactual.dev/ssclient/kiota.api.v2.file.item.download.item collection
-// Deprecated: This indexer is deprecated and will be removed in the next major version. Use the one with the typed parameter instead.
 // returns a *V2FileItemDownloadWithChunkNumberItemRequestBuilder when successful
-func (m *V2FileItemDownloadRequestBuilder) ByChunkNumber(chunkNumber string)(*V2FileItemDownloadWithChunkNumberItemRequestBuilder) {
-    urlTplParams := make(map[string]string)
-    for idx, item := range m.BaseRequestBuilder.PathParameters {
-        urlTplParams[idx] = item
-    }
-    if chunkNumber != "" {
-        urlTplParams["chunkNumber"] = chunkNumber
-    }
-    return NewV2FileItemDownloadWithChunkNumberItemRequestBuilderInternal(urlTplParams, m.BaseRequestBuilder.RequestAdapter)
-}
-// ByChunkNumberInteger gets an item from the go.artefactual.dev/ssclient/kiota.api.v2.file.item.download.item collection
-// returns a *V2FileItemDownloadWithChunkNumberItemRequestBuilder when successful
-func (m *V2FileItemDownloadRequestBuilder) ByChunkNumberInteger(chunkNumber int32)(*V2FileItemDownloadWithChunkNumberItemRequestBuilder) {
+func (m *V2FileItemDownloadRequestBuilder) ByChunkNumber(chunkNumber int32)(*V2FileItemDownloadWithChunkNumberItemRequestBuilder) {
     urlTplParams := make(map[string]string)
     for idx, item := range m.BaseRequestBuilder.PathParameters {
         urlTplParams[idx] = item

@@ -35,7 +35,7 @@ namespace Service {
 
     @route("{uuid}/")
     @get
-    op read(@path uuid: string): {
+    op read(@path uuid: uuid): {
       @statusCode statusCode: 200;
       @body pipeline: Pipeline;
     } | {

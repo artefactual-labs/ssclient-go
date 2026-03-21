@@ -17,15 +17,6 @@ type V2FileItemCheck_fixityEmptyPathSegmentRequestBuilder struct {
 type V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetQueryParameters struct {
     Force_local *bool `uriparametername:"force_local"`
 }
-// V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-    // Request query parameters
-    QueryParameters *V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetQueryParameters
-}
 // NewV2FileItemCheck_fixityEmptyPathSegmentRequestBuilderInternal instantiates a new V2FileItemCheck_fixityEmptyPathSegmentRequestBuilder and sets the default values.
 func NewV2FileItemCheck_fixityEmptyPathSegmentRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2FileItemCheck_fixityEmptyPathSegmentRequestBuilder) {
     m := &V2FileItemCheck_fixityEmptyPathSegmentRequestBuilder{
@@ -42,7 +33,7 @@ func NewV2FileItemCheck_fixityEmptyPathSegmentRequestBuilder(rawUrl string, requ
 // Get run a fixity check for the specified package.
 // returns a FixityResponseable when successful
 // returns a ErrorEscaped error when the service returns a 400 status code
-func (m *V2FileItemCheck_fixityEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetRequestConfiguration)(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.FixityResponseable, error) {
+func (m *V2FileItemCheck_fixityEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetQueryParameters])(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.FixityResponseable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
@@ -61,15 +52,9 @@ func (m *V2FileItemCheck_fixityEmptyPathSegmentRequestBuilder) Get(ctx context.C
 }
 // ToGetRequestInformation run a fixity check for the specified package.
 // returns a *RequestInformation when successful
-func (m *V2FileItemCheck_fixityEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2FileItemCheck_fixityEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[V2FileItemCheck_fixityEmptyPathSegmentRequestBuilderGetQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        if requestConfiguration.QueryParameters != nil {
-            requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
-        }
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "application/json")
     return requestInfo, nil
 }

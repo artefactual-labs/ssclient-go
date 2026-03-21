@@ -18,15 +18,6 @@ type V2PipelineEmptyPathSegmentRequestBuilderGetQueryParameters struct {
     Description *string `uriparametername:"description"`
     Uuid *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID `uriparametername:"uuid"`
 }
-// V2PipelineEmptyPathSegmentRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type V2PipelineEmptyPathSegmentRequestBuilderGetRequestConfiguration struct {
-    // Request headers
-    Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-    // Request options
-    Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-    // Request query parameters
-    QueryParameters *V2PipelineEmptyPathSegmentRequestBuilderGetQueryParameters
-}
 // NewV2PipelineEmptyPathSegmentRequestBuilderInternal instantiates a new V2PipelineEmptyPathSegmentRequestBuilder and sets the default values.
 func NewV2PipelineEmptyPathSegmentRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2PipelineEmptyPathSegmentRequestBuilder) {
     m := &V2PipelineEmptyPathSegmentRequestBuilder{
@@ -41,7 +32,7 @@ func NewV2PipelineEmptyPathSegmentRequestBuilder(rawUrl string, requestAdapter i
     return NewV2PipelineEmptyPathSegmentRequestBuilderInternal(urlParams, requestAdapter)
 }
 // returns a PipelineListable when successful
-func (m *V2PipelineEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *V2PipelineEmptyPathSegmentRequestBuilderGetRequestConfiguration)(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PipelineListable, error) {
+func (m *V2PipelineEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[V2PipelineEmptyPathSegmentRequestBuilderGetQueryParameters])(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PipelineListable, error) {
     requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration);
     if err != nil {
         return nil, err
@@ -56,15 +47,9 @@ func (m *V2PipelineEmptyPathSegmentRequestBuilder) Get(ctx context.Context, requ
     return res.(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PipelineListable), nil
 }
 // returns a *RequestInformation when successful
-func (m *V2PipelineEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *V2PipelineEmptyPathSegmentRequestBuilderGetRequestConfiguration)(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *V2PipelineEmptyPathSegmentRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[V2PipelineEmptyPathSegmentRequestBuilderGetQueryParameters])(*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-    if requestConfiguration != nil {
-        if requestConfiguration.QueryParameters != nil {
-            requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
-        }
-        requestInfo.Headers.AddAll(requestConfiguration.Headers)
-        requestInfo.AddRequestOptions(requestConfiguration.Options)
-    }
+    i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "application/json")
     return requestInfo, nil
 }

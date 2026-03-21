@@ -341,7 +341,7 @@ func TestPackagesDeleteAndReviewWorkWithRealAdapter(t *testing.T) {
 		body.SetUserId(executePtr(int32(1)))
 		body.SetUserEmail(executePtr("user@example.com"))
 
-		res, err := client.Packages().DeleteAIP(context.Background(), packageID, body)
+		res, err := client.Packages().DeleteAIP(context.Background(), uuid.MustParse(packageID), body)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -379,7 +379,7 @@ func TestPackagesDeleteAndReviewWorkWithRealAdapter(t *testing.T) {
 		body.SetDecision(&decision)
 		body.SetReason(executePtr("approved by workflow"))
 
-		res, err := client.Packages().ReviewAIPDeletion(context.Background(), packageID, body)
+		res, err := client.Packages().ReviewAIPDeletion(context.Background(), uuid.MustParse(packageID), body)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -395,7 +395,7 @@ func TestResponseSnapshotDecodeJSON(t *testing.T) {
 
 	var payload struct {
 		Kind string `json:"kind"`
-		UUID string `json:"uuid"`
+		ID   string `json:"uuid"`
 	}
 	if err := resp.decodeJSON(&payload); err != nil {
 		t.Fatal(err)
@@ -403,8 +403,8 @@ func TestResponseSnapshotDecodeJSON(t *testing.T) {
 
 	if !reflect.DeepEqual(payload, struct {
 		Kind string `json:"kind"`
-		UUID string `json:"uuid"`
-	}{Kind: "deleted", UUID: "1234"}) {
+		ID   string `json:"uuid"`
+	}{Kind: "deleted", ID: "1234"}) {
 		t.Fatalf("unexpected payload %#v", payload)
 	}
 }

@@ -40,10 +40,10 @@ func TestPipelines(t *testing.T) {
 		}
 
 		description := "pipeline"
-		uuid := "a64e061a-5688-49b5-95c1-0b6885c40c04"
+		pipelineID := uuid.MustParse("a64e061a-5688-49b5-95c1-0b6885c40c04")
 		res, err := client.Pipelines().List(context.Background(), ssclient.ListPipelinesQuery{
 			Description: &description,
-			UUID:        &uuid,
+			ID:          &pipelineID,
 		})
 		assertEqual(t, err, nil)
 		if res == nil {
@@ -76,7 +76,7 @@ func TestPipelines(t *testing.T) {
 			},
 		}
 
-		res, err := client.Pipelines().Get(context.Background(), pipelineID)
+		res, err := client.Pipelines().Get(context.Background(), uuid.MustParse(pipelineID))
 		assertEqual(t, err, nil)
 		if res == nil {
 			t.Fatal("expected pipeline")

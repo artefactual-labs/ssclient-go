@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+	kabs "github.com/microsoft/kiota-abstractions-go"
 	kapi "go.artefactual.dev/ssclient/kiota/api"
 	"go.artefactual.dev/ssclient/kiota/models"
 )
@@ -17,20 +19,15 @@ type PipelinesService struct {
 // pipelines.
 type ListPipelinesQuery struct {
 	Description *string
-	UUID        *string
+	ID          *uuid.UUID
 }
 
 // List returns a filtered list of pipelines.
 func (s *PipelinesService) List(ctx context.Context, query ListPipelinesQuery) (*models.PipelineList, error) {
-	pipelineUUID, err := parseOptionalUUID(query.UUID)
-	if err != nil {
-		return nil, fmt.Errorf("invalid pipeline UUID %q: %w", *query.UUID, err)
-	}
-
-	reqConfig := &kapi.V2PipelineEmptyPathSegmentRequestBuilderGetRequestConfiguration{
+	reqConfig := &kabs.RequestConfiguration[kapi.V2PipelineEmptyPathSegmentRequestBuilderGetQueryParameters]{
 		QueryParameters: &kapi.V2PipelineEmptyPathSegmentRequestBuilderGetQueryParameters{
 			Description: query.Description,
-			Uuid:        pipelineUUID,
+			Uuid:        query.ID,
 		},
 	}
 
@@ -50,9 +47,9 @@ func (s *PipelinesService) List(ctx context.Context, query ListPipelinesQuery) (
 	return typed, nil
 }
 
-// Get returns a pipeline by UUID.
-func (s *PipelinesService) Get(ctx context.Context, uuid string) (*models.Pipeline, error) {
-	res, err := s.client.raw.Api().V2().Pipeline().ByUuid(uuid).EmptyPathSegment().Get(ctx, nil)
+// Get returns a pipeline by ID.
+func (s *PipelinesService) Get(ctx context.Context, id uuid.UUID) (*models.Pipeline, error) {
+	res, err := s.client.raw.Api().V2().Pipeline().ByUuid(id).EmptyPathSegment().Get(ctx, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
