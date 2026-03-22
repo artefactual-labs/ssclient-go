@@ -33,7 +33,7 @@ type PackageEscaped struct {
     // Uniform Resource Identifier, e.g. "/api/v2/space/141593ff-2a27-44a1-9de1-917573fa0f4a/".
     resource_uri *string
     // The size property
-    size *int32
+    size *int64
     // The status property
     status *string
     // The stored_date property
@@ -195,7 +195,7 @@ func (m *PackageEscaped) GetFieldDeserializers()(map[string]func(i878a80d2330e89
         return nil
     }
     res["size"] = func (n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-        val, err := n.GetInt32Value()
+        val, err := n.GetInt64Value()
         if err != nil {
             return err
         }
@@ -267,8 +267,8 @@ func (m *PackageEscaped) GetResourceUri()(*string) {
     return m.resource_uri
 }
 // GetSize gets the size property value. The size property
-// returns a *int32 when successful
-func (m *PackageEscaped) GetSize()(*int32) {
+// returns a *int64 when successful
+func (m *PackageEscaped) GetSize()(*int64) {
     return m.size
 }
 // GetStatus gets the status property value. The status property
@@ -350,7 +350,7 @@ func (m *PackageEscaped) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a
         }
     }
     {
-        err := writer.WriteInt32Value("size", m.GetSize())
+        err := writer.WriteInt64Value("size", m.GetSize())
         if err != nil {
             return err
         }
@@ -426,7 +426,7 @@ func (m *PackageEscaped) SetResourceUri(value *string)() {
     m.resource_uri = value
 }
 // SetSize sets the size property value. The size property
-func (m *PackageEscaped) SetSize(value *int32)() {
+func (m *PackageEscaped) SetSize(value *int64)() {
     m.size = value
 }
 // SetStatus sets the status property value. The status property
@@ -454,7 +454,7 @@ type PackageEscapedable interface {
     GetReplicas()([]string)
     GetReplicatedPackage()(*string)
     GetResourceUri()(*string)
-    GetSize()(*int32)
+    GetSize()(*int64)
     GetStatus()(*string)
     GetStoredDate()(*i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
     GetUuid()(*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
@@ -468,7 +468,7 @@ type PackageEscapedable interface {
     SetReplicas(value []string)()
     SetReplicatedPackage(value *string)()
     SetResourceUri(value *string)()
-    SetSize(value *int32)()
+    SetSize(value *int64)()
     SetStatus(value *string)()
     SetStoredDate(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)()
     SetUuid(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)()

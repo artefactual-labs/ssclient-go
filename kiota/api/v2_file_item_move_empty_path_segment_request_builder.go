@@ -27,24 +27,20 @@ func NewV2FileItemMoveEmptyPathSegmentRequestBuilder(rawUrl string, requestAdapt
     return NewV2FileItemMoveEmptyPathSegmentRequestBuilderInternal(urlParams, requestAdapter)
 }
 // Post move the package to a different storage location.
-// returns a []byte when successful
 // returns a ErrorEscaped error when the service returns a 400 status code
-func (m *V2FileItemMoveEmptyPathSegmentRequestBuilder) Post(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PackageMoveRequestable, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])([]byte, error) {
+func (m *V2FileItemMoveEmptyPathSegmentRequestBuilder) Post(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.PackageMoveRequestable, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(error) {
     requestInfo, err := m.ToPostRequestInformation(ctx, body, requestConfiguration);
     if err != nil {
-        return nil, err
+        return err
     }
     errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings {
         "400": ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.CreateErrorEscapedFromDiscriminatorValue,
     }
-    res, err := m.BaseRequestBuilder.RequestAdapter.SendPrimitive(ctx, requestInfo, "[]byte", errorMapping)
+    err = m.BaseRequestBuilder.RequestAdapter.SendNoContent(ctx, requestInfo, errorMapping)
     if err != nil {
-        return nil, err
+        return err
     }
-    if res == nil {
-        return nil, nil
-    }
-    return res.([]byte), nil
+    return nil
 }
 // ToPostRequestInformation move the package to a different storage location.
 // returns a *RequestInformation when successful
@@ -52,7 +48,7 @@ func (m *V2FileItemMoveEmptyPathSegmentRequestBuilder) ToPostRequestInformation(
     requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ConfigureRequestInformation(requestInfo, requestConfiguration)
     requestInfo.Headers.TryAdd("Accept", "application/json")
-    err := requestInfo.SetContentFromParsable(ctx, m.BaseRequestBuilder.RequestAdapter, "application/json", body)
+    err := requestInfo.SetContentFromParsable(ctx, m.BaseRequestBuilder.RequestAdapter, "application/x-www-form-urlencoded", body)
     if err != nil {
         return nil, err
     }

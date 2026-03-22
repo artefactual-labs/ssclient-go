@@ -2,10 +2,12 @@ package ssclient
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"mime"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/google/uuid"
@@ -53,6 +55,45 @@ type FileStream struct {
 	ContentDisposition string
 	Filename           string
 	Body               io.ReadCloser
+}
+
+// MoveResult captures the accepted async package move response.
+type MoveResult struct {
+	StatusCode int
+	Location   string
+}
+
+// ReviewAIPDeletionResult preserves the two business outcomes exposed by the
+// review endpoint, both of which currently use HTTP 200 responses.
+type ReviewAIPDeletionResult struct {
+	StatusCode int
+	Success    *ReviewAIPDeletionSuccess
+	Failure    *ReviewAIPDeletionFailure
+}
+
+// IsSuccess reports whether the review completed with a business success
+// payload.
+func (r *ReviewAIPDeletionResult) IsSuccess() bool {
+	return r != nil && r.Success != nil
+}
+
+// IsFailure reports whether the review completed with an application-level
+// failure payload.
+func (r *ReviewAIPDeletionResult) IsFailure() bool {
+	return r != nil && r.Failure != nil
+}
+
+// ReviewAIPDeletionSuccess captures a successful review response.
+type ReviewAIPDeletionSuccess struct {
+	Message string `json:"message"`
+	Detail  string `json:"detail,omitempty"`
+}
+
+// ReviewAIPDeletionFailure captures an application-level failure returned by
+// the review endpoint with HTTP 200.
+type ReviewAIPDeletionFailure struct {
+	ErrorMessage string `json:"error_message"`
+	Detail       string `json:"detail,omitempty"`
 }
 
 // IsAccepted reports whether the request created a new deletion event.
@@ -265,34 +306,116 @@ func (s *PackagesService) CheckFixity(ctx context.Context, id uuid.UUID, opts Ch
 }
 
 // Move moves a package to a different storage location.
-func (s *PackagesService) Move(ctx context.Context, id uuid.UUID, body *models.PackageMoveRequest) error {
-	if body == nil {
-		return fmt.Errorf("package move request is required")
+func (s *PackagesService) Move(ctx context.Context, id, locationID uuid.UUID) (*MoveResult, error) {
+	values := url.Values{}
+	values.Set("location_uuid", locationID.String())
+
+	requestInfo := kabs.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(
+		kabs.POST,
+		"{+baseurl}/api/v2/file/{uuid}/move/",
+		map[string]string{
+			"uuid": id.String(),
+		},
+	)
+	requestInfo.Headers.TryAdd("Accept", "application/json")
+	requestInfo.Headers.TryAdd("Content-Type", "application/x-www-form-urlencoded")
+	requestInfo.Content = []byte(values.Encode())
+
+	resp, err := s.client.execute(ctx, requestInfo)
+	if err != nil {
+		return nil, normalizeError(err)
 	}
 
-	_, err := s.client.raw.Api().V2().File().ByUuid(id).Move().EmptyPathSegment().Post(ctx, body, nil)
-	return normalizeError(err)
+	switch resp.StatusCode {
+	case http.StatusAccepted:
+		location := resp.Headers.Get("Location")
+		if location == "" {
+			return nil, fmt.Errorf("missing Location header")
+		}
+		return &MoveResult{
+			StatusCode: http.StatusAccepted,
+			Location:   location,
+		}, nil
+	case http.StatusBadRequest:
+		return nil, newResponseErrorFromSnapshot(resp, "package move request bad request")
+	case http.StatusNotFound:
+		return nil, newResponseErrorFromSnapshot(resp, "package move request not found")
+	default:
+		return nil, newResponseErrorFromSnapshot(resp, fmt.Sprintf("unexpected package move response status %d", resp.StatusCode))
+	}
 }
 
 // ReviewAIPDeletion approves or rejects an AIP deletion request associated with
 // a package.
-func (s *PackagesService) ReviewAIPDeletion(ctx context.Context, id uuid.UUID, body *models.ReviewAipDeletionRequest) (*models.ReviewAipDeletionSuccess, error) {
+//
+// Storage Service reports two distinct business outcomes for this endpoint
+// using the same HTTP 200 status code and content type:
+//   - success bodies use {"message": ...}
+//   - application-level failure bodies use {"error_message": ...}
+//
+// That shape is part of the deployed API, but it is awkward for generated
+// clients because there is no discriminator beyond the JSON fields themselves.
+// The wrapper therefore executes the request and inspects the response body
+// directly so callers get a stable result type without having to decode the
+// ambiguous 200 response manually.
+func (s *PackagesService) ReviewAIPDeletion(ctx context.Context, id uuid.UUID, body *models.ReviewAipDeletionRequest) (*ReviewAIPDeletionResult, error) {
 	if body == nil {
 		return nil, fmt.Errorf("review AIP deletion request is required")
 	}
 
-	res, err := s.client.raw.Api().V2().File().ByUuid(id).Review_aip_deletion().EmptyPathSegment().Post(ctx, body, nil)
+	builder := s.client.raw.Api().V2().File().ByUuid(id).Review_aip_deletion().EmptyPathSegment()
+	requestInfo, err := builder.ToPostRequestInformation(ctx, body, nil)
 	if err != nil {
 		return nil, normalizeError(err)
 	}
-	if res == nil {
-		return nil, nil
+
+	resp, err := s.client.execute(ctx, requestInfo)
+	if err != nil {
+		return nil, normalizeError(err)
 	}
 
-	typed, ok := res.(*models.ReviewAipDeletionSuccess)
-	if !ok {
-		return nil, fmt.Errorf("unexpected review AIP deletion response type %T", res)
+	switch resp.StatusCode {
+	case http.StatusOK:
+		if hasJSONField(resp.Body, "error_message") {
+			var failure ReviewAIPDeletionFailure
+			if err := resp.decodeJSON(&failure); err != nil {
+				return nil, normalizeError(err)
+			}
+			return &ReviewAIPDeletionResult{
+				StatusCode: http.StatusOK,
+				Failure:    &failure,
+			}, nil
+		}
+
+		var success ReviewAIPDeletionSuccess
+		if err := resp.decodeJSON(&success); err != nil {
+			return nil, normalizeError(err)
+		}
+		return &ReviewAIPDeletionResult{
+			StatusCode: http.StatusOK,
+			Success:    &success,
+		}, nil
+	case http.StatusBadRequest:
+		return nil, newResponseErrorFromSnapshot(resp, "review AIP deletion request bad request")
+	case http.StatusForbidden:
+		return nil, newResponseErrorFromSnapshot(resp, "review AIP deletion request forbidden")
+	case http.StatusNotFound:
+		return nil, newResponseErrorFromSnapshot(resp, "review AIP deletion request not found")
+	default:
+		return nil, newResponseErrorFromSnapshot(resp, fmt.Sprintf("unexpected review AIP deletion response status %d", resp.StatusCode))
+	}
+}
+
+func hasJSONField(body []byte, field string) bool {
+	if len(body) == 0 {
+		return false
 	}
 
-	return typed, nil
+	var payload map[string]json.RawMessage
+	if err := json.Unmarshal(body, &payload); err != nil {
+		return false
+	}
+
+	_, ok := payload[field]
+	return ok
 }

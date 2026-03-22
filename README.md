@@ -17,8 +17,8 @@ of locations and pipelines found in Archivematica Storage Service.
 
 The main entrypoint is `ssclient.New`, which constructs a client with small,
 domain-oriented helpers such as `Locations()`, `Packages()`, and
-`Pipelines()`. This is the recommended way to use the module for common
-operations.
+`Pipelines()`. This is the recommended way to use the module and should be the
+default path for interacting with the API.
 
 ### Working with the generated client
 
@@ -31,9 +31,10 @@ That generated API uses Kiota's request-builder pattern, including
 slash. See [`example`] for a side-by-side example using both the high-level
 client and the generated client.
 
-The generated client also inherits some Kiota limitations. The high-level
-wrapper exists in part to smooth over those rough edges, so prefer it when a
-wrapper method is available. For background, see [issue #20].
+> [!WARNING]
+> Prefer the high-level wrapper for normal use. `Client.Raw()` is an escape
+> hatch for gaps in wrapper coverage while we continue to define that
+> boundary. For background, see [issue #20].
 
 ## OpenAPI specification
 
@@ -62,6 +63,28 @@ useful as reference material while building the TypeSpec description.
 If we want to expand coverage further, [django-tastypie-swagger] may be useful
 prior art because it already maps Tastypie resources into Swagger-style schema
 data.
+
+## Contributor notes
+
+This repository is wrapper-first. Generated code is an implementation detail
+and a fallback escape hatch, not the primary interface we want callers to use.
+
+When evolving an endpoint, the preferred pattern is:
+
+1. Fix TypeSpec first so the OpenAPI remains accurate.
+2. Regenerate Kiota without hand-editing generated files.
+3. Expose the operation through the public client wrapper and treat the
+   generated Go surface as a supporting implementation detail.
+
+Current examples include:
+
+- `Packages.Move`, where Storage Service expects
+  `application/x-www-form-urlencoded` and responds with `202 Accepted` plus a
+  `Location` header.
+- `Packages.DeleteAIP`, where multiple non-error `2xx` outcomes need to be
+  preserved explicitly.
+- `Packages.ReviewAIPDeletion`, where the server can return different `200`
+  JSON payloads for distinct business outcomes.
 
 [`example`]: ./example/main.go
 [TypeSpec]: https://typespec.io

@@ -307,8 +307,13 @@ paths:
           schema:
             $ref: '#/components/schemas/uuid'
       responses:
-        '200':
-          description: The request has succeeded.
+        '202':
+          description: The request has been accepted for processing, but processing has not yet completed.
+          headers:
+            Location:
+              required: true
+              schema:
+                type: string
         '400':
           description: The server could not understand the request due to invalid syntax.
           content:
@@ -320,7 +325,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/PackageMoveRequest'
   /api/v2/file/{uuid}/pointer_file/:
@@ -363,7 +368,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewAipDeletionSuccess'
+                anyOf:
+                  - $ref: '#/components/schemas/ReviewAipDeletionSuccess'
+                  - $ref: '#/components/schemas/ReviewAipDeletionFailure'
         '400':
           description: The server could not understand the request due to invalid syntax.
           content:
@@ -842,6 +849,7 @@ components:
           $ref: '#/components/schemas/uri'
         size:
           type: integer
+          format: int64
         status:
           type: string
         stored_date:
