@@ -6,12 +6,99 @@ package api
 import (
     "context"
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
+    i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
     ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588 "go.artefactual.dev/ssclient/kiota/models"
 )
 
 // V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder builds and executes requests for operations under \api\v2\file\{uuid}\review_aip_deletion\
 type V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
+}
+// PostResponse composed type wrapper for classes ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionFailureable, ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable
+type PostResponse struct {
+    // Composed type representation for type ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionFailureable
+    reviewAipDeletionFailure ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionFailureable
+    // Composed type representation for type ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable
+    reviewAipDeletionSuccess ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable
+}
+// NewPostResponse instantiates a new PostResponse and sets the default values.
+func NewPostResponse()(*PostResponse) {
+    m := &PostResponse{
+    }
+    return m
+}
+// CreatePostResponseFromDiscriminatorValue creates a new instance of the appropriate class based on discriminator value
+// returns a Parsable when successful
+func CreatePostResponseFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, error) {
+    result := NewPostResponse()
+    if parseNode != nil {
+        if val, err := parseNode.GetObjectValue(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.CreateReviewAipDeletionFailureFromDiscriminatorValue); val != nil {
+            if err != nil {
+                return nil, err
+            }
+            if cast, ok := val.(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionFailureable); ok {
+                result.SetReviewAipDeletionFailure(cast)
+            }
+        } else if val, err := parseNode.GetObjectValue(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.CreateReviewAipDeletionSuccessFromDiscriminatorValue); val != nil {
+            if err != nil {
+                return nil, err
+            }
+            if cast, ok := val.(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable); ok {
+                result.SetReviewAipDeletionSuccess(cast)
+            }
+        }
+    }
+    return result, nil
+}
+// GetFieldDeserializers the deserialization information for the current model
+// returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error) when successful
+func (m *PostResponse) GetFieldDeserializers()(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error)) {
+    return make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode)(error))
+}
+// GetIsComposedType determines if the current object is a wrapper around a composed type
+// returns a bool when successful
+func (m *PostResponse) GetIsComposedType()(bool) {
+    return true
+}
+// GetReviewAipDeletionFailure gets the ReviewAipDeletionFailure property value. Composed type representation for type ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionFailureable
+// returns a ReviewAipDeletionFailureable when successful
+func (m *PostResponse) GetReviewAipDeletionFailure()(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionFailureable) {
+    return m.reviewAipDeletionFailure
+}
+// GetReviewAipDeletionSuccess gets the ReviewAipDeletionSuccess property value. Composed type representation for type ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable
+// returns a ReviewAipDeletionSuccessable when successful
+func (m *PostResponse) GetReviewAipDeletionSuccess()(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable) {
+    return m.reviewAipDeletionSuccess
+}
+// Serialize serializes information the current object
+func (m *PostResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter)(error) {
+    if m.GetReviewAipDeletionFailure() != nil {
+        err := writer.WriteObjectValue("", m.GetReviewAipDeletionFailure())
+        if err != nil {
+            return err
+        }
+    } else if m.GetReviewAipDeletionSuccess() != nil {
+        err := writer.WriteObjectValue("", m.GetReviewAipDeletionSuccess())
+        if err != nil {
+            return err
+        }
+    }
+    return nil
+}
+// SetReviewAipDeletionFailure sets the ReviewAipDeletionFailure property value. Composed type representation for type ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionFailureable
+func (m *PostResponse) SetReviewAipDeletionFailure(value ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionFailureable)() {
+    m.reviewAipDeletionFailure = value
+}
+// SetReviewAipDeletionSuccess sets the ReviewAipDeletionSuccess property value. Composed type representation for type ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable
+func (m *PostResponse) SetReviewAipDeletionSuccess(value ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable)() {
+    m.reviewAipDeletionSuccess = value
+}
+type PostResponseable interface {
+    i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+    GetReviewAipDeletionFailure()(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionFailureable)
+    GetReviewAipDeletionSuccess()(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable)
+    SetReviewAipDeletionFailure(value ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionFailureable)()
+    SetReviewAipDeletionSuccess(value ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable)()
 }
 // NewV2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilderInternal instantiates a new V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder and sets the default values.
 func NewV2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder) {
@@ -27,10 +114,10 @@ func NewV2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder(rawUrl strin
     return NewV2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilderInternal(urlParams, requestAdapter)
 }
 // Post approve or reject an AIP deletion request associated with this package.
-// returns a ReviewAipDeletionSuccessable when successful
+// returns a PostResponseable when successful
 // returns a ReviewAipDeletionFailure error when the service returns a 400 status code
 // returns a ReviewAipDeletionFailure error when the service returns a 404 status code
-func (m *V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder) Post(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionRequestable, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable, error) {
+func (m *V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder) Post(ctx context.Context, body ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionRequestable, requestConfiguration *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestConfiguration[i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DefaultQueryParameters])(PostResponseable, error) {
     requestInfo, err := m.ToPostRequestInformation(ctx, body, requestConfiguration);
     if err != nil {
         return nil, err
@@ -39,14 +126,14 @@ func (m *V2FileItemReview_aip_deletionEmptyPathSegmentRequestBuilder) Post(ctx c
         "400": ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.CreateReviewAipDeletionFailureFromDiscriminatorValue,
         "404": ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.CreateReviewAipDeletionFailureFromDiscriminatorValue,
     }
-    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.CreateReviewAipDeletionSuccessFromDiscriminatorValue, errorMapping)
+    res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, CreatePostResponseFromDiscriminatorValue, errorMapping)
     if err != nil {
         return nil, err
     }
     if res == nil {
         return nil, nil
     }
-    return res.(ia31f303b98dc4e7292d1559872ed38681eda57e78e48a431654df5b787bc8588.ReviewAipDeletionSuccessable), nil
+    return res.(PostResponseable), nil
 }
 // ToPostRequestInformation approve or reject an AIP deletion request associated with this package.
 // returns a *RequestInformation when successful

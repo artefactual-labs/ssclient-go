@@ -145,6 +145,9 @@ namespace Service {
       @statusCode statusCode: 404;
     };
 
+    // Storage Service's Tastypie endpoint consumes form fields and acknowledges
+    // the async move with 202 Accepted plus a Location header. Keep this shape
+    // authoritative here even though a JSON body would be more typical.
     @doc("Move the package to a different storage location.")
     @route("{uuid}/move/")
     @post
@@ -152,10 +155,14 @@ namespace Service {
       @path
       uuid: uuid,
 
-      @body
+      @header
+      contentType: "application/x-www-form-urlencoded",
+
+      @bodyRoot
       body: PackageMoveRequest,
     ): {
-      @statusCode statusCode: 200;
+      @statusCode statusCode: 202;
+      @header("Location") location: string;
     } | {
       @statusCode statusCode: 400;
       @body error: Error;
@@ -337,6 +344,9 @@ namespace Service {
       @body error: DeleteAipNotAllowed;
     };
 
+    // Storage Service reports both business success and business failure with
+    // HTTP 200 and distinguishes them by response body shape. Preserve that
+    // behavior here so generated clients mirror the deployed API.
     @doc("Approve or reject an AIP deletion request associated with this package.")
     @route("{uuid}/review_aip_deletion/")
     @post
@@ -349,6 +359,9 @@ namespace Service {
     ): {
       @statusCode statusCode: 200;
       @body result: ReviewAipDeletionSuccess;
+    } | {
+      @statusCode statusCode: 200;
+      @body result: ReviewAipDeletionFailure;
     } | {
       @statusCode statusCode: 400;
       @body error: ReviewAipDeletionFailure;
@@ -446,7 +459,7 @@ model Package {
   replicas: string[];
   replicated_package: string | null;
   resource_uri: uri;
-  size: integer;
+  size: int64;
   status: string;
   stored_date: utcDateTime | null;
 }

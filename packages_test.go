@@ -632,55 +632,115 @@ func TestPackages(t *testing.T) {
 			const locationID = "154660b9-b4a3-4886-8d68-5e170c0923b8"
 
 			client, err := ssclient.New(ssclient.Config{
-				BaseURL:    "http://storage.service",
-				Username:   "test",
-				Key:        "test",
-				HTTPClient: &http.Client{},
+				BaseURL:  "http://storage.service",
+				Username: "test",
+				Key:      "test",
+				HTTPClient: &http.Client{
+					Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+						assertEqual(t, r.Method, http.MethodPost)
+						assertEqual(t, r.URL.String(), "http://storage.service/api/v2/file/"+packageID+"/move/")
+						assertEqual(t, r.Header.Get("Accept"), "application/json")
+						assertEqual(t, r.Header.Get("Content-Type"), "application/x-www-form-urlencoded")
+
+						body, err := io.ReadAll(r.Body)
+						assertEqual(t, err, nil)
+						assertEqual(t, string(body), "location_uuid="+url.QueryEscape(locationID))
+
+						return &http.Response{
+							StatusCode: http.StatusAccepted,
+							Header:     http.Header{"Location": {"/api/v2/async/1/"}},
+							Body:       io.NopCloser(strings.NewReader("")),
+							Request:    r,
+						}, nil
+					}),
+				},
 			})
 			assertEqual(t, err, nil)
 
 			raw := client.Raw()
-			writerFactory := raw.RequestAdapter.GetSerializationWriterFactory()
 			raw.RequestAdapter = &fakeRequestAdapter{
-				baseURL:                    "http://storage.service",
-				serializationWriterFactory: writerFactory,
-				sendPrimitive: func(ctx context.Context, requestInfo *kabs.RequestInformation, typeName string, errorMappings kabs.ErrorMappings) (any, error) {
-					assertEqual(t, typeName, "[]byte")
+				baseURL: "http://storage.service",
+				convertToNativeRequest: func(ctx context.Context, requestInfo *kabs.RequestInformation) (any, error) {
 					assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/file/{uuid}/move/")
 					assertEqual(t, requestInfo.PathParameters["uuid"], packageID)
 					assertEqual(t, requestInfo.Headers.Get("Accept"), []string{"application/json"})
-					assertEqual(t, requestInfo.Headers.Get("Content-Type"), []string{"application/json"})
-					if got := string(requestInfo.Content); !strings.Contains(got, `"location_uuid":"`+locationID+`"`) {
-						t.Fatalf("unexpected request body %q", got)
-					}
+					assertEqual(t, requestInfo.Headers.Get("Content-Type"), []string{"application/x-www-form-urlencoded"})
+					assertEqual(t, string(requestInfo.Content), "location_uuid="+url.QueryEscape(locationID))
 
-					return nil, nil
+					return &http.Request{
+						Method: http.MethodPost,
+						URL: &url.URL{
+							Scheme: "http",
+							Host:   "storage.service",
+							Path:   "/api/v2/file/" + packageID + "/move/",
+						},
+						Header: http.Header{
+							"Accept":       {"application/json"},
+							"Content-Type": {"application/x-www-form-urlencoded"},
+						},
+						Body: io.NopCloser(strings.NewReader(string(requestInfo.Content))),
+					}, nil
 				},
 			}
 
-			body := models.NewPackageMoveRequest()
-			body.SetLocationUuid(ptr(uuid.MustParse(locationID)))
-			assertEqual(t, client.Packages().Move(context.Background(), uuid.MustParse(packageID), body), nil)
+			res, err := client.Packages().Move(context.Background(), uuid.MustParse(packageID), uuid.MustParse(locationID))
+			assertEqual(t, err, nil)
+			if res == nil {
+				t.Fatal("expected move result")
+			}
+			assertEqual(t, res.StatusCode, http.StatusAccepted)
+			assertEqual(t, res.Location, "/api/v2/async/1/")
 		})
 
-		t.Run("NilBody", func(t *testing.T) {
+		t.Run("MissingLocationHeader", func(t *testing.T) {
 			client, err := ssclient.New(ssclient.Config{
-				BaseURL:    "http://storage.service",
-				Username:   "test",
-				Key:        "test",
-				HTTPClient: &http.Client{},
+				BaseURL:  "http://storage.service",
+				Username: "test",
+				Key:      "test",
+				HTTPClient: &http.Client{
+					Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+						return &http.Response{
+							StatusCode: http.StatusAccepted,
+							Header:     http.Header{},
+							Body:       io.NopCloser(strings.NewReader("")),
+							Request:    r,
+						}, nil
+					}),
+				},
 			})
 			assertEqual(t, err, nil)
 
-			if err := client.Packages().Move(context.Background(), uuid.Nil, nil); err == nil {
+			raw := client.Raw()
+			raw.RequestAdapter = &fakeRequestAdapter{
+				baseURL: "http://storage.service",
+				convertToNativeRequest: func(ctx context.Context, requestInfo *kabs.RequestInformation) (any, error) {
+					return &http.Request{
+						Method: http.MethodPost,
+						URL: &url.URL{
+							Scheme: "http",
+							Host:   "storage.service",
+							Path:   "/api/v2/file/" + uuid.Nil.String() + "/move/",
+						},
+						Header: http.Header{
+							"Accept":       {"application/json"},
+							"Content-Type": {"application/x-www-form-urlencoded"},
+						},
+						Body: io.NopCloser(strings.NewReader(string(requestInfo.Content))),
+					}, nil
+				},
+			}
+
+			if _, err := client.Packages().Move(context.Background(), uuid.Nil, uuid.Nil); err == nil {
 				t.Fatal("expected error")
 			}
 		})
 	})
 
 	t.Run("ReviewAIPDeletion", func(t *testing.T) {
-		t.Run("Success", func(t *testing.T) {
-			const packageID = "7c8a3549-2fe0-41d3-9d83-f485f1a43be3"
+		const packageID = "7c8a3549-2fe0-41d3-9d83-f485f1a43be3"
+
+		newReviewAIPDeletionRequestAdapter := func(t *testing.T) (*fakeRequestAdapter, *models.ReviewAipDeletionRequest) {
+			t.Helper()
 
 			client, err := ssclient.New(ssclient.Config{
 				BaseURL:    "http://storage.service",
@@ -692,10 +752,10 @@ func TestPackages(t *testing.T) {
 
 			raw := client.Raw()
 			writerFactory := raw.RequestAdapter.GetSerializationWriterFactory()
-			raw.RequestAdapter = &fakeRequestAdapter{
+			adapter := &fakeRequestAdapter{
 				baseURL:                    "http://storage.service",
 				serializationWriterFactory: writerFactory,
-				send: func(ctx context.Context, requestInfo *kabs.RequestInformation, constructor serialization.ParsableFactory, errorMappings kabs.ErrorMappings) (serialization.Parsable, error) {
+				convertToNativeRequest: func(ctx context.Context, requestInfo *kabs.RequestInformation) (any, error) {
 					assertEqual(t, requestInfo.UrlTemplate, "{+baseurl}/api/v2/file/{uuid}/review_aip_deletion/")
 					assertEqual(t, requestInfo.PathParameters["uuid"], packageID)
 					assertEqual(t, requestInfo.Headers.Get("Accept"), []string{"application/json"})
@@ -712,9 +772,139 @@ func TestPackages(t *testing.T) {
 						t.Fatalf("unexpected request body %q", got)
 					}
 
-					res := models.NewReviewAipDeletionSuccess()
-					res.SetMessage(ptr("done"))
-					return res, nil
+					return &http.Request{
+						Method: http.MethodPost,
+						URL: &url.URL{
+							Scheme: "http",
+							Host:   "storage.service",
+							Path:   "/api/v2/file/" + packageID + "/review_aip_deletion/",
+						},
+						Header: http.Header{
+							"Accept":       {"application/json"},
+							"Content-Type": {"application/json"},
+						},
+						Body: io.NopCloser(strings.NewReader(got)),
+					}, nil
+				},
+			}
+
+			body := models.NewReviewAipDeletionRequest()
+			body.SetEventId(ptr(int32(99)))
+			decision := models.APPROVE_REVIEWAIPDELETIONDECISION
+			body.SetDecision(&decision)
+			body.SetReason(ptr("approved by workflow"))
+
+			return adapter, body
+		}
+
+		t.Run("Success", func(t *testing.T) {
+			requestAdapter, body := newReviewAIPDeletionRequestAdapter(t)
+
+			client, err := ssclient.New(ssclient.Config{
+				BaseURL:  "http://storage.service",
+				Username: "test",
+				Key:      "test",
+				HTTPClient: &http.Client{
+					Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+						return &http.Response{
+							StatusCode: http.StatusOK,
+							Header:     http.Header{"Content-Type": {"application/json"}},
+							Body:       io.NopCloser(strings.NewReader(`{"message":"done"}`)),
+							Request:    r,
+						}, nil
+					}),
+				},
+			})
+			assertEqual(t, err, nil)
+			client.Raw().RequestAdapter = requestAdapter
+
+			res, err := client.Packages().ReviewAIPDeletion(context.Background(), uuid.MustParse(packageID), body)
+			assertEqual(t, err, nil)
+			if res == nil {
+				t.Fatal("expected review deletion response")
+			}
+			if res.Success == nil {
+				t.Fatal("expected success review result")
+			}
+			assertEqual(t, res.Success.Message, "done")
+			assertEqual(t, res.IsSuccess(), true)
+			assertEqual(t, res.IsFailure(), false)
+		})
+
+		t.Run("SuccessWithDetail", func(t *testing.T) {
+			requestAdapter, body := newReviewAIPDeletionRequestAdapter(t)
+
+			client, err := ssclient.New(ssclient.Config{
+				BaseURL:  "http://storage.service",
+				Username: "test",
+				Key:      "test",
+				HTTPClient: &http.Client{
+					Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+						return &http.Response{
+							StatusCode: http.StatusOK,
+							Header:     http.Header{"Content-Type": {"application/json"}},
+							Body:       io.NopCloser(strings.NewReader(`{"message":"done","detail":"LOCKSS warning"}`)),
+							Request:    r,
+						}, nil
+					}),
+				},
+			})
+			assertEqual(t, err, nil)
+			client.Raw().RequestAdapter = requestAdapter
+
+			res, err := client.Packages().ReviewAIPDeletion(context.Background(), uuid.MustParse(packageID), body)
+			assertEqual(t, err, nil)
+			if res == nil {
+				t.Fatal("expected review deletion response")
+			}
+			if res.Success == nil {
+				t.Fatal("expected success review result")
+			}
+			assertEqual(t, res.Success.Message, "done")
+			assertEqual(t, res.Success.Detail, "LOCKSS warning")
+			assertEqual(t, res.IsSuccess(), true)
+			assertEqual(t, res.IsFailure(), false)
+		})
+
+		t.Run("BusinessFailure", func(t *testing.T) {
+			const packageID = "7c8a3549-2fe0-41d3-9d83-f485f1a43be3"
+
+			client, err := ssclient.New(ssclient.Config{
+				BaseURL:  "http://storage.service",
+				Username: "test",
+				Key:      "test",
+				HTTPClient: &http.Client{
+					Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+						return &http.Response{
+							StatusCode: http.StatusOK,
+							Header:     http.Header{"Content-Type": {"application/json"}},
+							Body:       io.NopCloser(strings.NewReader(`{"error_message":"disk error"}`)),
+							Request:    r,
+						}, nil
+					}),
+				},
+			})
+			assertEqual(t, err, nil)
+
+			raw := client.Raw()
+			writerFactory := raw.RequestAdapter.GetSerializationWriterFactory()
+			raw.RequestAdapter = &fakeRequestAdapter{
+				baseURL:                    "http://storage.service",
+				serializationWriterFactory: writerFactory,
+				convertToNativeRequest: func(ctx context.Context, requestInfo *kabs.RequestInformation) (any, error) {
+					return &http.Request{
+						Method: http.MethodPost,
+						URL: &url.URL{
+							Scheme: "http",
+							Host:   "storage.service",
+							Path:   "/api/v2/file/" + packageID + "/review_aip_deletion/",
+						},
+						Header: http.Header{
+							"Accept":       {"application/json"},
+							"Content-Type": {"application/json"},
+						},
+						Body: io.NopCloser(strings.NewReader(string(requestInfo.Content))),
+					}, nil
 				},
 			}
 
@@ -729,7 +919,12 @@ func TestPackages(t *testing.T) {
 			if res == nil {
 				t.Fatal("expected review deletion response")
 			}
-			assertEqual(t, *res.GetMessage(), "done")
+			if res.Failure == nil {
+				t.Fatal("expected failure review result")
+			}
+			assertEqual(t, res.Failure.ErrorMessage, "disk error")
+			assertEqual(t, res.IsSuccess(), false)
+			assertEqual(t, res.IsFailure(), true)
 		})
 
 		t.Run("NilBody", func(t *testing.T) {
