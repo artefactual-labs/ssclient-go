@@ -5,28 +5,30 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime"
 	"net/http"
+	"strconv"
 	"strings"
 
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	khttp "github.com/microsoft/kiota-http-go"
 )
 
-// responseSnapshot captures the native HTTP response for wrapper methods that
-// cannot rely on Kiota's generated method signatures, for example endpoints
-// with multiple successful 2xx response shapes.
+// responseSnapshot buffers an HTTP response so higher-level wrappers can
+// inspect the status, headers, and body after the transport body has been
+// consumed. This is primarily used for endpoints whose success responses do
+// not map cleanly to a single Kiota-generated shape.
 type responseSnapshot struct {
 	StatusCode int
 	Headers    http.Header
 	Body       []byte
 }
 
-type responseStream struct {
-	StatusCode int
-	Headers    http.Header
-	Body       io.ReadCloser
-}
-
+// decodeJSON unmarshals a buffered JSON response into dst.
+//
+// The caller must provide a non-nil destination and the snapshot must contain
+// a body, otherwise the error should stay explicit because these are client
+// misuse cases rather than server responses.
 func (r *responseSnapshot) decodeJSON(dst any) error {
 	if dst == nil {
 		return fmt.Errorf("decode target is required")
@@ -42,8 +44,27 @@ func (r *responseSnapshot) decodeJSON(dst any) error {
 	return nil
 }
 
-// execute fully consumes the response body and therefore closes it before
-// returning the buffered snapshot.
+// responseStream preserves transport metadata while leaving the body open for
+// the caller to consume.
+type responseStream struct {
+	StatusCode int
+	Headers    http.Header
+	Body       io.ReadCloser
+}
+
+// FileStream describes a successful streamed file response and exposes common
+// metadata derived from the HTTP headers alongside the live body reader.
+type FileStream struct {
+	StatusCode         int
+	ContentType        string
+	ContentLength      int64
+	ContentDisposition string
+	Filename           string
+	Body               io.ReadCloser
+}
+
+// execute sends requestInfo and fully buffers the response body. The body is
+// always closed before the method returns.
 func (c *Client) execute(ctx context.Context, requestInfo *kabs.RequestInformation) (*responseSnapshot, error) {
 	resp, err := c.executeStream(ctx, requestInfo)
 	if err != nil {
@@ -63,8 +84,9 @@ func (c *Client) execute(ctx context.Context, requestInfo *kabs.RequestInformati
 	}, nil
 }
 
-// executeStream returns the live response body to the caller, so the caller is
-// responsible for closing it on successful requests.
+// executeStream sends requestInfo and returns the native HTTP response metadata
+// plus the live body stream. Successful callers take ownership of closing the
+// returned body.
 //
 //nolint:contextcheck // The request inherits the caller context and appends Kiota request options before dispatch.
 func (c *Client) executeStream(ctx context.Context, requestInfo *kabs.RequestInformation) (*responseStream, error) {
@@ -119,6 +141,45 @@ func (c *Client) executeStream(ctx context.Context, requestInfo *kabs.RequestInf
 	}, nil
 }
 
+// streamRequest executes a request whose success path is expected to be an
+// HTTP 200 response with a streamed body. Non-200 responses are normalized into
+// the package's domain errors after buffering the response body.
+func (c *Client) streamRequest(ctx context.Context, requestInfo *kabs.RequestInformation, action string) (*FileStream, error) {
+	resp, err := c.executeStream(ctx, requestInfo)
+	if err != nil {
+		return nil, normalizeError(err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		defer closeBody(resp.Body)
+
+		body, readErr := io.ReadAll(resp.Body)
+		if readErr != nil {
+			return nil, normalizeError(fmt.Errorf("read %s error response body: %w", action, readErr))
+		}
+
+		snapshot := &responseSnapshot{
+			StatusCode: resp.StatusCode,
+			Headers:    resp.Headers,
+			Body:       body,
+		}
+		if resp.StatusCode == http.StatusAccepted {
+			return nil, newNotAvailableErrorFromSnapshot(snapshot, fmt.Sprintf("%s not locally available", action))
+		}
+
+		return nil, newResponseErrorFromSnapshot(snapshot, fmt.Sprintf("unexpected %s response status %d", action, resp.StatusCode))
+	}
+
+	return &FileStream{
+		StatusCode:         resp.StatusCode,
+		ContentType:        resp.Headers.Get("Content-Type"),
+		ContentLength:      parseContentLength(resp.Headers.Get("Content-Length")),
+		ContentDisposition: resp.Headers.Get("Content-Disposition"),
+		Filename:           parseFilename(resp.Headers.Get("Content-Disposition")),
+		Body:               resp.Body,
+	}, nil
+}
+
 func ensureRequestBaseURL(adapter kabs.RequestAdapter, requestInfo *kabs.RequestInformation) {
 	if adapter == nil || requestInfo == nil {
 		return
@@ -149,4 +210,30 @@ func closeBody(body io.ReadCloser) {
 		return
 	}
 	_ = body.Close()
+}
+
+func parseContentLength(value string) int64 {
+	if value == "" {
+		return -1
+	}
+
+	length, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return -1
+	}
+
+	return length
+}
+
+func parseFilename(value string) string {
+	if value == "" {
+		return ""
+	}
+
+	_, params, err := mime.ParseMediaType(value)
+	if err != nil {
+		return ""
+	}
+
+	return params["filename"]
 }

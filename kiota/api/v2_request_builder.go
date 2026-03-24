@@ -11,6 +11,11 @@ import (
 type V2RequestBuilder struct {
     i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
+// Async the async property
+// returns a *V2AsyncRequestBuilder when successful
+func (m *V2RequestBuilder) Async()(*V2AsyncRequestBuilder) {
+    return NewV2AsyncRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
 // NewV2RequestBuilderInternal instantiates a new V2RequestBuilder and sets the default values.
 func NewV2RequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter)(*V2RequestBuilder) {
     m := &V2RequestBuilder{

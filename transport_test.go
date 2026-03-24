@@ -301,6 +301,189 @@ func TestExecuteStreamWithoutBaseURLFailsWithRealAdapterBeforeSeeding(t *testing
 	}
 }
 
+func TestStreamRequestSuccess(t *testing.T) {
+	client, err := New(Config{
+		BaseURL:  "http://storage.service",
+		Username: "test",
+		Key:      "test",
+		HTTPClient: &http.Client{
+			Transport: executeRoundTripFunc(func(r *http.Request) (*http.Response, error) {
+				return &http.Response{
+					StatusCode: http.StatusOK,
+					Header: http.Header{
+						"Content-Type":        {"application/zip"},
+						"Content-Disposition": {`attachment; filename="bag.zip"`},
+						"Content-Length":      {"9"},
+					},
+					Body:    io.NopCloser(strings.NewReader("zip-bytes")),
+					Request: r,
+				}, nil
+			}),
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	client.adapter = &executeTestAdapter{
+		convert: func(ctx context.Context, requestInfo *kabs.RequestInformation) (any, error) {
+			return &http.Request{
+				Method: http.MethodGet,
+				URL: &url.URL{
+					Scheme: "http",
+					Host:   "storage.service",
+					Path:   "/api/v2/file/pkg/download/",
+				},
+				Header: http.Header{
+					"Accept": {"*/*"},
+				},
+			}, nil
+		},
+	}
+
+	reqInfo := kabs.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(kabs.GET, "{+baseurl}/api/v2/file/pkg/download/", map[string]string{
+		"baseurl": "http://storage.service",
+	})
+
+	res, err := client.streamRequest(context.Background(), reqInfo, "download")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res == nil {
+		t.Fatal("expected stream result")
+	}
+	defer closeBody(res.Body)
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got, want := res.ContentType, "application/zip"; got != want {
+		t.Fatalf("unexpected content type %q want %q", got, want)
+	}
+	if got, want := res.Filename, "bag.zip"; got != want {
+		t.Fatalf("unexpected filename %q want %q", got, want)
+	}
+	if got, want := res.ContentLength, int64(9); got != want {
+		t.Fatalf("unexpected content length %d want %d", got, want)
+	}
+	if got, want := string(body), "zip-bytes"; got != want {
+		t.Fatalf("unexpected body %q want %q", got, want)
+	}
+}
+
+func TestStreamRequestNotAvailable(t *testing.T) {
+	client, err := New(Config{
+		BaseURL:  "http://storage.service",
+		Username: "test",
+		Key:      "test",
+		HTTPClient: &http.Client{
+			Transport: executeRoundTripFunc(func(r *http.Request) (*http.Response, error) {
+				return &http.Response{
+					StatusCode: http.StatusAccepted,
+					Header:     http.Header{"Content-Type": {"application/json"}},
+					Body:       io.NopCloser(strings.NewReader(`{"message":"File is not locally available."}`)),
+					Request:    r,
+				}, nil
+			}),
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	client.adapter = &executeTestAdapter{
+		convert: func(ctx context.Context, requestInfo *kabs.RequestInformation) (any, error) {
+			return &http.Request{
+				Method: http.MethodGet,
+				URL: &url.URL{
+					Scheme: "http",
+					Host:   "storage.service",
+					Path:   "/api/v2/file/pkg/download/",
+				},
+			}, nil
+		},
+	}
+
+	reqInfo := kabs.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(kabs.GET, "{+baseurl}/api/v2/file/pkg/download/", map[string]string{
+		"baseurl": "http://storage.service",
+	})
+
+	res, err := client.streamRequest(context.Background(), reqInfo, "download")
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	if res != nil {
+		t.Fatalf("did not expect result %#v", res)
+	}
+
+	var unavailableErr *NotAvailableError
+	if !errors.As(err, &unavailableErr) {
+		t.Fatalf("expected NotAvailableError, got %T", err)
+	}
+	if got, want := unavailableErr.Message, "File is not locally available."; got != want {
+		t.Fatalf("unexpected message %q want %q", got, want)
+	}
+}
+
+func TestStreamRequestUnexpectedStatus(t *testing.T) {
+	client, err := New(Config{
+		BaseURL:  "http://storage.service",
+		Username: "test",
+		Key:      "test",
+		HTTPClient: &http.Client{
+			Transport: executeRoundTripFunc(func(r *http.Request) (*http.Response, error) {
+				return &http.Response{
+					StatusCode: http.StatusInternalServerError,
+					Header:     http.Header{"Content-Type": {"application/json"}},
+					Body:       io.NopCloser(strings.NewReader(`{"error":"boom"}`)),
+					Request:    r,
+				}, nil
+			}),
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	client.adapter = &executeTestAdapter{
+		convert: func(ctx context.Context, requestInfo *kabs.RequestInformation) (any, error) {
+			return &http.Request{
+				Method: http.MethodGet,
+				URL: &url.URL{
+					Scheme: "http",
+					Host:   "storage.service",
+					Path:   "/api/v2/file/pkg/download/",
+				},
+			}, nil
+		},
+	}
+
+	reqInfo := kabs.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(kabs.GET, "{+baseurl}/api/v2/file/pkg/download/", map[string]string{
+		"baseurl": "http://storage.service",
+	})
+
+	res, err := client.streamRequest(context.Background(), reqInfo, "download")
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	if res != nil {
+		t.Fatalf("did not expect result %#v", res)
+	}
+
+	var responseErr *ResponseError
+	if !errors.As(err, &responseErr) {
+		t.Fatalf("expected ResponseError, got %T", err)
+	}
+	if got, want := responseErr.StatusCode, http.StatusInternalServerError; got != want {
+		t.Fatalf("unexpected status %d want %d", got, want)
+	}
+	if got, want := responseErr.Message, "boom"; got != want {
+		t.Fatalf("unexpected message %q want %q", got, want)
+	}
+}
+
 func TestEnsureRequestBaseURLNoopWithoutTemplate(t *testing.T) {
 	reqInfo := kabs.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(kabs.GET, "http://storage.service/static", nil)
 	ensureRequestBaseURL(&executeTestAdapter{}, reqInfo)

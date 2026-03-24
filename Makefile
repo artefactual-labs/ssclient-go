@@ -29,12 +29,20 @@ ssclient: # @HELP Generate the Kiota client from the OpenAPI spec.
 		'-------------------------------------------------------------------------' \
 		'# WARNING: kiota emits some expected warnings:                          #' \
 		'#                                                                       #' \
-		'# - multiple success schemas: the API really has two different success  #' \
-		'#   payloads (200 and 202), and the high-level wrapper handles that     #' \
-		'#   endpoint manually.                                                  #' \
-		'# - plain-text error responses on download endpoints: SS really returns #' \
-		'#   text/plain bodies for some 400/404/501 cases, so Kiota cannot       #' \
-		'#   generate typed error models for them.                               #' \
+		'# - Polymorphic schema without discriminator:                           #' \
+		'#   /api/v2/file/{uuid}/review_aip_deletion/ is polymorphic but does    #' \
+		'#   not define a discriminator, which may cause serialization issues.   #' \
+		'#                                                                       #' \
+		'# - Multiple divergent success schemas:                                 #' \
+		'#   /api/v2/file/{uuid}/delete_aip/ defines multiple success responses  #' \
+		'#   (e.g. 200 and 202) with different schemas. Kiota uses the lowest    #' \
+		'#   success status code schema.                                         #' \
+		'#                                                                       #' \
+		'# - Missing typed error models for download endpoints:                  #' \
+		'#   Some endpoints (e.g. Packages_downloadFile and                      #' \
+		'#   Packages_downloadPointerFile) return plain text or unsupported      #' \
+		'#   error responses (400, 404, 501), so Kiota cannot generate typed     #' \
+		'#   error models for them.                                              #' \
 		'#                                                                       #' \
 		'-------------------------------------------------------------------------'
 

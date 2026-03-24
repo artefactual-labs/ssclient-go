@@ -84,7 +84,8 @@ func (s *LocationsService) Get(ctx context.Context, id uuid.UUID) (*models.Locat
 }
 
 // Default returns the Location header from the default-location redirect for a
-// given purpose.
+// given purpose. The returned value is a resource URI; use [ParseResourceURI]
+// to extract the resource identifier when needed.
 func (s *LocationsService) Default(ctx context.Context, purpose models.LocationPurpose) (string, error) {
 	builder := s.client.raw.Api().V2().Location().DefaultEscaped().ByPurpose(purpose.String()).EmptyPathSegment()
 	requestInfo, err := builder.ToGetRequestInformation(ctx, nil)

@@ -33,6 +33,7 @@ type Client struct {
 	adapter    kabs.RequestAdapter
 	httpClient *http.Client
 
+	async     *AsyncService
 	locations *LocationsService
 	packages  *PackagesService
 	pipelines *PipelinesService
@@ -71,6 +72,7 @@ func New(cfg Config) (*Client, error) {
 		adapter:    adapter,
 		httpClient: httpClient,
 	}
+	client.async = &AsyncService{client: client}
 	client.locations = &LocationsService{client: client}
 	client.packages = &PackagesService{client: client}
 	client.pipelines = &PipelinesService{client: client}
@@ -86,6 +88,11 @@ func (c *Client) Raw() *kiota.Client {
 // Adapter returns the underlying request adapter.
 func (c *Client) Adapter() kabs.RequestAdapter {
 	return c.adapter
+}
+
+// Async returns asynchronous operation tracking helpers.
+func (c *Client) Async() *AsyncService {
+	return c.async
 }
 
 // Locations returns location-related operations.

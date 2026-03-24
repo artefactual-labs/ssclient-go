@@ -2,17 +2,23 @@ package ssclient_test
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
 	"github.com/microsoft/kiota-abstractions-go/serialization"
 	"github.com/microsoft/kiota-abstractions-go/store"
 
 	"go.artefactual.dev/ssclient"
+	"go.artefactual.dev/ssclient/kiota/models"
 )
 
+// fakeRequestAdapter is a narrow Kiota adapter test double that lets each test
+// override only the request-adapter entry points it exercises.
 type fakeRequestAdapter struct {
 	send                       func(context.Context, *kabs.RequestInformation, serialization.ParsableFactory, kabs.ErrorMappings) (serialization.Parsable, error)
 	sendPrimitive              func(context.Context, *kabs.RequestInformation, string, kabs.ErrorMappings) (any, error)
@@ -21,6 +27,8 @@ type fakeRequestAdapter struct {
 	serializationWriterFactory serialization.SerializationWriterFactory
 }
 
+// roundTripFunc adapts a function to http.RoundTripper for transport-level
+// request assertions in tests.
 type roundTripFunc func(*http.Request) (*http.Response, error)
 
 func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
@@ -124,8 +132,199 @@ func TestClient(t *testing.T) {
 		if client.Raw() == nil {
 			t.Fatal("expected raw client")
 		}
+		if client.Async() == nil {
+			t.Fatal("expected async service")
+		}
 		if client.Packages() == nil {
 			t.Fatal("expected packages service")
 		}
+	})
+
+	t.Run("Trailing slash URLs", func(t *testing.T) {
+		const baseURL = "http://storage.service"
+
+		t.Run("Wrapper methods", func(t *testing.T) {
+			t.Run("PackagesGet", func(t *testing.T) {
+				const packageID = "7c8a3549-2fe0-41d3-9d83-f485f1a43be3"
+
+				client, err := ssclient.New(ssclient.Config{
+					BaseURL:  baseURL,
+					Username: "test",
+					Key:      "test",
+					HTTPClient: &http.Client{
+						Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+							assertEqual(t, r.URL.String(), baseURL+"/api/v2/file/"+packageID+"/")
+							return &http.Response{
+								StatusCode: http.StatusOK,
+								Header:     http.Header{"Content-Type": {"application/json"}},
+								Body:       io.NopCloser(strings.NewReader(`{"uuid":"` + packageID + `","status":"UPLOADED"}`)),
+								Request:    r,
+							}, nil
+						}),
+					},
+				})
+				assertEqual(t, err, nil)
+
+				_, err = client.Packages().Get(context.Background(), uuid.MustParse(packageID))
+				assertEqual(t, err, nil)
+			})
+
+			t.Run("LocationsGet", func(t *testing.T) {
+				const locationID = "fff70864-a5d4-4ca6-ab29-b4ce67d8eeab"
+
+				client, err := ssclient.New(ssclient.Config{
+					BaseURL:  baseURL,
+					Username: "test",
+					Key:      "test",
+					HTTPClient: &http.Client{
+						Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+							assertEqual(t, r.URL.String(), baseURL+"/api/v2/location/"+locationID+"/")
+							return &http.Response{
+								StatusCode: http.StatusOK,
+								Header:     http.Header{"Content-Type": {"application/json"}},
+								Body:       io.NopCloser(strings.NewReader(`{"uuid":"` + locationID + `"}`)),
+								Request:    r,
+							}, nil
+						}),
+					},
+				})
+				assertEqual(t, err, nil)
+
+				_, err = client.Locations().Get(context.Background(), uuid.MustParse(locationID))
+				assertEqual(t, err, nil)
+			})
+
+			t.Run("LocationsMove", func(t *testing.T) {
+				const locationID = "fff70864-a5d4-4ca6-ab29-b4ce67d8eeab"
+
+				client, err := ssclient.New(ssclient.Config{
+					BaseURL:  baseURL,
+					Username: "test",
+					Key:      "test",
+					HTTPClient: &http.Client{
+						Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+							assertEqual(t, r.URL.String(), baseURL+"/api/v2/location/"+locationID+"/")
+							return &http.Response{
+								StatusCode: http.StatusOK,
+								Header:     http.Header{"Content-Type": {"application/json"}},
+								Body:       io.NopCloser(strings.NewReader("")),
+								Request:    r,
+							}, nil
+						}),
+					},
+				})
+				assertEqual(t, err, nil)
+
+				body := models.NewMoveRequest()
+				body.SetOriginLocation(ptr("/api/v2/location/origin/"))
+				body.SetPipeline(ptr("/api/v2/pipeline/source/"))
+				assertEqual(t, client.Locations().Move(context.Background(), uuid.MustParse(locationID), body), nil)
+			})
+
+			t.Run("PipelinesGet", func(t *testing.T) {
+				const pipelineID = "a64e061a-5688-49b5-95c1-0b6885c40c04"
+
+				client, err := ssclient.New(ssclient.Config{
+					BaseURL:  baseURL,
+					Username: "test",
+					Key:      "test",
+					HTTPClient: &http.Client{
+						Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+							assertEqual(t, r.URL.String(), baseURL+"/api/v2/pipeline/"+pipelineID+"/")
+							return &http.Response{
+								StatusCode: http.StatusOK,
+								Header:     http.Header{"Content-Type": {"application/json"}},
+								Body:       io.NopCloser(strings.NewReader(`{"uuid":"` + pipelineID + `"}`)),
+								Request:    r,
+							}, nil
+						}),
+					},
+				})
+				assertEqual(t, err, nil)
+
+				_, err = client.Pipelines().Get(context.Background(), uuid.MustParse(pipelineID))
+				assertEqual(t, err, nil)
+			})
+		})
+
+		t.Run("Generated item empty path segment builders", func(t *testing.T) {
+			t.Run("PackageItem", func(t *testing.T) {
+				const packageID = "7c8a3549-2fe0-41d3-9d83-f485f1a43be3"
+
+				client, err := ssclient.New(ssclient.Config{
+					BaseURL:  baseURL,
+					Username: "test",
+					Key:      "test",
+					HTTPClient: &http.Client{
+						Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+							assertEqual(t, r.URL.String(), baseURL+"/api/v2/file/"+packageID+"/")
+							return &http.Response{
+								StatusCode: http.StatusOK,
+								Header:     http.Header{"Content-Type": {"application/json"}},
+								Body:       io.NopCloser(strings.NewReader(`{"uuid":"` + packageID + `","status":"UPLOADED"}`)),
+								Request:    r,
+							}, nil
+						}),
+					},
+				})
+				assertEqual(t, err, nil)
+
+				_, err = client.Raw().Api().V2().File().ByUuid(uuid.MustParse(packageID)).EmptyPathSegment().Get(context.Background(), nil)
+				assertEqual(t, err, nil)
+			})
+
+			t.Run("LocationItem", func(t *testing.T) {
+				const locationID = "fff70864-a5d4-4ca6-ab29-b4ce67d8eeab"
+
+				client, err := ssclient.New(ssclient.Config{
+					BaseURL:  baseURL,
+					Username: "test",
+					Key:      "test",
+					HTTPClient: &http.Client{
+						Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+							assertEqual(t, r.URL.String(), baseURL+"/api/v2/location/"+locationID+"/")
+							return &http.Response{
+								StatusCode: http.StatusOK,
+								Header:     http.Header{"Content-Type": {"application/json"}},
+								Body:       io.NopCloser(strings.NewReader("")),
+								Request:    r,
+							}, nil
+						}),
+					},
+				})
+				assertEqual(t, err, nil)
+
+				body := models.NewMoveRequest()
+				body.SetOriginLocation(ptr("/api/v2/location/origin/"))
+				body.SetPipeline(ptr("/api/v2/pipeline/source/"))
+				_, err = client.Raw().Api().V2().Location().ByUuid(uuid.MustParse(locationID)).EmptyPathSegment().Post(context.Background(), body, nil)
+				assertEqual(t, err, nil)
+			})
+
+			t.Run("PipelineItem", func(t *testing.T) {
+				const pipelineID = "a64e061a-5688-49b5-95c1-0b6885c40c04"
+
+				client, err := ssclient.New(ssclient.Config{
+					BaseURL:  baseURL,
+					Username: "test",
+					Key:      "test",
+					HTTPClient: &http.Client{
+						Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+							assertEqual(t, r.URL.String(), baseURL+"/api/v2/pipeline/"+pipelineID+"/")
+							return &http.Response{
+								StatusCode: http.StatusOK,
+								Header:     http.Header{"Content-Type": {"application/json"}},
+								Body:       io.NopCloser(strings.NewReader(`{"uuid":"` + pipelineID + `"}`)),
+								Request:    r,
+							}, nil
+						}),
+					},
+				})
+				assertEqual(t, err, nil)
+
+				_, err = client.Raw().Api().V2().Pipeline().ByUuid(uuid.MustParse(pipelineID)).EmptyPathSegment().Get(context.Background(), nil)
+				assertEqual(t, err, nil)
+			})
+		})
 	})
 }
