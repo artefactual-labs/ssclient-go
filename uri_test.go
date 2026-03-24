@@ -83,3 +83,75 @@ func TestMustParseResourceURI(t *testing.T) {
 		ssclient.MustParseResourceURI("/api/v2/file/not-a-resource/move/")
 	})
 }
+
+func TestParseAsyncOperationURI(t *testing.T) {
+	tests := []struct {
+		name        string
+		resourceURI string
+		wantID      int
+		wantErr     bool
+	}{
+		{
+			name:        "relative URI",
+			resourceURI: "/api/v2/async/1/",
+			wantID:      1,
+		},
+		{
+			name:        "absolute URI",
+			resourceURI: "https://example.test/api/v2/async/17/",
+			wantID:      17,
+		},
+		{
+			name:        "base path prefix",
+			resourceURI: "https://example.test/storage/api/v2/async/42/",
+			wantID:      42,
+		},
+		{
+			name:        "reject non async resource",
+			resourceURI: "/api/v2/file/96922350-ccde-4fb0-a999-d2010522028f/",
+			wantErr:     true,
+		},
+		{
+			name:        "reject invalid id",
+			resourceURI: "/api/v2/async/not-a-number/",
+			wantErr:     true,
+		},
+		{
+			name:        "reject zero",
+			resourceURI: "/api/v2/async/0/",
+			wantErr:     true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			id, err := ssclient.ParseAsyncOperationURI(test.resourceURI)
+			if test.wantErr {
+				if err == nil {
+					t.Fatal("expected error")
+				}
+				return
+			}
+
+			assertEqual(t, err, nil)
+			assertEqual(t, id, test.wantID)
+		})
+	}
+}
+
+func TestMustParseAsyncOperationURI(t *testing.T) {
+	t.Run("valid URI", func(t *testing.T) {
+		id := ssclient.MustParseAsyncOperationURI("/api/v2/async/1/")
+		assertEqual(t, id, 1)
+	})
+
+	t.Run("panics on invalid URI", func(t *testing.T) {
+		defer func() {
+			if recover() == nil {
+				t.Fatal("expected panic")
+			}
+		}()
+
+		ssclient.MustParseAsyncOperationURI("/api/v2/file/not-a-resource/")
+	})
+}

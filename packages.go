@@ -4,11 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"mime"
 	"net/http"
 	"net/url"
-	"strconv"
 
 	"github.com/google/uuid"
 	kabs "github.com/microsoft/kiota-abstractions-go"
@@ -20,91 +17,6 @@ import (
 // PackagesService provides package-related API operations.
 type PackagesService struct {
 	client *Client
-}
-
-// CheckFixityOptions configures a package fixity check request.
-type CheckFixityOptions struct {
-	ForceLocal *bool
-}
-
-// DeleteAIPAccepted is returned when the server creates a new deletion request.
-type DeleteAIPAccepted struct {
-	Message string `json:"message"`
-	ID      int32  `json:"id"`
-}
-
-// DeleteAIPAlreadyExists is returned when a pending deletion request already
-// exists for the package.
-type DeleteAIPAlreadyExists struct {
-	ErrorMessage string `json:"error_message"`
-}
-
-// DeleteAIPResult preserves the two non-error outcomes exposed by the Storage
-// Service delete request endpoint.
-type DeleteAIPResult struct {
-	StatusCode    int
-	Accepted      *DeleteAIPAccepted
-	AlreadyExists *DeleteAIPAlreadyExists
-}
-
-// FileStream captures a successful streamed file response.
-type FileStream struct {
-	StatusCode         int
-	ContentType        string
-	ContentLength      int64
-	ContentDisposition string
-	Filename           string
-	Body               io.ReadCloser
-}
-
-// MoveResult captures the accepted async package move response.
-type MoveResult struct {
-	StatusCode int
-	Location   string
-}
-
-// ReviewAIPDeletionResult preserves the two business outcomes exposed by the
-// review endpoint, both of which currently use HTTP 200 responses.
-type ReviewAIPDeletionResult struct {
-	StatusCode int
-	Success    *ReviewAIPDeletionSuccess
-	Failure    *ReviewAIPDeletionFailure
-}
-
-// IsSuccess reports whether the review completed with a business success
-// payload.
-func (r *ReviewAIPDeletionResult) IsSuccess() bool {
-	return r != nil && r.Success != nil
-}
-
-// IsFailure reports whether the review completed with an application-level
-// failure payload.
-func (r *ReviewAIPDeletionResult) IsFailure() bool {
-	return r != nil && r.Failure != nil
-}
-
-// ReviewAIPDeletionSuccess captures a successful review response.
-type ReviewAIPDeletionSuccess struct {
-	Message string `json:"message"`
-	Detail  string `json:"detail,omitempty"`
-}
-
-// ReviewAIPDeletionFailure captures an application-level failure returned by
-// the review endpoint with HTTP 200.
-type ReviewAIPDeletionFailure struct {
-	ErrorMessage string `json:"error_message"`
-	Detail       string `json:"detail,omitempty"`
-}
-
-// IsAccepted reports whether the request created a new deletion event.
-func (r *DeleteAIPResult) IsAccepted() bool {
-	return r != nil && r.Accepted != nil
-}
-
-// HasExistingRequest reports whether the package already had a pending
-// deletion request.
-func (r *DeleteAIPResult) HasExistingRequest() bool {
-	return r != nil && r.AlreadyExists != nil
 }
 
 // Get returns a package by ID.
@@ -134,7 +46,7 @@ func (s *PackagesService) DownloadPackage(ctx context.Context, id uuid.UUID) (*F
 	requestInfo.Headers.Remove("Accept")
 	requestInfo.Headers.Add("Accept", "*/*")
 
-	return s.streamPackageRequest(ctx, requestInfo, "download")
+	return s.client.streamRequest(ctx, requestInfo, "download")
 }
 
 // DownloadFile extracts a file from a package and streams it back.
@@ -154,7 +66,7 @@ func (s *PackagesService) DownloadFile(ctx context.Context, id uuid.UUID, relati
 	requestInfo.Headers.Remove("Accept")
 	requestInfo.Headers.Add("Accept", "*/*")
 
-	return s.streamPackageRequest(ctx, requestInfo, "extract file")
+	return s.client.streamRequest(ctx, requestInfo, "extract file")
 }
 
 // DownloadPointerFile returns the package pointer file as a stream.
@@ -166,69 +78,37 @@ func (s *PackagesService) DownloadPointerFile(ctx context.Context, id uuid.UUID)
 	requestInfo.Headers.Remove("Accept")
 	requestInfo.Headers.Add("Accept", "*/*")
 
-	return s.streamPackageRequest(ctx, requestInfo, "pointer file")
+	return s.client.streamRequest(ctx, requestInfo, "pointer file")
 }
 
-func (s *PackagesService) streamPackageRequest(ctx context.Context, requestInfo *kabs.RequestInformation, action string) (*FileStream, error) {
-	resp, err := s.client.executeStream(ctx, requestInfo)
-	if err != nil {
-		return nil, normalizeError(err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		defer closeBody(resp.Body)
-
-		body, readErr := io.ReadAll(resp.Body)
-		if readErr != nil {
-			return nil, normalizeError(fmt.Errorf("read %s error response body: %w", action, readErr))
-		}
-
-		snapshot := &responseSnapshot{
-			StatusCode: resp.StatusCode,
-			Headers:    resp.Headers,
-			Body:       body,
-		}
-		if resp.StatusCode == http.StatusAccepted {
-			return nil, newNotAvailableErrorFromSnapshot(snapshot, fmt.Sprintf("%s not locally available", action))
-		}
-
-		return nil, newResponseErrorFromSnapshot(snapshot, fmt.Sprintf("unexpected %s response status %d", action, resp.StatusCode))
-	}
-
-	return &FileStream{
-		StatusCode:         resp.StatusCode,
-		ContentType:        resp.Headers.Get("Content-Type"),
-		ContentLength:      parseContentLength(resp.Headers.Get("Content-Length")),
-		ContentDisposition: resp.Headers.Get("Content-Disposition"),
-		Filename:           parseFilename(resp.Headers.Get("Content-Disposition")),
-		Body:               resp.Body,
-	}, nil
+// DeleteAIPAccepted is returned when the server creates a new deletion request.
+type DeleteAIPAccepted struct {
+	Message string `json:"message"`
+	ID      int32  `json:"id"`
 }
 
-func parseContentLength(value string) int64 {
-	if value == "" {
-		return -1
-	}
-
-	length, err := strconv.ParseInt(value, 10, 64)
-	if err != nil {
-		return -1
-	}
-
-	return length
+// DeleteAIPAlreadyExists is returned when a pending deletion request already
+// exists for the package.
+type DeleteAIPAlreadyExists struct {
+	ErrorMessage string `json:"error_message"`
 }
 
-func parseFilename(value string) string {
-	if value == "" {
-		return ""
-	}
+// DeleteAIPResult preserves the two non-error outcomes exposed by the Storage
+// Service delete request endpoint.
+type DeleteAIPResult struct {
+	Accepted      *DeleteAIPAccepted
+	AlreadyExists *DeleteAIPAlreadyExists
+}
 
-	_, params, err := mime.ParseMediaType(value)
-	if err != nil {
-		return ""
-	}
+// IsAccepted reports whether the request created a new deletion event.
+func (r *DeleteAIPResult) IsAccepted() bool {
+	return r != nil && r.Accepted != nil
+}
 
-	return params["filename"]
+// HasExistingRequest reports whether the package already had a pending
+// deletion request.
+func (r *DeleteAIPResult) HasExistingRequest() bool {
+	return r != nil && r.AlreadyExists != nil
 }
 
 // DeleteAIP creates an AIP deletion request for the given package. The server
@@ -257,8 +137,7 @@ func (s *PackagesService) DeleteAIP(ctx context.Context, id uuid.UUID, body *mod
 			return nil, normalizeError(err)
 		}
 		return &DeleteAIPResult{
-			StatusCode: http.StatusAccepted,
-			Accepted:   &accepted,
+			Accepted: &accepted,
 		}, nil
 	case http.StatusOK:
 		var existing DeleteAIPAlreadyExists
@@ -266,7 +145,6 @@ func (s *PackagesService) DeleteAIP(ctx context.Context, id uuid.UUID, body *mod
 			return nil, normalizeError(err)
 		}
 		return &DeleteAIPResult{
-			StatusCode:    http.StatusOK,
 			AlreadyExists: &existing,
 		}, nil
 	case http.StatusBadRequest:
@@ -278,6 +156,11 @@ func (s *PackagesService) DeleteAIP(ctx context.Context, id uuid.UUID, body *mod
 	default:
 		return nil, newResponseErrorFromSnapshot(resp, fmt.Sprintf("unexpected delete AIP response status %d", resp.StatusCode))
 	}
+}
+
+// CheckFixityOptions configures a package fixity check request.
+type CheckFixityOptions struct {
+	ForceLocal *bool
 }
 
 // CheckFixity runs a fixity check for the given package ID.
@@ -305,7 +188,13 @@ func (s *PackagesService) CheckFixity(ctx context.Context, id uuid.UUID, opts Ch
 	return typed, nil
 }
 
-// Move moves a package to a different storage location.
+// MoveResult captures the accepted async package move response.
+type MoveResult struct {
+	Location string
+}
+
+// Move starts an asynchronous package move to a different storage location.
+// The returned Location header points at the async operation resource.
 func (s *PackagesService) Move(ctx context.Context, id, locationID uuid.UUID) (*MoveResult, error) {
 	values := url.Values{}
 	values.Set("location_uuid", locationID.String())
@@ -333,8 +222,7 @@ func (s *PackagesService) Move(ctx context.Context, id, locationID uuid.UUID) (*
 			return nil, fmt.Errorf("missing Location header")
 		}
 		return &MoveResult{
-			StatusCode: http.StatusAccepted,
-			Location:   location,
+			Location: location,
 		}, nil
 	case http.StatusBadRequest:
 		return nil, newResponseErrorFromSnapshot(resp, "package move request bad request")
@@ -343,6 +231,37 @@ func (s *PackagesService) Move(ctx context.Context, id, locationID uuid.UUID) (*
 	default:
 		return nil, newResponseErrorFromSnapshot(resp, fmt.Sprintf("unexpected package move response status %d", resp.StatusCode))
 	}
+}
+
+// ReviewAIPDeletionSuccess captures a successful review response.
+type ReviewAIPDeletionSuccess struct {
+	Message string `json:"message"`
+	Detail  string `json:"detail,omitempty"`
+}
+
+// ReviewAIPDeletionError describes an application-level review failure
+// returned by the review AIP deletion endpoint with HTTP 200.
+type ReviewAIPDeletionError struct {
+	ErrorMessage string
+	Detail       string
+}
+
+// Error returns a readable representation of the application-level review
+// failure.
+func (e *ReviewAIPDeletionError) Error() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if e.ErrorMessage != "" && e.Detail != "" {
+		return fmt.Sprintf("%s (%s)", e.ErrorMessage, e.Detail)
+	}
+	if e.ErrorMessage != "" {
+		return e.ErrorMessage
+	}
+	if e.Detail != "" {
+		return e.Detail
+	}
+	return "review AIP deletion failed"
 }
 
 // ReviewAIPDeletion approves or rejects an AIP deletion request associated with
@@ -356,9 +275,10 @@ func (s *PackagesService) Move(ctx context.Context, id, locationID uuid.UUID) (*
 // That shape is part of the deployed API, but it is awkward for generated
 // clients because there is no discriminator beyond the JSON fields themselves.
 // The wrapper therefore executes the request and inspects the response body
-// directly so callers get a stable result type without having to decode the
-// ambiguous 200 response manually.
-func (s *PackagesService) ReviewAIPDeletion(ctx context.Context, id uuid.UUID, body *models.ReviewAipDeletionRequest) (*ReviewAIPDeletionResult, error) {
+// directly so callers can rely on err for both transport/protocol failures and
+// application-level review failures. Callers that need structured failure
+// details can use errors.As with *ReviewAIPDeletionError.
+func (s *PackagesService) ReviewAIPDeletion(ctx context.Context, id uuid.UUID, body *models.ReviewAipDeletionRequest) (*ReviewAIPDeletionSuccess, error) {
 	if body == nil {
 		return nil, fmt.Errorf("review AIP deletion request is required")
 	}
@@ -377,24 +297,24 @@ func (s *PackagesService) ReviewAIPDeletion(ctx context.Context, id uuid.UUID, b
 	switch resp.StatusCode {
 	case http.StatusOK:
 		if hasJSONField(resp.Body, "error_message") {
-			var failure ReviewAIPDeletionFailure
+			var failure struct {
+				ErrorMessage string `json:"error_message"`
+				Detail       string `json:"detail,omitempty"`
+			}
 			if err := resp.decodeJSON(&failure); err != nil {
 				return nil, normalizeError(err)
 			}
-			return &ReviewAIPDeletionResult{
-				StatusCode: http.StatusOK,
-				Failure:    &failure,
-			}, nil
+			return nil, &ReviewAIPDeletionError{
+				ErrorMessage: failure.ErrorMessage,
+				Detail:       failure.Detail,
+			}
 		}
 
 		var success ReviewAIPDeletionSuccess
 		if err := resp.decodeJSON(&success); err != nil {
 			return nil, normalizeError(err)
 		}
-		return &ReviewAIPDeletionResult{
-			StatusCode: http.StatusOK,
-			Success:    &success,
-		}, nil
+		return &success, nil
 	case http.StatusBadRequest:
 		return nil, newResponseErrorFromSnapshot(resp, "review AIP deletion request bad request")
 	case http.StatusForbidden:

@@ -131,6 +131,18 @@ namespace Service {
     };
   }
 
+  @route("/async/")
+  namespace Async {
+    @route("{id}/")
+    @get
+    op read(@path id: int32): {
+      @statusCode statusCode: 200;
+      @body task: AsyncTask;
+    } | {
+      @statusCode statusCode: 404;
+    };
+  }
+
   @route("/file/")
   namespace Packages {
     @route("{uuid}/")
@@ -466,6 +478,21 @@ model Package {
 
 model PackageMoveRequest {
   location_uuid: uuid;
+}
+
+// Storage Service persists arbitrary pickled task results and surfaces them via
+// Tastypie once the job completes. Keep `result` broad because different async
+// tasks may return different JSON shapes.
+model AsyncTask {
+  id: int32;
+  resource_uri: uri;
+  completed: boolean;
+  was_error: boolean;
+  created_time: utcDateTime;
+  updated_time: utcDateTime;
+  completed_time: utcDateTime | null;
+  result?: unknown;
+  error?: string;
 }
 
 model FixityResponse {

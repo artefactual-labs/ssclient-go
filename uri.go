@@ -3,6 +3,7 @@ package ssclient
 import (
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -45,4 +46,32 @@ func MustParseResourceURI(resourceURI string) (resource, uuid string) {
 		panic(err)
 	}
 	return resource, uuid
+}
+
+// ParseAsyncOperationURI extracts the task ID from a Storage Service async
+// operation URI such as "/api/v2/async/1/".
+func ParseAsyncOperationURI(resourceURI string) (int, error) {
+	resource, identifier, err := ParseResourceURI(resourceURI)
+	if err != nil {
+		return 0, err
+	}
+	if resource != "async" {
+		return 0, fmt.Errorf("invalid async operation URI %q", resourceURI)
+	}
+
+	id, err := strconv.Atoi(identifier)
+	if err != nil || id <= 0 {
+		return 0, fmt.Errorf("invalid async operation URI %q", resourceURI)
+	}
+	return id, nil
+}
+
+// MustParseAsyncOperationURI extracts the task ID from a Storage Service async
+// operation URI and panics if the URI is invalid.
+func MustParseAsyncOperationURI(resourceURI string) int {
+	id, err := ParseAsyncOperationURI(resourceURI)
+	if err != nil {
+		panic(err)
+	}
+	return id
 }

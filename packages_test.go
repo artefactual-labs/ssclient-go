@@ -504,7 +504,6 @@ func TestPackages(t *testing.T) {
 			if res.HasExistingRequest() {
 				t.Fatal("did not expect existing request result")
 			}
-			assertEqual(t, res.StatusCode, http.StatusAccepted)
 			assertEqual(t, res.Accepted.Message, "Delete request created successfully.")
 			assertEqual(t, res.Accepted.ID, int32(17))
 		})
@@ -568,7 +567,6 @@ func TestPackages(t *testing.T) {
 			if !res.HasExistingRequest() {
 				t.Fatal("expected existing request result")
 			}
-			assertEqual(t, res.StatusCode, http.StatusOK)
 			assertEqual(t, res.AlreadyExists.ErrorMessage, "A deletion request already exists for this AIP.")
 		})
 
@@ -688,7 +686,6 @@ func TestPackages(t *testing.T) {
 			if res == nil {
 				t.Fatal("expected move result")
 			}
-			assertEqual(t, res.StatusCode, http.StatusAccepted)
 			assertEqual(t, res.Location, "/api/v2/async/1/")
 		})
 
@@ -823,12 +820,7 @@ func TestPackages(t *testing.T) {
 			if res == nil {
 				t.Fatal("expected review deletion response")
 			}
-			if res.Success == nil {
-				t.Fatal("expected success review result")
-			}
-			assertEqual(t, res.Success.Message, "done")
-			assertEqual(t, res.IsSuccess(), true)
-			assertEqual(t, res.IsFailure(), false)
+			assertEqual(t, res.Message, "done")
 		})
 
 		t.Run("SuccessWithDetail", func(t *testing.T) {
@@ -857,13 +849,8 @@ func TestPackages(t *testing.T) {
 			if res == nil {
 				t.Fatal("expected review deletion response")
 			}
-			if res.Success == nil {
-				t.Fatal("expected success review result")
-			}
-			assertEqual(t, res.Success.Message, "done")
-			assertEqual(t, res.Success.Detail, "LOCKSS warning")
-			assertEqual(t, res.IsSuccess(), true)
-			assertEqual(t, res.IsFailure(), false)
+			assertEqual(t, res.Message, "done")
+			assertEqual(t, res.Detail, "LOCKSS warning")
 		})
 
 		t.Run("BusinessFailure", func(t *testing.T) {
@@ -915,16 +902,56 @@ func TestPackages(t *testing.T) {
 			body.SetReason(ptr("approved by workflow"))
 
 			res, err := client.Packages().ReviewAIPDeletion(context.Background(), uuid.MustParse(packageID), body)
+			if err == nil {
+				t.Fatal("expected review deletion error")
+			}
+			if res != nil {
+				t.Fatalf("did not expect review deletion result %#v", res)
+			}
+
+			var reviewErr *ssclient.ReviewAIPDeletionError
+			if !errors.As(err, &reviewErr) {
+				t.Fatalf("expected ReviewAIPDeletionError, got %T", err)
+			}
+			assertEqual(t, reviewErr.ErrorMessage, "disk error")
+			assertEqual(t, reviewErr.Detail, "")
+			if !strings.Contains(err.Error(), "disk error") {
+				t.Fatalf("unexpected error %v", err)
+			}
+		})
+
+		t.Run("TransportError", func(t *testing.T) {
+			requestAdapter, body := newReviewAIPDeletionRequestAdapter(t)
+
+			client, err := ssclient.New(ssclient.Config{
+				BaseURL:  "http://storage.service",
+				Username: "test",
+				Key:      "test",
+				HTTPClient: &http.Client{
+					Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+						return nil, errors.New("network down")
+					}),
+				},
+			})
 			assertEqual(t, err, nil)
-			if res == nil {
-				t.Fatal("expected review deletion response")
+			client.Raw().RequestAdapter = requestAdapter
+
+			res, err := client.Packages().ReviewAIPDeletion(context.Background(), uuid.MustParse(packageID), body)
+			if err == nil {
+				t.Fatal("expected transport error")
 			}
-			if res.Failure == nil {
-				t.Fatal("expected failure review result")
+			if res != nil {
+				t.Fatalf("did not expect review deletion result %#v", res)
 			}
-			assertEqual(t, res.Failure.ErrorMessage, "disk error")
-			assertEqual(t, res.IsSuccess(), false)
-			assertEqual(t, res.IsFailure(), true)
+
+			var responseErr *ssclient.ResponseError
+			if !errors.As(err, &responseErr) {
+				t.Fatalf("expected ResponseError, got %T", err)
+			}
+			assertEqual(t, responseErr.StatusCode, 0)
+			if !strings.Contains(responseErr.Message, "network down") {
+				t.Fatalf("unexpected response error message %q", responseErr.Message)
+			}
 		})
 
 		t.Run("NilBody", func(t *testing.T) {

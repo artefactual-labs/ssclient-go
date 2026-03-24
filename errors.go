@@ -8,6 +8,8 @@ import (
 	"net/textproto"
 
 	kabs "github.com/microsoft/kiota-abstractions-go"
+
+	"go.artefactual.dev/ssclient/kiota/models"
 )
 
 // ResponseError describes a non-success HTTP response returned by Storage
@@ -19,15 +21,6 @@ type ResponseError struct {
 	Message    string
 	Detail     string
 	Cause      error
-}
-
-// NotAvailableError describes a 202 response indicating the requested content
-// is not locally available for download yet.
-type NotAvailableError struct {
-	StatusCode int
-	Headers    http.Header
-	Body       []byte
-	Message    string
 }
 
 // Error returns a readable representation of the failed response.
@@ -67,6 +60,15 @@ func (e *ResponseError) Unwrap() error {
 	return e.Cause
 }
 
+// NotAvailableError describes a 202 response indicating the requested content
+// is not locally available for download yet.
+type NotAvailableError struct {
+	StatusCode int
+	Headers    http.Header
+	Body       []byte
+	Message    string
+}
+
 // Error returns a readable representation of the unavailable response.
 func (e *NotAvailableError) Error() string {
 	if e == nil {
@@ -79,6 +81,30 @@ func (e *NotAvailableError) Error() string {
 		return fmt.Sprintf("storage service content unavailable with status %d", e.StatusCode)
 	}
 	return "storage service content unavailable"
+}
+
+// AsyncTaskError describes a completed asynchronous task that finished in an
+// application-level error state.
+type AsyncTaskError struct {
+	Task    *models.AsyncTask
+	Message string
+}
+
+// Error returns a readable representation of the failed async task.
+func (e *AsyncTaskError) Error() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if e.Message != "" {
+		return e.Message
+	}
+	if e.Task != nil && e.Task.GetError() != nil && *e.Task.GetError() != "" {
+		return *e.Task.GetError()
+	}
+	if e.Task != nil && e.Task.GetId() != nil {
+		return fmt.Sprintf("async task %d failed", *e.Task.GetId())
+	}
+	return "async task failed"
 }
 
 // StatusCode returns the HTTP status code from a supported Storage Service
@@ -101,6 +127,27 @@ func IsNotFound(err error) bool {
 	return ok && status == http.StatusNotFound
 }
 
+func newAsyncTaskError(task *models.AsyncTask) *AsyncTaskError {
+	err := &AsyncTaskError{Task: task}
+	if task == nil {
+		err.Message = "async task failed"
+		return err
+	}
+	if task.GetError() != nil && *task.GetError() != "" {
+		err.Message = *task.GetError()
+		return err
+	}
+	if task.GetId() != nil {
+		err.Message = fmt.Sprintf("async task %d failed", *task.GetId())
+		return err
+	}
+	err.Message = "async task failed"
+	return err
+}
+
+// normalizeError converts any error returned by the underlying request adapter
+// into a ResponseError, by extracting as much information as possible from the
+// original.
 func normalizeError(err error) error {
 	if err == nil {
 		return nil

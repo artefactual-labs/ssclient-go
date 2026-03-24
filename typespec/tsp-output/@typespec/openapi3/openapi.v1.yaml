@@ -4,6 +4,25 @@ info:
   version: v1
 tags: []
 paths:
+  /api/v2/async/{id}/:
+    get:
+      operationId: Async_read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncTask'
+        '404':
+          description: The server cannot find the requested resource.
   /api/v2/file/{uuid}/:
     get:
       operationId: Packages_read
@@ -595,6 +614,39 @@ components:
         type: string
       explode: false
   schemas:
+    AsyncTask:
+      type: object
+      required:
+        - id
+        - resource_uri
+        - completed
+        - was_error
+        - created_time
+        - updated_time
+        - completed_time
+      properties:
+        id:
+          type: integer
+          format: int32
+        resource_uri:
+          $ref: '#/components/schemas/uri'
+        completed:
+          type: boolean
+        was_error:
+          type: boolean
+        created_time:
+          type: string
+          format: date-time
+        updated_time:
+          type: string
+          format: date-time
+        completed_time:
+          type: string
+          format: date-time
+          nullable: true
+        result: {}
+        error:
+          type: string
     AvailabilityResponse:
       type: object
       required:

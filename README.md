@@ -66,15 +66,16 @@ data.
 
 ## Contributor notes
 
-This repository is wrapper-first. Generated code is an implementation detail
+This repository is wrapper-first. Generated code is supporting infrastructure
 and a fallback escape hatch, not the primary interface we want callers to use.
 
-When evolving an endpoint, the preferred pattern is:
+When an endpoint's wire contract needs to be added or changed, the preferred
+pattern is:
 
 1. Fix TypeSpec first so the OpenAPI remains accurate.
 2. Regenerate Kiota without hand-editing generated files.
 3. Expose the operation through the public client wrapper and treat the
-   generated Go surface as a supporting implementation detail.
+   generated Go surface as supporting infrastructure.
 
 Current examples include:
 
@@ -84,7 +85,11 @@ Current examples include:
 - `Packages.DeleteAIP`, where multiple non-error `2xx` outcomes need to be
   preserved explicitly.
 - `Packages.ReviewAIPDeletion`, where the server can return different `200`
-  JSON payloads for distinct business outcomes.
+  JSON payloads and the wrapper lifts application-level failures into a typed
+  error for idiomatic Go callers.
+- `AsyncService.Get` and `AsyncService.Wait`, where the generated async
+  endpoint and model types remain available but the wrapper exposes a more
+  Go-oriented polling interface.
 
 [`example`]: ./example/main.go
 [TypeSpec]: https://typespec.io
