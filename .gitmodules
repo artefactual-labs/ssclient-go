@@ -1,0 +1,4 @@
+[submodule "spec"]
+	path = spec
+	url = git@github.com:archivematica/archivematica-storage-service-api-specification.git
+	branch = main

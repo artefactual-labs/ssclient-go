@@ -13,5 +13,5 @@
 // responses, and enums where that keeps the SDK compact and close to the
 // service schema.
 //
-// [OpenAPI specification]: https://artefactual-labs.github.io/ssclient-go/
+// [OpenAPI specification]: https://github.com/archivematica/archivematica-storage-service-api-specification
 package ssclient

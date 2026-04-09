@@ -1,7 +1,6 @@
 [tools]
 go = "1.26.1"
 kiota = "1.30.0"
-node = "24"
 golangci-lint = "latest"
 
 "go:go.uber.org/mock/mockgen" = "0.6.0"

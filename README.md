@@ -16,29 +16,32 @@ of locations and pipelines found in Archivematica Storage Service.
 ### Working with the high-level client
 
 The main entrypoint is `ssclient.New`, which constructs a client with small,
-domain-oriented helpers such as `Locations()`, `Packages()`, and
-`Pipelines()`. This is the recommended way to use the module and should be the
-default path for interacting with the API.
+domain-oriented helpers such as `Locations()`, `Packages()`, and `Pipelines()`.
+This is the recommended way to use the module and should be the default path for
+interacting with the API.
 
 ### Working with the generated client
 
 This repository also ships a generated client based on the project's OpenAPI
-description. If you need an endpoint that the high-level wrapper does not
-expose yet, `Client.Raw()` returns that lower-level client as an escape hatch.
+description from the separate
+[Archivematica Storage Service API Specification][spec-repo] repository. If you
+need an endpoint that the high-level wrapper does not expose yet, `Client.Raw()`
+returns that lower-level client as an escape hatch.
 
 That generated API uses Kiota's request-builder pattern, including
 `EmptyPathSegment()` for Storage Service endpoints that require a trailing
 slash. See [`example`] for a side-by-side example using both the high-level
 client and the generated client.
 
-> [!WARNING]
-> Prefer the high-level wrapper for normal use. `Client.Raw()` is an escape
-> hatch for gaps in wrapper coverage while we continue to define that
+> [!WARNING] Prefer the high-level wrapper for normal use. `Client.Raw()` is an
+> escape hatch for gaps in wrapper coverage while we continue to define that
 > boundary. For background, see [issue #20].
 
 ## OpenAPI specification
 
-We use [TypeSpec] to describe the Storage Service API as an OpenAPI schema.
+The Storage Service API description lives in the separate
+[Archivematica Storage Service API Specification][spec-repo] repository, which
+uses [TypeSpec] to produce the OpenAPI schema consumed by this module.
 
 You can browse the schema in two forms:
 
@@ -69,12 +72,21 @@ data.
 This repository is wrapper-first. Generated code is supporting infrastructure
 and a fallback escape hatch, not the primary interface we want callers to use.
 
+The generated client in this repository depends on the `spec/` git submodule.
+Initialize it before running generation commands:
+
+```sh
+git submodule update --init --recursive
+```
+
 When an endpoint's wire contract needs to be added or changed, the preferred
 pattern is:
 
-1. Fix TypeSpec first so the OpenAPI remains accurate.
-2. Regenerate Kiota without hand-editing generated files.
-3. Expose the operation through the public client wrapper and treat the
+1. Update the specification in
+   [archivematica-storage-service-api-specification][spec-repo] first so the
+   OpenAPI remains accurate.
+1. Regenerate Kiota without hand-editing generated files.
+1. Expose the operation through the public client wrapper and treat the
    generated Go surface as supporting infrastructure.
 
 Current examples include:
@@ -84,18 +96,19 @@ Current examples include:
   `Location` header.
 - `Packages.DeleteAIP`, where multiple non-error `2xx` outcomes need to be
   preserved explicitly.
-- `Packages.ReviewAIPDeletion`, where the server can return different `200`
-  JSON payloads and the wrapper lifts application-level failures into a typed
-  error for idiomatic Go callers.
-- `AsyncService.Get` and `AsyncService.Wait`, where the generated async
-  endpoint and model types remain available but the wrapper exposes a more
-  Go-oriented polling interface.
+- `Packages.ReviewAIPDeletion`, where the server can return different `200` JSON
+  payloads and the wrapper lifts application-level failures into a typed error
+  for idiomatic Go callers.
+- `AsyncService.Get` and `AsyncService.Wait`, where the generated async endpoint
+  and model types remain available but the wrapper exposes a more Go-oriented
+  polling interface.
 
-[`example`]: ./example/main.go
-[TypeSpec]: https://typespec.io
-[openapi-schema]: https://raw.githubusercontent.com/artefactual-labs/ssclient-go/main/typespec/tsp-output/%40typespec/openapi3/openapi.v1.yaml
-[openapi-docs]: https://artefactual-labs.github.io/ssclient-go/
-[TastyPie]: https://django-tastypie.readthedocs.io/
-[ss-schema.json]: https://gist.github.com/sevein/379f101ab9305235844c1e5101eeba04
 [django-tastypie-swagger]: https://github.com/concentricsky/django-tastypie-swagger
 [issue #20]: https://github.com/artefactual-labs/ssclient-go/issues/20
+[openapi-docs]: https://editor.swagger.io/?url=https://raw.githubusercontent.com/archivematica/archivematica-storage-service-api-specification/main/openapi.v1.yaml
+[openapi-schema]: https://raw.githubusercontent.com/archivematica/archivematica-storage-service-api-specification/main/openapi.v1.yaml
+[spec-repo]: https://github.com/archivematica/archivematica-storage-service-api-specification
+[ss-schema.json]: https://gist.github.com/sevein/379f101ab9305235844c1e5101eeba04
+[tastypie]: https://django-tastypie.readthedocs.io/
+[typespec]: https://typespec.io
+[`example`]: ./example/main.go
