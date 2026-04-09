@@ -33,9 +33,10 @@ That generated API uses Kiota's request-builder pattern, including
 slash. See [`example`] for a side-by-side example using both the high-level
 client and the generated client.
 
-> [!WARNING] Prefer the high-level wrapper for normal use. `Client.Raw()` is an
-> escape hatch for gaps in wrapper coverage while we continue to define that
-> boundary. For background, see [issue #20].
+> [!WARNING]
+> Prefer the high-level wrapper for normal use. `Client.Raw()` is an escape
+> hatch for gaps in wrapper coverage while we continue to define that boundary.
+> For background, see [issue #20].
 
 ## OpenAPI specification
 
