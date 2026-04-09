@@ -1,6 +1,6 @@
 {
   "descriptionHash": "F6612E2EBE4FB12B95E09627256DBDE77D3B75C01A7572561A5D5F35A9C5BEA38E11B737290030B642D152DB8957FE00E14085E8F13800FF229A4B441DE62493",
-  "descriptionLocation": "../typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml",
+  "descriptionLocation": "../spec/openapi.v1.yaml",
   "lockFileVersion": "1.0.0",
   "kiotaVersion": "1.30.0",
   "clientClassName": "Client",

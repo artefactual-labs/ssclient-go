@@ -1,6 +1,7 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 .PHONY: *
+SPEC_FILE := $(CURDIR)/spec/openapi.v1.yaml
 
 DBG_MAKEFILE ?=
 ifeq ($(DBG_MAKEFILE),1)
@@ -23,8 +24,17 @@ lint: LINT_FLAGS ?= --fix=1
 lint:
 	mise exec -- golangci-lint run $(LINT_FLAGS)
 
+spec-check: # @HELP Ensure the spec submodule is initialized.
+	@test -f "$(SPEC_FILE)" || { \
+		printf '%s\n' \
+			'OpenAPI spec not found at $(SPEC_FILE).' \
+			'Run: git submodule update --init --recursive'; \
+		exit 1; \
+	}
+
 ssclient: # @HELP Generate the Kiota client from the OpenAPI spec.
-	KIOTA_TUTORIAL_ENABLED=false mise exec -- kiota generate --language go --clean-output --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --output ./kiota --exclude-backward-compatible
+ssclient: spec-check
+	KIOTA_TUTORIAL_ENABLED=false mise exec -- kiota generate --language go --clean-output --class-name Client --namespace-name go.artefactual.dev/ssclient/kiota --openapi $(SPEC_FILE) --output ./kiota --exclude-backward-compatible
 	@printf '%s\n' \
 		'-------------------------------------------------------------------------' \
 		'# WARNING: kiota emits some expected warnings:                          #' \
@@ -47,14 +57,11 @@ ssclient: # @HELP Generate the Kiota client from the OpenAPI spec.
 		'-------------------------------------------------------------------------'
 
 ssclient-deps: # @HELP Show the Kiota generation dependency graph.
-	KIOTA_TUTORIAL_ENABLED=false mise exec -- kiota info --openapi typespec/tsp-output/@typespec/openapi3/openapi.v1.yaml --language Go
-
-typespec: # @HELP Install TypeSpec deps and compile the API spec.
-	mise exec -- npm --prefix=$(CURDIR)/typespec clean-install
-	mise exec -- npm --prefix=$(CURDIR)/typespec run compile
+ssclient-deps: spec-check
+	KIOTA_TUTORIAL_ENABLED=false mise exec -- kiota info --openapi $(SPEC_FILE) --language Go
 
 gen: # @HELP Generate code.
-gen: typespec ssclient examplemocks
+gen: ssclient examplemocks
 
 test: # @HELP Run tests.
 test:
@@ -69,4 +76,3 @@ help:
 	        BEGIN {FS = ": *# *@HELP"};           \
 	        { printf "  %-30s %s\n", $$1, $$2 };  \
 	    '
-
