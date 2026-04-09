@@ -83,7 +83,6 @@ Examples of wrapper-level normalization in this repository include:
   on top of the underlying async task resource.
 
 [issue #20]: https://github.com/artefactual-labs/ssclient-go/issues/20
-[openapi-docs]: https://editor.swagger.io/?url=https://raw.githubusercontent.com/archivematica/archivematica-storage-service-api-specification/main/openapi.v1.yaml
-[openapi-schema]: https://raw.githubusercontent.com/archivematica/archivematica-storage-service-api-specification/main/openapi.v1.yaml
-[spec-repo]: https://github.com/archivematica/archivematica-storage-service-api-specification
+[openapi-docs]:  https://archivematica.github.io/archivematica-storage-service-api-specification/
+[openapi-schema]: https://github.com/archivematica/archivematica-storage-service-api-specification/blob/main/typespec/tsp-output/%40typespec/openapi3/openapi.v1.yaml
 [`example`]: ./example/main.go
